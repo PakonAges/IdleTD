@@ -1,0 +1,27 @@
+syntax: glob
+
+.DS_Store
+*.pidb
+*.unitypackage
+
+
+ThirdParty/BUILD/protobuf/build-32/*
+ThirdParty/BUILD/protobuf/build-64/*
+ThirdParty/BUILD/protobuf/build-CS/*
+*.ilk
+*.ilk.meta
+ThirdParty/BUILD/protobuf/build-XCode*
+UnityVS.VersionSpecific.dll
+UnityVS.VersionSpecific.dll.meta
+syntax: regexp
+
+[Tt]humbs.db
+^ThirdParty/BUILD/protobuf/build/.*
+^\.vs/.*
+^Build/.*
+^Library/.*
+^Temp/.*
+^[Oo]bj/.*
+^[^/]*\.sln
+^[^/]*\.userprefs
+^[^/]*\.csproj
