@@ -1,9 +1,11 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class GameMaster : MonoBehaviour {
 
     public MapManager mapManager = new MapManager();
+    public NavMeshSurface navMesh;
     int i = 1; //debug for unlocking sections
 
 	void Awake () {
@@ -11,7 +13,7 @@ public class GameMaster : MonoBehaviour {
         mapManager.Map =  GetComponentInChildren<MapGenerator>().GenerateMap(10);
         mapManager.Init(GetComponent<WaypointsSpawner>());
 
-        GetComponentInChildren<UnityEngine.AI.NavMeshSurface>().BuildNavMesh();
+        navMesh.BuildNavMesh();
 
         //DataManager.instance.LoadData();
         //TimeManager.instance.Init();
