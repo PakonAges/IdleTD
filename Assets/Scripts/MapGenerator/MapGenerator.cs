@@ -40,7 +40,7 @@ public class LocallSectionCell
     }
 }
 
-public class MapGenerator : MonoBehaviour {
+public class MapGenerator : MonoBehaviour  {
 
     [Header("Map Setup")]
     public int MapSizeX = 200;
@@ -50,15 +50,13 @@ public class MapGenerator : MonoBehaviour {
     static public int startSecionSize = 7;
     static public int gapSizeBetweenSections = 1;
 
-    public NewMap Map = new NewMap();
+    public NewMap Map;
     SectionPositioner sectionPositioner;
-
     PortalGenerator portalGenerator;
 
     public NewMap GenerateMap(int sections)
     {
         Map = new NewMap();
-        Map.Init();
 
         UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
 

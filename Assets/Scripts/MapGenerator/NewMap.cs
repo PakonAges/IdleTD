@@ -4,9 +4,8 @@ public class NewMap {
 
     public Dictionary<int,MapSection> MapSections;
 
-    public void Init()
+    public NewMap()
     {
         MapSections = new Dictionary<int, MapSection>();
     }
-	
 }
