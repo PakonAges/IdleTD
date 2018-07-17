@@ -1,10 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 
-public class debugMapGenController : MonoBehaviour {
+public class DebugMapGenController : MonoBehaviour {
 
-    public MapGenerator mapg;
+    MapGenerator _mapGenerator;
     //int x = 1;
+
+    [Inject]
+    public void Construct(MapGenerator mapGenerator)
+    {
+        _mapGenerator = mapGenerator;
+    }
 
     private void Start()
     {
@@ -14,7 +21,7 @@ public class debugMapGenController : MonoBehaviour {
     void Update () {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            mapg.GenerateMap(5);
+            _mapGenerator.GenerateMap(5);
         }
 
         //if (Input.GetKeyDown(KeyCode.G))

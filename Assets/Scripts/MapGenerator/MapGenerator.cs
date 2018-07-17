@@ -40,7 +40,10 @@ public class LocallSectionCell
     }
 }
 
-public class MapGenerator : MonoBehaviour  {
+public class MapGenerator {
+
+    private readonly MapBuilder _mapBuilder;
+    private readonly SectionObjectsSpawner _sectionObjectsSpawner;
 
     [Header("Map Setup")]
     public int MapSizeX = 200;
@@ -53,6 +56,12 @@ public class MapGenerator : MonoBehaviour  {
     public NewMap Map;
     SectionPositioner sectionPositioner;
     PortalGenerator portalGenerator;
+
+    public MapGenerator(MapBuilder mapBuilder, SectionObjectsSpawner sectionObjectsSpawner)
+    {
+        _mapBuilder = mapBuilder;
+        _sectionObjectsSpawner = sectionObjectsSpawner;
+    }
 
     public NewMap GenerateMap(int sections)
     {
@@ -75,8 +84,8 @@ public class MapGenerator : MonoBehaviour  {
         SectionRoadBuilder roadBuilder = new SectionRoadBuilder(Map.MapSections);
         Debug.Log("Section Roads Created");
 
-        GetComponent<MapBuilder>().BuildMap(Map.MapSections, portalGenerator.PortalList);
-        GetComponent<SectionObjectsSpawner>().SpawnRocks(Map.MapSections);
+        _mapBuilder.BuildMap(Map.MapSections, portalGenerator.PortalList);
+        _sectionObjectsSpawner.SpawnRocks(Map.MapSections);
 
         return Map; 
     }
