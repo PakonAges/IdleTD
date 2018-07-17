@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MapManager {
 
-    public NewMap Map { get; set; }
+    public Map Map { get; set; }
     WaypointsSpawner wayPointSpawner;
     public CreepWayBuilder wayBuilder;
 

@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 
-public class NewMap {
+public class Map {
 
+    public int Seed;
     public Dictionary<int,MapSection> MapSections;
 
-    public NewMap()
+    public Map(int seed)
     {
+        Seed = seed;
         MapSections = new Dictionary<int, MapSection>();
     }
 }

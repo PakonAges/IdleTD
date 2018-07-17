@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class PortalGenerator {
 
-    NewMap myMap;
+    Map myMap;
     SectionPositioner myPositioner;
 
     public List<Vector3> PortalList = new List<Vector3>();
     Dictionary<int,List<int>> SectionsLinias = new Dictionary<int, List<int>>();
     int iteration = 1;
 
-	public PortalGenerator (NewMap map, SectionPositioner positioner)
+	public PortalGenerator (Map map, SectionPositioner positioner)
     {
         myMap = map;
         myPositioner = positioner;

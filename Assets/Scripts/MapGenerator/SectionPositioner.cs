@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class SectionPositioner {
 
-    int Gap;
+    private readonly MapGenerationData _mapData;
+
+    readonly int Gap;
     public int GapId = 666;
 
     public int EmptyId = 0;
-
-    int localMapSizeX;
-    int localMapSizeY;
+    readonly int localMapSizeX;
+    readonly int localMapSizeY;
 
     Vector2 zeroOffset;
 
@@ -19,22 +20,20 @@ public class SectionPositioner {
 
     List<Vector2> buildCoordList;
 
-    //debug. To be able to instantiate blocks
-    //MapGenerator myGen;
-
-    public SectionPositioner(int mapSizeX, int mapSizeY, int gapSize, MapGenerator Gen)
+    public SectionPositioner(MapGenerationData mapData)
     {
-        //myGen = Gen;
-        localMapSizeX = mapSizeX;
-        localMapSizeY = mapSizeY;
+        _mapData = mapData;
 
-        localMap = new int[mapSizeX, mapSizeY];
+        localMapSizeX = _mapData.MapSizeX;
+        localMapSizeY = _mapData.MapSizeY;
+
+        localMap = new int[_mapData.MapSizeX, _mapData.MapSizeY];
         ClearLocalMap();
 
-        Gap = gapSize;
+        Gap = _mapData.GapSize;
 
-        localZero = new Vector2(mapSizeX * 0.5f, 0);
-        zeroOffset = new Vector2(((1 - MapGenerator.startSecionSize) * 0.5f), 0);
+        localZero = new Vector2(_mapData.MapSizeX * 0.5f, 0);
+        zeroOffset = new Vector2(((1 - _mapData.StartingSecionSize) * 0.5f), 0);
 
         buildCoordList = new List<Vector2>();
 
@@ -49,57 +48,14 @@ public class SectionPositioner {
 
         if (SectionId == 1)
         {
-            definedSection.Xsize = MapGenerator.startSecionSize;
-            definedSection.Ysize = MapGenerator.startSecionSize;
+            definedSection.Xsize = _mapData.StartingSecionSize;
+            definedSection.Ysize = _mapData.StartingSecionSize;
         }
-        //if (SectionId == 2)
-        //{
-        //    definedSection.Xsize = 8;
-        //    definedSection.Ysize = 4;
-        //}
-        //if (SectionId == 3)
-        //{
-        //    definedSection.Xsize = 6;
-        //    definedSection.Ysize = 3;
-        //}
-        //if (SectionId == 4)
-        //{
-        //    definedSection.Xsize = 5;
-        //    definedSection.Ysize = 4;
-        //}
-        //if (SectionId == 5)
-        //{
-        //    definedSection.Xsize = 8;
-        //    definedSection.Ysize = 7;
-        //}
-        //if (SectionId == 6)
-        //{
-        //    definedSection.Xsize = 5;
-        //    definedSection.Ysize = 7;
-        //}
-        //if (SectionId == 7)
-        //{
-        //    definedSection.Xsize = 4;
-        //    definedSection.Ysize = 8;
-        //}
-        //if (SectionId == 8)
-        //{
-        //    definedSection.Xsize = 4;
-        //    definedSection.Ysize = 8;
-        //}
-        //if (SectionId == 9)
-        //{
-        //    definedSection.Xsize = 5;
-        //    definedSection.Ysize = 6;
-        //}
-        //if (SectionId > 9)
+        
         else
         {
-            definedSection.Xsize = UnityEngine.Random.Range(MapGenerator.minSectionSize, MapGenerator.maxSectionSize + 1);
-            definedSection.Ysize = UnityEngine.Random.Range(MapGenerator.minSectionSize, MapGenerator.maxSectionSize + 1);
-
-            //definedSection.Xsize = 8;
-            //definedSection.Ysize = 3;
+            definedSection.Xsize = UnityEngine.Random.Range(_mapData.MinSectionSize, _mapData.MaxSectionSize + 1);
+            definedSection.Ysize = UnityEngine.Random.Range(_mapData.MinSectionSize, _mapData.MaxSectionSize + 1);
         }
 
         Vector2 localNewPosition = FindNearestLocalPlace();
@@ -399,9 +355,9 @@ public class SectionPositioner {
         //Check X side
         if (Ydirection == 1)
         {
-            additionalCheckCell.Y += (MapGenerator.minSectionSize - 1);
+            additionalCheckCell.Y += (_mapData.MinSectionSize - 1);
         } else
-            additionalCheckCell.Y -= (MapGenerator.minSectionSize - 1);
+            additionalCheckCell.Y -= (_mapData.MinSectionSize - 1);
 
 
         for (int i = 0; i < section.Xsize; i++)
@@ -527,8 +483,6 @@ public class SectionPositioner {
         if (IsInMapLimits(place) && !buildCoordList.Exists(x => x == place))
         {
             buildCoordList.Add(place);
-            //myGen.SpawnPoint(ConvertLocalToGlobal(place));
-            //Debug.Log("Added SpawnPoint: " + place);
         } else
         {
             Debug.Log("Duplicate place: " + place);
@@ -538,7 +492,6 @@ public class SectionPositioner {
     void RemovePlace(Vector2 place)
     {
         buildCoordList.Remove(place);
-        //Debug.Log("Remove SpawnPoint: " + place);
     }
 
     void ClearUpPlaces()
@@ -583,12 +536,12 @@ public class SectionPositioner {
 
             if (Xdirection == 1)
             {
-                FirstCheckCell.X = (int)place.x + MapGenerator.minSectionSize - 1;
+                FirstCheckCell.X = (int)place.x + _mapData.MinSectionSize - 1;
                 SecondCheckCell.X = (int)place.x;
                 ThirdCheckCell.X = FirstCheckCell.X;
             } else
             {
-                FirstCheckCell.X = (int)place.x - MapGenerator.minSectionSize + 1;
+                FirstCheckCell.X = (int)place.x - _mapData.MinSectionSize + 1;
                 SecondCheckCell.X = (int)place.x;
                 ThirdCheckCell.X = FirstCheckCell.X;
             }
@@ -596,12 +549,12 @@ public class SectionPositioner {
             if (Ydirection == 1)
             {
                 FirstCheckCell.Y = (int)place.y;
-                SecondCheckCell.Y = (int)place.y + MapGenerator.minSectionSize - 1;
+                SecondCheckCell.Y = (int)place.y + _mapData.MinSectionSize - 1;
                 ThirdCheckCell.Y = SecondCheckCell.Y;
             } else
             {
                 FirstCheckCell.Y = (int)place.y;
-                SecondCheckCell.Y = (int)place.y - MapGenerator.minSectionSize + 1;
+                SecondCheckCell.Y = (int)place.y - _mapData.MinSectionSize + 1;
                 ThirdCheckCell.Y = SecondCheckCell.Y;
             }
  

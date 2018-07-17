@@ -10,7 +10,7 @@ public class GameMaster : MonoBehaviour {
 
 	void Awake () {
 
-        mapManager.Map =  GetComponentInChildren<MapGenerator>().GenerateMap(10);
+        mapManager.Map =  GetComponentInChildren<MapGenerator>().GenerateMap();
         mapManager.Init(GetComponent<WaypointsSpawner>());
 
         navMesh.BuildNavMesh();

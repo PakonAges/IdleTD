@@ -14,6 +14,7 @@ public struct MapCell
 
 public class GlobalSectionCell
 {
+    //Top Left Coord of the Section in the world
     public Vector3 Position;
     public int Xsize;
     public int Ysize;
@@ -40,64 +41,69 @@ public class LocallSectionCell
     }
 }
 
-public class MapGenerator {
+public class MapGenerator
+{
+    public bool deBugDrawSections = false;
+    public bool deBugDrawPortals = false;
 
-    private readonly MapBuilder _mapBuilder;
     private readonly SectionObjectsSpawner _sectionObjectsSpawner;
+    private readonly MapGenerationData _mapGenerationInput;
+    private SectionPositioner sectionPositioner;
 
-    [Header("Map Setup")]
-    public int MapSizeX = 200;
-    public int MapSizeY = 200;
-    static public int minSectionSize = 4;
-    static public int maxSectionSize = 8;
-    static public int startSecionSize = 7;
-    static public int gapSizeBetweenSections = 1;
-
-    public NewMap Map;
-    SectionPositioner sectionPositioner;
-    PortalGenerator portalGenerator;
-
-    public MapGenerator(MapBuilder mapBuilder, SectionObjectsSpawner sectionObjectsSpawner)
+    public MapGenerator(SectionObjectsSpawner sectionObjectsSpawner,
+                        MapGenerationData mapGenerationInputata)
     {
-        _mapBuilder = mapBuilder;
         _sectionObjectsSpawner = sectionObjectsSpawner;
+        _mapGenerationInput = mapGenerationInputata;
     }
 
-    public NewMap GenerateMap(int sections)
+
+    /// <summary>
+    /// Generates Map Data needed to build Map itself in the builder.
+    /// </summary>
+    /// <returns>Map data</returns>
+    public Map GenerateMap()
     {
-        Map = new NewMap();
+        var seed = (int)System.DateTime.Now.Ticks;
 
-        UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
-
-        sectionPositioner = new SectionPositioner(MapSizeX, MapSizeY, gapSizeBetweenSections, this);
-        
-
-        for (int i = 1; i < sections + 1; i++)
+        //Use random seed or predefined?
+        if (_mapGenerationInput.useSeed)
         {
-            Map.MapSections.Add(i, GenerateSection(i));
+            seed = _mapGenerationInput.Seed;
         }
-        Debug.Log("Map Created: " + sections + " sections");
+        
+        UnityEngine.Random.InitState(seed);
 
-        portalGenerator = new PortalGenerator(Map, sectionPositioner);
-        Debug.Log("Portals Created: " + portalGenerator.PortalList.Count + " portals total");
+        var GeneratedMap = new Map(seed);
 
-        SectionRoadBuilder roadBuilder = new SectionRoadBuilder(Map.MapSections);
-        Debug.Log("Section Roads Created");
+        sectionPositioner = new SectionPositioner(_mapGenerationInput);
 
-        _mapBuilder.BuildMap(Map.MapSections, portalGenerator.PortalList);
-        _sectionObjectsSpawner.SpawnRocks(Map.MapSections);
+        for (int i = 1; i < _mapGenerationInput.SectionsAmount + 1; i++)
+        {
+            GeneratedMap.MapSections.Add(i, GenerateSection(i));
 
-        return Map; 
+            if (deBugDrawSections)
+            {
+                //Draw secton in Editor
+            }
+        }
+
+        var portalGenerator = new PortalGenerator(GeneratedMap, sectionPositioner);
+        if (deBugDrawPortals)
+        {
+            //Draw Portals
+        }
+
+        //Debug.Log("Portals Created: " + portalGenerator.PortalList.Count + " portals total");
+        return GeneratedMap;
     }
 
     MapSection GenerateSection(int id)
     {
         GlobalSectionCell section = sectionPositioner.DefineSection(id);
-
         MapSection NewSection = new MapSection(id, section);
 
-        Debug.Log("Section Builded: " + id + " = [" + section.Xsize + ";" + section.Ysize + "]");
-
+        //Debug.Log("Section Builded: " + id + " = [" + section.Xsize + ";" + section.Ysize + "]");
         return NewSection;
     }
 }

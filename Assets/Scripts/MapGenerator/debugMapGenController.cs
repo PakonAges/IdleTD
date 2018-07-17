@@ -21,7 +21,7 @@ public class DebugMapGenController : MonoBehaviour {
     void Update () {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            _mapGenerator.GenerateMap(5);
+            _mapGenerator.GenerateMap();
         }
 
         //if (Input.GetKeyDown(KeyCode.G))

@@ -38,7 +38,7 @@ public class CreepMovement : MonoBehaviour {
         prevTarget = targetToMove;
         targetToMove = newTarget;
 
-        Vector3 dir = targetToMove - transform.position;
+        //Vector3 dir = targetToMove - transform.position;
         //transform.rotation = Quaternion.LookRotation(dir);
     }
 }

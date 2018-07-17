@@ -6,7 +6,7 @@ public class CreepWayBuilder {
 
     public Dictionary<int, List<Vector2>> pathInSections = new Dictionary<int, List<Vector2>>();
 
-    public CreepWayBuilder(NewMap map)
+    public CreepWayBuilder(Map map)
     {
         foreach (var section in map.MapSections)
         {

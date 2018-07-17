@@ -8,11 +8,15 @@ public class MapBuilder : MonoBehaviour {
     public GameObject GroundTile;
     public GameObject Bridge;
 
-    public void BuildMap(Dictionary<int, MapSection> map, List<Vector3> portals)
+    public void BuildMap(Map map, List<Vector3> portals)
     {
-        BuildEntrance(map[1].Xsize / 2);
+        //Get Map Config from generator
+        //Then build Map
+        //THen Build Objects
 
-        foreach (KeyValuePair<int, MapSection> pair in map)
+        BuildEntrance(map.MapSections[1].Xsize / 2);
+
+        foreach (KeyValuePair<int, MapSection> pair in map.MapSections)
         {
             BuildMapSection(pair.Value);
         }
@@ -21,6 +25,10 @@ public class MapBuilder : MonoBehaviour {
         {
             Instantiate(RoadTile, portal, Quaternion.identity,transform).name = "Portal";
         }
+
+        //SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);
+        //_mapBuilder.BuildMap(GeneratedMap, portalGenerator.PortalList);
+        //_sectionObjectsSpawner.SpawnRocks(GeneratedMap.MapSections);
     }
 
     void BuildEntrance(int place)//HACK
