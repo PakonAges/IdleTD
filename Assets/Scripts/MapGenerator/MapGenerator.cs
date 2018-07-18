@@ -48,13 +48,16 @@ public class MapGenerator
 
     private readonly SectionObjectsSpawner _sectionObjectsSpawner;
     private readonly MapGenerationData _mapGenerationInput;
+    private readonly DebugSectionBuilder _debugSectionBuilder;
     private SectionPositioner sectionPositioner;
 
     public MapGenerator(SectionObjectsSpawner sectionObjectsSpawner,
-                        MapGenerationData mapGenerationInputata)
+                        MapGenerationData mapGenerationInputata,
+                        DebugSectionBuilder debugSectionBuilder)
     {
         _sectionObjectsSpawner = sectionObjectsSpawner;
         _mapGenerationInput = mapGenerationInputata;
+        _debugSectionBuilder = debugSectionBuilder;
     }
 
 
@@ -80,11 +83,12 @@ public class MapGenerator
 
         for (int i = 1; i < _mapGenerationInput.SectionsAmount + 1; i++)
         {
-            GeneratedMap.MapSections.Add(i, GenerateSection(i));
+            var MapSection = GenerateSection(i);
+            GeneratedMap.MapSections.Add(i, MapSection);
 
             if (deBugDrawSections)
             {
-                //Draw secton in Editor
+                _debugSectionBuilder.BuildSection(MapSection);
             }
         }
 
