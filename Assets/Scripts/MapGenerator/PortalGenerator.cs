@@ -140,7 +140,7 @@ public class PortalGenerator {
                 x = 0;
                 y = Portal.Y - myPositioner.ConvertGlobalToLocal(myMap.MapSections[ToSection].PivotPosition).Y;
                 myMap.MapSections[ToSection].SectionTopography[x, y] = TileType.Road;
-                myMap.MapSections[ToSection].Entrance = Side.Left;
+                myMap.MapSections[ToSection].EntranceSide = Side.Left;
                 myMap.MapSections[ToSection].EntranceCell.X = x;
                 myMap.MapSections[ToSection].EntranceCell.Y = y;
                 break;
@@ -154,7 +154,7 @@ public class PortalGenerator {
                 x = Portal.X - myPositioner.ConvertGlobalToLocal(myMap.MapSections[ToSection].PivotPosition).X;
                 y = 0;
                 myMap.MapSections[ToSection].SectionTopography[x, y] = TileType.Road;
-                myMap.MapSections[ToSection].Entrance = Side.Top;
+                myMap.MapSections[ToSection].EntranceSide = Side.Top;
                 myMap.MapSections[ToSection].EntranceCell.X = x;
                 myMap.MapSections[ToSection].EntranceCell.Y = y;
                 break;
@@ -168,7 +168,7 @@ public class PortalGenerator {
                 x = myMap.MapSections[ToSection].Xsize - 1;
                 y = Portal.Y - myPositioner.ConvertGlobalToLocal(myMap.MapSections[ToSection].PivotPosition).Y;
                 myMap.MapSections[ToSection].SectionTopography[x, y] = TileType.Road;
-                myMap.MapSections[ToSection].Entrance = Side.Right;
+                myMap.MapSections[ToSection].EntranceSide = Side.Right;
                 myMap.MapSections[ToSection].EntranceCell.X = x;
                 myMap.MapSections[ToSection].EntranceCell.Y = y;
                 break;
@@ -182,7 +182,7 @@ public class PortalGenerator {
                 x = Portal.X - myPositioner.ConvertGlobalToLocal(myMap.MapSections[ToSection].PivotPosition).X;
                 y = myMap.MapSections[ToSection].Ysize - 1;
                 myMap.MapSections[ToSection].SectionTopography[x, y] = TileType.Road;
-                myMap.MapSections[ToSection].Entrance = Side.Bot;
+                myMap.MapSections[ToSection].EntranceSide = Side.Bot;
                 myMap.MapSections[ToSection].EntranceCell.X = x;
                 myMap.MapSections[ToSection].EntranceCell.Y = y;
                 break;
@@ -195,7 +195,7 @@ public class PortalGenerator {
     {
         FindSectionTangency(1);
         myMap.MapSections[1].DoesHaveAnExit = true;
-        myMap.MapSections[1].Entrance = Side.Top;
+        myMap.MapSections[1].EntranceSide = Side.Top;
     }
 
     void BuildNextLinia(List<int> queue)

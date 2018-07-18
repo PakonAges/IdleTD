@@ -64,7 +64,7 @@ public class WaypointsSpawner : MonoBehaviour {
         //add Section Entrance to The End of the new Path
         newPath.Add(CreateWayPoint(myManager.Map.MapSections[id].EntranceCell, myManager.Map.MapSections[id].PivotPosition));
         //add prev.Section Exit to the End of the End
-        Vector3 injectionPoint = FindOtherSideOfThePortal(myManager.Map.MapSections[id].EntranceCell, myManager.Map.MapSections[id].Entrance, myManager.Map.MapSections[id].PivotPosition);
+        Vector3 injectionPoint = FindOtherSideOfThePortal(myManager.Map.MapSections[id].EntranceCell, myManager.Map.MapSections[id].EntranceSide, myManager.Map.MapSections[id].PivotPosition);
         newPath.Add(injectionPoint);
 
         Place = CreepPath.instance.path.LastIndexOf(injectionPoint);

@@ -20,7 +20,7 @@ public class SectionRoadBuilder
             if (mapSection.Key == 1)
             {
                 mapSection.Value.SectionTopography[mapSection.Value.Xsize / 2, 0] = TileType.Road;
-                mapSection.Value.Entrance = Side.Top;
+                mapSection.Value.EntranceSide = Side.Top;
                 mapSection.Value.EntranceCell = new MapCell(mapSection.Value.Xsize / 2, 0);
             }
 

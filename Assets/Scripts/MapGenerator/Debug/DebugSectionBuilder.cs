@@ -3,66 +3,96 @@ using GameData;
 
 public class DebugSectionBuilder : MonoBehaviour {
 
-    public GameObject Road;
-    public GameObject Ground;
-    public GameObject Entrance;
-    public GameObject Exit;
+    public GameObject EmptyTile;
+    public GameObject RoadTile;
+    public GameObject BridgeTile;
+    public GameObject GroundTile;
+    public GameObject EntranceTile;
+    public GameObject ExitTile;
+    public GameObject ErrorTile;
+
+    private Transform sectionTransform;
+    private Vector3 sectionPivot = new Vector3();
 
     public void BuildSection(MapSection section)
     {
-        var sectionGO = Instantiate(new GameObject());
-        sectionGO.name = "Section: " + section.SectionId;
-
-        for (int i = 0; i < section.SectionTopography.GetLength(0); i++)
+        //Create empty holder for the section tiles
+        var sectionGO = new GameObject
         {
-            for (int j = 0; j < section.SectionTopography.GetLength(1); j++)
+            name = "Section: " + section.SectionId
+        };
+        sectionTransform = sectionGO.transform;
+        sectionPivot = section.PivotPosition;
+
+        //Spawn Entrance Tile
+        BuildTile(section.EntranceCell.X, section.EntranceCell.Y, TileType.Entrance);
+
+        //Spawn Exit tiles
+        if (section.DoesHaveAnExit)
+        {
+            foreach (var exit in section.ExitCells)
             {
-                BuildTile(sectionGO.transform, section.PivotPosition, i, j, section.SectionTopography[i, j]);
+                BuildTile(exit.X, exit.Y, TileType.Exit);
+            }
+        }
 
-                //if (section.SectionTopography[i,j] == GameData.TileType.Ground)
-                //{
-                //    Instantiate(Ground, pos, Quaternion.identity).name = section.SectionId + " Section. Ground Tile [" + i + ";" + j + "]";
-                //}
-
-                //if (section.SectionTopography[i, j] == GameData.TileType.Road)
-                //{
-                //    Instantiate(Road, pos, Quaternion.identity).name = section.SectionId + " Section.  Road Tile [" + i + ";" + j + "]";
-                //}
-
-                //if (section.SectionTopography[i, j] == GameData.TileType.Empty)
-                //{
-                //    Instantiate(Entrance, pos, Quaternion.identity).name = section.SectionId + " Section.  Empty Tile [" + i + ";" + j + "]";
-                //}
+        for (int j = 0; j < section.SectionTopography.GetLength(1); j++)
+        {
+            for (int i = 0; i < section.SectionTopography.GetLength(0); i++)
+            {
+                BuildTile(i, j, section.SectionTopography[i, j]);
             }
         }
 
         Debug.Log("Section Builded: " + section.SectionId);
     }
 
-    GameObject BuildTile (Transform parent, Vector3 pivot, int x, int y, TileType type)
+    GameObject BuildTile (int x, int y, TileType type)
     {
         var pos = new Vector3();
-        pos = pivot;
+        pos = sectionPivot;
         pos.x += x;
-        pos.z += y;
+        pos.z -= y;
 
-        switch (TileType)
+        GameObject TileToBuild;
+
+        switch (type)
         {
             case TileType.Empty:
+            TileToBuild = EmptyTile;
             break;
+
             case TileType.Ground:
+            TileToBuild = GroundTile;
             break;
+
             case TileType.Road:
+            TileToBuild = RoadTile;
             break;
+
             case TileType.Bridge:
+            pos.y += 1;
+            TileToBuild = BridgeTile;
             break;
+
+            case TileType.Entrance:
+            pos.y += 1;
+            TileToBuild = EntranceTile;
+            break;
+
+            case TileType.Exit:
+            pos.y += 1;
+            TileToBuild = ExitTile;
+            break;
+
             default:
+            TileToBuild = ErrorTile;
             break;
         }
 
-        var Tile = Instantiate(Entrance, pos, Quaternion.identity);
-        Tile.name = "Ground Tile [" + x + ";" + y + "]";
-        Tile.transform.SetParent(parent);
+        var Tile = Instantiate(TileToBuild, pos, Quaternion.identity);
+        Tile.name = type.ToString() + " [" + x + ";" + y + "]";
+        Tile.transform.SetParent(sectionTransform);
 
         return Tile;
     }

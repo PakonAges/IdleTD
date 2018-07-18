@@ -14,7 +14,9 @@
         Empty,
         Ground,
         Road,
-        Bridge
+        Bridge,
+        Entrance,
+        Exit
     }
 
     public enum TowerType

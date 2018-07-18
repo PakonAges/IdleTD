@@ -25,7 +25,7 @@ public class CreepWayBuilder {
         Vector2 prevCell = new Vector2(focusCell.x,focusCell.y);        //To add wayPoint on the previous cell, if road is changing direction
         Vector2 startCell = new Vector2(focusCell.x, focusCell.y);      //To check when to stop. After a full circle
 
-        Side direction = StartDirection(section.Entrance);
+        Side direction = StartDirection(section.EntranceSide);
 
         for (int i = 0; i < section.SectionTopography.GetLength(0); i++)
         {

@@ -13,7 +13,7 @@ public class MapSection {
 
     public bool DoesHaveAnExit = false;
 
-    public Side Entrance = Side.None;
+    public Side EntranceSide = Side.None;
     public MapCell EntranceCell = new MapCell();
 
     public List<Side> ExitSides = new List<Side>();

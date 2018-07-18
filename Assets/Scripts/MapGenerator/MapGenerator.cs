@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public struct MapCell
 {
@@ -69,30 +70,39 @@ public class MapGenerator
     {
         var seed = (int)System.DateTime.Now.Ticks;
 
-        //Use random seed or predefined?
+        //Use random seed or predefined
         if (_mapGenerationInput.useSeed)
         {
             seed = _mapGenerationInput.Seed;
         }
         
-        UnityEngine.Random.InitState(seed);
+        Random.InitState(seed);
 
         var GeneratedMap = new Map(seed);
 
         sectionPositioner = new SectionPositioner(_mapGenerationInput);
-
+        
+        //Generate and position empty sections
         for (int i = 1; i < _mapGenerationInput.SectionsAmount + 1; i++)
         {
             var MapSection = GenerateSection(i);
             GeneratedMap.MapSections.Add(i, MapSection);
-
-            if (deBugDrawSections)
-            {
-                _debugSectionBuilder.BuildSection(MapSection);
-            }
         }
 
+        //Generate Portals
         var portalGenerator = new PortalGenerator(GeneratedMap, sectionPositioner);
+
+        //Generate Roads in each section
+        SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);
+
+        ///Debug mode
+        if (deBugDrawSections)
+        {
+            foreach (KeyValuePair<int, MapSection> section in GeneratedMap.MapSections)
+            {
+                _debugSectionBuilder.BuildSection(section.Value);
+            }
+        }
         if (deBugDrawPortals)
         {
             //Draw Portals
