@@ -25,7 +25,7 @@ public class DebugMapGenerator : MapGenerator {
         }
         if (deBugDrawPortals)
         {
-            _debugSectionBuilder.BuildPortals(map.PortalList);
+            _debugSectionBuilder.BuildPortals(map.Bridges);
         }
     }
 }

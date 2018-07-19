@@ -48,11 +48,11 @@ public class DebugSectionBuilder : MonoBehaviour {
         Debug.Log("Section Builded: " + section.SectionId);
     }
 
-    public void BuildPortals(List<Vector3> portalList)
+    public void BuildPortals(List<Bridge> Bridges)
     {
-        foreach (var place in portalList)
+        foreach (var bridge in Bridges)
         {
-            var Portal = Instantiate(BridgeTile, place, Quaternion.identity);
+            var Portal = Instantiate(BridgeTile, bridge.Place, Quaternion.identity);
             Portal.name = "Portal";
         }
     }

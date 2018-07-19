@@ -16,7 +16,11 @@ public class PortalGenerator {
         myMap = map;
         myPositioner = positioner;
         GeneratePortals();
-        map.PortalList = PortalList;
+
+        for (int i = 0; i < PortalList.Count; i++)
+        {
+            map.Bridges.Add(new Bridge(PortalList[i]));
+        }
     }
 
     public void GeneratePortals()
