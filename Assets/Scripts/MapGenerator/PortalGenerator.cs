@@ -8,7 +8,7 @@ public class PortalGenerator {
     SectionPositioner myPositioner;
 
     public List<Vector3> PortalList = new List<Vector3>();
-    Dictionary<int,List<int>> SectionsLinias = new Dictionary<int, List<int>>();
+    Dictionary<int,List<int>> SectionLanes = new Dictionary<int, List<int>>();
     int iteration = 1;
 
 	public PortalGenerator (Map map, SectionPositioner positioner)
@@ -16,13 +16,13 @@ public class PortalGenerator {
         myMap = map;
         myPositioner = positioner;
         GeneratePortals();
+        map.PortalList = PortalList;
     }
 
     public void GeneratePortals()
     {
         BuildStartingSection();
-
-        BuildNextLinia(SectionsLinias[iteration]);
+        BuildNextLane(SectionLanes[iteration]);
     }
 
     void FindSectionTangency(int sectionId)
@@ -110,13 +110,13 @@ public class PortalGenerator {
 
                 myMap.MapSections[pair.Key].DoesHaveAnExit = true;
 
-                if (SectionsLinias.ContainsKey(iteration))
+                if (SectionLanes.ContainsKey(iteration))
                 {
-                    SectionsLinias[iteration].Add(pair.Key);
+                    SectionLanes[iteration].Add(pair.Key);
                 } else
                 {
-                    SectionsLinias.Add(iteration, new List<int>());
-                    SectionsLinias[iteration].Add(pair.Key);
+                    SectionLanes.Add(iteration, new List<int>());
+                    SectionLanes[iteration].Add(pair.Key);
                 }
                 
             }
@@ -198,7 +198,7 @@ public class PortalGenerator {
         myMap.MapSections[1].EntranceSide = Side.Top;
     }
 
-    void BuildNextLinia(List<int> queue)
+    void BuildNextLane(List<int> queue)
     {
         iteration++;
 
@@ -207,9 +207,9 @@ public class PortalGenerator {
             FindSectionTangency(SectionId);
         }
 
-        if (SectionsLinias.ContainsKey(iteration))
+        if (SectionLanes.ContainsKey(iteration))
         {
-            BuildNextLinia(SectionsLinias[iteration]);
+            BuildNextLane(SectionLanes[iteration]);
         }
     }
 }

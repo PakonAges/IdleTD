@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using GameData;
+using System.Collections.Generic;
 
 public class DebugSectionBuilder : MonoBehaviour {
 
@@ -45,6 +46,15 @@ public class DebugSectionBuilder : MonoBehaviour {
         }
 
         Debug.Log("Section Builded: " + section.SectionId);
+    }
+
+    public void BuildPortals(List<Vector3> portalList)
+    {
+        foreach (var place in portalList)
+        {
+            var Portal = Instantiate(BridgeTile, place, Quaternion.identity);
+            Portal.name = "Portal";
+        }
     }
 
     GameObject BuildTile (int x, int y, TileType type)

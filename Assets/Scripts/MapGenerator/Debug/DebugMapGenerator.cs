@@ -2,8 +2,8 @@
 
 public class DebugMapGenerator : MapGenerator {
 
-    public bool deBugDrawSections = false;
-    public bool deBugDrawPortals = false;
+    public bool deBugDrawSections = true;
+    public bool deBugDrawPortals = true;
 
     private readonly MapGenerationData _mapData;
     private readonly DebugSectionBuilder _debugSectionBuilder;
@@ -25,7 +25,7 @@ public class DebugMapGenerator : MapGenerator {
         }
         if (deBugDrawPortals)
         {
-            //Draw Portals
+            _debugSectionBuilder.BuildPortals(map.PortalList);
         }
     }
 }
