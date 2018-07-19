@@ -2,6 +2,9 @@
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Generate random empty section and position it as is in the defined rules 
+/// </summary>
 public class SectionPositioner {
 
     private readonly MapGenerationData _mapData;
@@ -101,7 +104,7 @@ public class SectionPositioner {
 
     
 
-    GlobalSectionCell BuildLocalSection(int SectionId, LocallSectionCell section)   //<--- if gap > 1, there might be some problems.
+    GlobalSectionCell BuildLocalSection(int SectionId, LocallSectionCell section) 
     {
         //Fix pivot -> topleft
         //Fix X size
@@ -117,54 +120,58 @@ public class SectionPositioner {
             }
         }
 
-        //Don't forget to add perimeter
-        MapCell focusCell = new MapCell(newSection.Position.X,newSection.Position.Y);
-        focusCell.X--;
-        focusCell.Y--;
-
-        //Top Perimeter
-        for (int i = 0; i < newSection.Xsize + Gap; i++)
+        //Don't forget to mark perimeter with a gap width
+        for (int g = 1; g <= Gap; g++)
         {
-            if (IsInMapLimits(focusCell, EmptyId))
+            MapCell focusCell = new MapCell(newSection.Position.X,newSection.Position.Y);
+            focusCell.X -= g;
+            focusCell.Y -= g;
+
+            //Top Perimeter
+            for (int i = 0; i < newSection.Xsize + (g * 2 - 1); i++)
             {
-                localMap[focusCell.X, focusCell.Y] = GapId;
+                if (IsInMapLimits(focusCell, EmptyId))
+                {
+                    localMap[focusCell.X, focusCell.Y] = GapId;
+                }
+
+                focusCell.X++;
             }
 
-            focusCell.X++;
-        }
-
-        //Right Perimeter
-        for (int i = 0; i < newSection.Ysize + Gap; i++)
-        {
-            if (IsInMapLimits(focusCell, EmptyId))
+            //Right Perimeter
+            for (int i = 0; i < newSection.Ysize + (g * 2 - 1); i++)
             {
-                localMap[focusCell.X, focusCell.Y] = GapId;
+                if (IsInMapLimits(focusCell, EmptyId))
+                {
+                    localMap[focusCell.X, focusCell.Y] = GapId;
+                }
+
+                focusCell.Y++;
             }
 
-            focusCell.Y++;
-        }
-
-        //Bot Perimeter
-        for (int i = 0; i < newSection.Xsize + Gap; i++)
-        {
-            if (IsInMapLimits(focusCell, EmptyId))
+            //Bot Perimeter
+            for (int i = 0; i < newSection.Xsize + (g * 2 - 1); i++)
             {
-                localMap[focusCell.X, focusCell.Y] = GapId;
+                if (IsInMapLimits(focusCell, EmptyId))
+                {
+                    localMap[focusCell.X, focusCell.Y] = GapId;
+                }
+
+                focusCell.X--;
             }
 
-            focusCell.X--;
-        }
-
-        //Left Perimeter
-        for (int i = 0; i < newSection.Ysize + Gap; i++)
-        {
-            if (IsInMapLimits(focusCell, EmptyId))
+            //Left Perimeter
+            for (int i = 0; i < newSection.Ysize + (g * 2 - 1); i++)
             {
-                localMap[focusCell.X, focusCell.Y] = GapId;
-            }
+                if (IsInMapLimits(focusCell, EmptyId))
+                {
+                    localMap[focusCell.X, focusCell.Y] = GapId;
+                }
 
-            focusCell.Y--;
+                focusCell.Y--;
+            }
         }
+
 
         //If this is the first section -> add spawn Vector on the right side;
         if (SectionId == 1)
@@ -293,12 +300,15 @@ public class SectionPositioner {
         if (cell.X >= 0 && cell.X <= localMapSizeX && cell.Y >= 0 && cell.Y <= localMapSizeY) return true;
         else return false;
     }
+
     bool IsInMapLimits(Vector2 place)
     {
         MapCell cell = new MapCell((int)place.x, (int)place.y);
         if (cell.X >= 0 && cell.X <= localMapSizeX && cell.Y >= 0 && cell.Y <= localMapSizeY) return true;
         else return false;
     }
+
+
     public bool IsInMapLimits(MapCell cell, int localCellId)
     {
         if (cell.X >= 0 && cell.X <= localMapSizeX && cell.Y >= 0 && cell.Y <= localMapSizeY)

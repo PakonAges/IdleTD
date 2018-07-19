@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using GameData;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class DebugSectionBuilder : MonoBehaviour {
 
@@ -105,5 +106,42 @@ public class DebugSectionBuilder : MonoBehaviour {
         Tile.transform.SetParent(sectionTransform);
 
         return Tile;
+    }
+
+
+    //Draw Local Map
+    public class DebugCellIdPair
+    {
+        public Vector3 GizmosPosition;
+        public string GizmosText;
+
+        public DebugCellIdPair(Vector3 pos, string id)
+        {
+            GizmosPosition = pos;
+            GizmosText = id;
+        }
+    }
+
+    public List<DebugCellIdPair> LocalMapList = new List<DebugCellIdPair>();
+
+    public void BuildLocalMap(int[,] localMap)
+    {
+        for (int i = 0; i < localMap.GetLength(0); i++)
+        {
+            for (int j = 0; j < localMap.GetLength(1); j++)
+            {
+                var GizmosPosition = new Vector3(i, 0, -j);
+                var GizmosText = localMap[i, j].ToString();
+                LocalMapList.Add(new DebugCellIdPair(GizmosPosition, GizmosText));
+            }
+        }
+    }
+
+    public void OnDrawGizmos()
+    {
+        foreach (var cell in LocalMapList)
+        {
+            Handles.Label(cell.GizmosPosition, cell.GizmosText);
+        }
     }
 }

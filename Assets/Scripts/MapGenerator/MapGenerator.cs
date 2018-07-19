@@ -75,7 +75,7 @@ public class MapGenerator
         SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);
 
         //Debug mode
-        DebugBuilding(GeneratedMap);
+        DebugBuilding(GeneratedMap,sectionPositioner.localMap);
 
         return GeneratedMap;
     }
@@ -85,7 +85,6 @@ public class MapGenerator
         GlobalSectionCell section = sectionPositioner.DefineSection(id);
         MapSection NewSection = new MapSection(id, section);
 
-        //Debug.Log("Section Builded: " + id + " = [" + section.Xsize + ";" + section.Ysize + "]");
         return NewSection;
     }
 
@@ -102,5 +101,5 @@ public class MapGenerator
         return seed;
     }
 
-    protected virtual void DebugBuilding(Map map) { }
+    protected virtual void DebugBuilding(Map map, int[,] localMap) { }
 }
