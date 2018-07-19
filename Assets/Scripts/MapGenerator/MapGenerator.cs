@@ -44,23 +44,13 @@ public class LocallSectionCell
 
 public class MapGenerator
 {
-    public bool deBugDrawSections = false;
-    public bool deBugDrawPortals = false;
-
-    private readonly SectionObjectsSpawner _sectionObjectsSpawner;
     private readonly MapGenerationData _mapGenerationInput;
-    private readonly DebugSectionBuilder _debugSectionBuilder;
     private SectionPositioner sectionPositioner;
 
-    public MapGenerator(SectionObjectsSpawner sectionObjectsSpawner,
-                        MapGenerationData mapGenerationInputata,
-                        DebugSectionBuilder debugSectionBuilder)
+    public MapGenerator(MapGenerationData mapGenerationInput)
     {
-        _sectionObjectsSpawner = sectionObjectsSpawner;
-        _mapGenerationInput = mapGenerationInputata;
-        _debugSectionBuilder = debugSectionBuilder;
+        _mapGenerationInput = mapGenerationInput;
     }
-
 
     /// <summary>
     /// Generates Map Data needed to build Map itself in the builder.
@@ -68,18 +58,7 @@ public class MapGenerator
     /// <returns>Map data</returns>
     public Map GenerateMap()
     {
-        var seed = (int)System.DateTime.Now.Ticks;
-
-        //Use random seed or predefined
-        if (_mapGenerationInput.useSeed)
-        {
-            seed = _mapGenerationInput.Seed;
-        }
-        
-        Random.InitState(seed);
-
-        var GeneratedMap = new Map(seed);
-
+        var GeneratedMap = new Map(GenerateSeed());
         sectionPositioner = new SectionPositioner(_mapGenerationInput);
         
         //Generate and position empty sections
@@ -95,20 +74,9 @@ public class MapGenerator
         //Generate Roads in each section
         SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);
 
-        ///Debug mode
-        if (deBugDrawSections)
-        {
-            foreach (KeyValuePair<int, MapSection> section in GeneratedMap.MapSections)
-            {
-                _debugSectionBuilder.BuildSection(section.Value);
-            }
-        }
-        if (deBugDrawPortals)
-        {
-            //Draw Portals
-        }
+        //Debug mode
+        DebugBuilding(GeneratedMap);
 
-        //Debug.Log("Portals Created: " + portalGenerator.PortalList.Count + " portals total");
         return GeneratedMap;
     }
 
@@ -120,4 +88,19 @@ public class MapGenerator
         //Debug.Log("Section Builded: " + id + " = [" + section.Xsize + ";" + section.Ysize + "]");
         return NewSection;
     }
+
+    //Use predefined seed or generate new one
+    int GenerateSeed()
+    {
+        var seed = (int)System.DateTime.Now.Ticks;
+        if (_mapGenerationInput.useSeed)
+        {
+            seed = _mapGenerationInput.Seed;
+        }
+
+        Random.InitState(seed);
+        return seed;
+    }
+
+    protected virtual void DebugBuilding(Map map) { }
 }

@@ -9,16 +9,15 @@ public class MapGeneratorInstaller : MonoInstaller
 
     public override void InstallBindings()
     {
-        Container.Bind<MapGenerator>().AsSingle().NonLazy();
-        Container.Bind<MapBuilder>().FromComponentOn(MapGeneratorGO).AsSingle();
-        Container.Bind<SectionObjectsSpawner>().FromComponentOn(MapGeneratorGO).AsSingle();
-        Container.BindInstance(MapGenerationData).AsSingle();
-
         InstallDebugModules();
+        //Container.Bind<MapBuilder>().FromComponentOn(MapGeneratorGO).AsSingle();
+        //Container.Bind<SectionObjectsSpawner>().FromComponentOn(MapGeneratorGO).AsSingle();
+        Container.BindInstance(MapGenerationData).AsSingle();
     }
 
     private void InstallDebugModules()
     {
+        Container.Bind<DebugMapGenerator>().AsSingle().NonLazy();
         Container.Bind<DebugSectionBuilder>().FromComponentOn(MapGeneratorGO).AsSingle();
     }
 }

@@ -4,11 +4,11 @@ using Zenject;
 
 public class DebugMapGenController : MonoBehaviour {
 
-    MapGenerator _mapGenerator;
+    DebugMapGenerator _mapGenerator;
     //int x = 1;
 
     [Inject]
-    public void Construct(MapGenerator mapGenerator)
+    public void Construct(DebugMapGenerator mapGenerator)
     {
         _mapGenerator = mapGenerator;
         _mapGenerator.deBugDrawSections = true;
