@@ -2,7 +2,6 @@
 
 public class DebugMapBuilder : MapBuilder
 {
-
     private void Start()
     {
         Debug.Log("Map Builder Initialized");

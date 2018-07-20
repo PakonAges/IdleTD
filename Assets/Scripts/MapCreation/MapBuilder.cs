@@ -1,21 +1,31 @@
 ﻿using UnityEngine;
 using GameData;
 using System.Collections.Generic;
+using Zenject;
 
 /// <summary>
 /// Builds level by the Data from the Generator. Including all objects, light, etc.
 /// </summary>
 public class MapBuilder : MonoBehaviour {
 
+    private MapGenerator _mapGenerator;
+
     public GameObject RoadTile;
     public GameObject GroundTile;
     public GameObject Bridge;
 
-    public void BuildMap(Map map)
+    [Inject]
+    public void Construct(MapGenerator mapGenerator)
+    {
+        _mapGenerator = mapGenerator;
+    }
+
+    public void BuildMap()
     {
         //Get Map Config from generator
         //Then build Map
         //THen Build Objects
+        var map = _mapGenerator.GenerateMap();
 
         BuildEntrance(map.MapSections[1].Xsize / 2);
 
