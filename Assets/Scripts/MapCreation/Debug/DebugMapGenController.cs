@@ -27,15 +27,9 @@ public class DebugMapGenController : MonoBehaviour {
             _mapGenerator.GenerateMap();
         }
 
-        //if (Input.GetKeyDown(KeyCode.G))
+        //if (Input.GetKeyDown(KeyCode.R))
         //{
-        //    mapg.GenerateMap(x);
-        //    x++;
+        //    SceneManager.LoadScene("MapGenerator");
         //}
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene("MapGenerator");
-        }
     }
 }

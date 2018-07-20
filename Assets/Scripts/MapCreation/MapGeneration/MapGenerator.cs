@@ -71,7 +71,7 @@ public class MapGenerator
         new BridgeGenerator(GeneratedMap, sectionPositioner);
 
         //Generate Roads in each section
-        new SectionRoadBuilder(GeneratedMap.MapSections);
+        new SectionRoadGenerator(GeneratedMap.MapSections);
 
         //Debug mode
         DebugBuilding(GeneratedMap,sectionPositioner.localMap);

@@ -2,13 +2,16 @@
 using GameData;
 using System.Collections.Generic;
 
+/// <summary>
+/// Builds level by the Data from the Generator. Including all objects, light, etc.
+/// </summary>
 public class MapBuilder : MonoBehaviour {
 
     public GameObject RoadTile;
     public GameObject GroundTile;
     public GameObject Bridge;
 
-    public void BuildMap(Map map, List<Vector3> portals)
+    public void BuildMap(Map map)
     {
         //Get Map Config from generator
         //Then build Map
@@ -21,10 +24,10 @@ public class MapBuilder : MonoBehaviour {
             BuildMapSection(pair.Value);
         }
 
-        foreach (var portal in portals)
-        {
-            Instantiate(RoadTile, portal, Quaternion.identity,transform).name = "Portal";
-        }
+        //foreach (var portal in portals)
+        //{
+        //    Instantiate(RoadTile, portal, Quaternion.identity,transform).name = "Portal";
+        //}
 
         //SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);
         //_mapBuilder.BuildMap(GeneratedMap, portalGenerator.PortalList);
@@ -86,5 +89,4 @@ public class MapBuilder : MonoBehaviour {
         sectionGO.transform.position = section.PivotPosition;
 
     }
-
 }

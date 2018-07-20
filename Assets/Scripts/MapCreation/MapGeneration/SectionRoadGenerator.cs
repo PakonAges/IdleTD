@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SectionRoadBuilder
+public class SectionRoadGenerator
 {
 
     //int roadLenght = 0;
@@ -12,7 +12,7 @@ public class SectionRoadBuilder
     int totalRounds = 0;
     int round = 0;
 
-    public SectionRoadBuilder(Dictionary<int, MapSection> map)
+    public SectionRoadGenerator(Dictionary<int, MapSection> map)
     {
 
         foreach (KeyValuePair<int, MapSection> mapSection in map)
