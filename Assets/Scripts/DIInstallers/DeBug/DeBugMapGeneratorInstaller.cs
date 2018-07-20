@@ -1,18 +1,21 @@
-using System;
 using UnityEngine;
 using Zenject;
 
-public class MapGeneratorInstaller : MonoInstaller
+public class DeBugMapGeneratorInstaller : MonoInstaller
 {
     public GameObject MapGeneratorGO;
     public MapGenerationData MapGenerationData;
 
     public override void InstallBindings()
     {
+        CreateGenerator();
         InstallDebugModules();
-        //Container.Bind<MapBuilder>().FromComponentOn(MapGeneratorGO).AsSingle();
-        //Container.Bind<SectionObjectsSpawner>().FromComponentOn(MapGeneratorGO).AsSingle();
         Container.BindInstance(MapGenerationData).AsSingle();
+    }
+
+    private void CreateGenerator()
+    {
+        Instantiate(MapGeneratorGO);
     }
 
     private void InstallDebugModules()

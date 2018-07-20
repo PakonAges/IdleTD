@@ -6,12 +6,12 @@ public class DebugMapGenerator : MapGenerator {
     public bool deBugDrawSections = false;
     public bool deBugDrawBridges = false;
 
-    private readonly MapGenerationData _mapData;
+    //private readonly MapGenerationData _mapData;
     private readonly DebugSectionBuilder _debugSectionBuilder;
 
     public DebugMapGenerator(MapGenerationData mapGenerationInput, DebugSectionBuilder debugSectionBuilder) : base(mapGenerationInput)
     {
-        _mapData = mapGenerationInput;
+        //_mapData = mapGenerationInput;
         _debugSectionBuilder = debugSectionBuilder;
     }
 

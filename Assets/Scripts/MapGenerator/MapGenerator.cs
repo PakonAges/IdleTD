@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public struct MapCell
 {
@@ -69,10 +68,10 @@ public class MapGenerator
         }
 
         //Generate Portals
-        var portalGenerator = new BridgeGenerator(GeneratedMap, sectionPositioner);
+        new BridgeGenerator(GeneratedMap, sectionPositioner);
 
         //Generate Roads in each section
-        SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);
+        new SectionRoadBuilder(GeneratedMap.MapSections);
 
         //Debug mode
         DebugBuilding(GeneratedMap,sectionPositioner.localMap);
