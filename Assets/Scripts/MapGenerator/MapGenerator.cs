@@ -69,7 +69,7 @@ public class MapGenerator
         }
 
         //Generate Portals
-        var portalGenerator = new PortalGenerator(GeneratedMap, sectionPositioner);
+        var portalGenerator = new BridgeGenerator(GeneratedMap, sectionPositioner);
 
         //Generate Roads in each section
         SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);

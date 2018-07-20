@@ -53,8 +53,11 @@ public class DebugSectionBuilder : MonoBehaviour {
     {
         foreach (var bridge in Bridges)
         {
-            var Portal = Instantiate(BridgeTile, bridge.Place, Quaternion.identity);
-            Portal.name = "Portal";
+            foreach (var tile in bridge.BridgeTiles)
+            {
+                var Bridge = Instantiate(BridgeTile, tile, Quaternion.identity);
+                Bridge.name = "Bridge";
+            }
         }
     }
 

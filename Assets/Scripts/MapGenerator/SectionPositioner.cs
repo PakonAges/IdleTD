@@ -9,7 +9,7 @@ public class SectionPositioner {
 
     private readonly MapGenerationData _mapData;
 
-    readonly int Gap;
+    readonly public int Gap;
     public int GapId = 666;
 
     public int EmptyId = 0;

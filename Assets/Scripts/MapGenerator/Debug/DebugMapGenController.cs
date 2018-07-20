@@ -12,8 +12,8 @@ public class DebugMapGenController : MonoBehaviour {
     {
         _mapGenerator = mapGenerator;
         _mapGenerator.deBugDrawSections = true;
-        _mapGenerator.deBugDrawPortals = false;
-        _mapGenerator.deBugDrawLocalMap = false;
+        _mapGenerator.deBugDrawBridges = true;
+        _mapGenerator.deBugDrawIndexMap = false;
     }
 
     private void Start()

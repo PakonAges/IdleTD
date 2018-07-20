@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Bridge {
 
-    public Vector3 Place;
+    public Vector3[] BridgeTiles;
 
-    public Bridge(Vector3 place)
+    public Bridge(int length)
     {
-        Place = place;
+        BridgeTiles = new Vector3[length];
     }
 }

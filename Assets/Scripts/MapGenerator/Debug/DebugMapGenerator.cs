@@ -2,9 +2,9 @@
 
 public class DebugMapGenerator : MapGenerator {
 
-    public bool deBugDrawLocalMap = true;
+    public bool deBugDrawIndexMap = false;
     public bool deBugDrawSections = false;
-    public bool deBugDrawPortals = false;
+    public bool deBugDrawBridges = false;
 
     private readonly MapGenerationData _mapData;
     private readonly DebugSectionBuilder _debugSectionBuilder;
@@ -17,7 +17,7 @@ public class DebugMapGenerator : MapGenerator {
 
     protected override void DebugBuilding(Map map, int[,] localMap)
     {
-        if (deBugDrawLocalMap)
+        if (deBugDrawIndexMap)
         {
             _debugSectionBuilder.BuildLocalMap(localMap);
         }
@@ -29,7 +29,7 @@ public class DebugMapGenerator : MapGenerator {
                 _debugSectionBuilder.BuildSection(section.Value);
             }
         }
-        if (deBugDrawPortals)
+        if (deBugDrawBridges)
         {
             _debugSectionBuilder.BuildPortals(map.Bridges);
         }
