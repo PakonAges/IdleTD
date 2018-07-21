@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Zenject;
 
 /// <summary>
-/// Builds level by the Data from the Generator. Including all objects, light, etc.
+/// Builds level by the Data from the Generator. Including all objects, light, etc. ?
 /// </summary>
 public class MapBuilder : MonoBehaviour {
 
@@ -13,6 +13,7 @@ public class MapBuilder : MonoBehaviour {
     public GameObject RoadTile;
     public GameObject GroundTile;
     public GameObject Bridge;
+    public GameObject SectionPillar;
 
     [Inject]
     public void Construct(MapGenerator mapGenerator)
@@ -22,9 +23,6 @@ public class MapBuilder : MonoBehaviour {
 
     public void BuildMap()
     {
-        //Get Map Config from generator
-        //Then build Map
-        //THen Build Objects
         var map = _mapGenerator.GenerateMap();
 
         BuildEntrance(map.MapSections[1].Xsize / 2);
@@ -34,14 +32,13 @@ public class MapBuilder : MonoBehaviour {
             BuildMapSection(pair.Value);
         }
 
-        //foreach (var portal in portals)
-        //{
-        //    Instantiate(RoadTile, portal, Quaternion.identity,transform).name = "Portal";
-        //}
-
-        //SectionRoadBuilder roadBuilder = new SectionRoadBuilder(GeneratedMap.MapSections);
-        //_mapBuilder.BuildMap(GeneratedMap, portalGenerator.PortalList);
-        //_sectionObjectsSpawner.SpawnRocks(GeneratedMap.MapSections);
+        foreach (var bridge in map.Bridges)
+        {
+            for (int i = 0; i < bridge.BridgeTiles.Length; i++)
+            {
+                Instantiate(RoadTile, bridge.BridgeTiles[i], Quaternion.identity, transform).name = "Bridge";
+            }
+        }
     }
 
     void BuildEntrance(int place)//HACK
@@ -55,8 +52,11 @@ public class MapBuilder : MonoBehaviour {
         int SectionX = section.SectionTopography.GetLength(0);
         int SectionY = section.SectionTopography.GetLength(1);
 
-        GameObject sectionGO = new GameObject();
-        sectionGO.name = "MapSection (" + SectionX + ";" + SectionY + ")";
+        GameObject sectionGO = new GameObject
+        {
+            name = "MapSection (" + SectionX + ";" + SectionY + ")"
+        };
+
         sectionGO.transform.SetParent(this.transform);
         
         for (int i = 0; i < SectionX; i++)
@@ -98,5 +98,17 @@ public class MapBuilder : MonoBehaviour {
 
         sectionGO.transform.position = section.PivotPosition;
 
+        BuildPillar(section);
+
+    }
+
+    public void BuildPillar(MapSection section)
+    {
+        var PivotOffset = new Vector3(section.Xsize * 0.5f - 0.5f, -1, -section.Ysize * 0.5f + 0.5f);
+
+        var pillar = Instantiate(SectionPillar);
+        pillar.name = "Section Pillar " + section.SectionId;
+        pillar.transform.localScale = new Vector3(section.Xsize, 10, section.Ysize);
+        pillar.transform.position = section.PivotPosition + PivotOffset;
     }
 }
