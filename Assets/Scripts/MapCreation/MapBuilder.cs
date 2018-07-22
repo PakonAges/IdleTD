@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Zenject;
 
 /// <summary>
-/// Builds level by the Data from the Generator. Including all objects, light, etc. ?
+/// Builds level by the Data from the Generator. Including all objects, light, etc. ?s
 /// </summary>
 public class MapBuilder : MonoBehaviour {
 

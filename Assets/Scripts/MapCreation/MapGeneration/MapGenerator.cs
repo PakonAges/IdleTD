@@ -41,14 +41,14 @@ public class LocallSectionCell
     }
 }
 
-public class MapGenerator
+public class MapGenerator : IMapGenerator
 {
-    private readonly MapGenerationData _mapGenerationInput;
+    private MapGenerationData _mapGenerationInput;
     private SectionPositioner sectionPositioner;
 
-    public MapGenerator(MapGenerationData mapGenerationInput)
+    public MapGenerator(SaveLoader saveLoader)
     {
-        _mapGenerationInput = mapGenerationInput;
+        _mapGenerationInput = saveLoader.GetMapData();
     }
 
     /// <summary>
@@ -73,9 +73,6 @@ public class MapGenerator
         //Generate Roads in each section
         new SectionRoadGenerator(GeneratedMap.MapSections);
 
-        //Debug mode
-        DebugBuilding(GeneratedMap,sectionPositioner.localMap);
-
         return GeneratedMap;
     }
 
@@ -99,6 +96,4 @@ public class MapGenerator
         Random.InitState(seed);
         return seed;
     }
-
-    protected virtual void DebugBuilding(Map map, int[,] localMap) { }
 }

@@ -20,7 +20,7 @@ public class DeBugMapGeneratorInstaller : MonoInstaller
 
     private void InstallDebugModules()
     {
-        Container.Bind<DebugMapGenerator>().AsSingle().NonLazy();
+        Container.Bind<IMapGenerator>().To<DebugMapGenerator>().AsSingle().NonLazy();
         Container.Bind<DebugSectionBuilder>().FromComponentOn(MapGeneratorGO).AsSingle();
     }
 }
