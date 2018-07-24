@@ -33,10 +33,8 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     private void InstallMapBuilder()
     {
         Container.Bind<IMapGenerator>().To<MapGenerator>().AsSingle().NonLazy();
-        //Bind Map Buiilder. But make a refactor!
-        //I need all model prefabs in some collection
-        //Then Builder -> non monobehaviour
-        //Then some rules where which model to build (How to choose based on player progress!
+        Container.Bind<MapBuilder>().FromComponentsOn(this.gameObject).AsSingle().NonLazy();
+        //add some rules where which model to build (How to choose based on player progress!
 
     }
 }

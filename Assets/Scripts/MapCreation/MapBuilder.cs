@@ -6,19 +6,15 @@ using Zenject;
 /// <summary>
 /// Builds level by the Data from the Generator. Including all objects, light, etc. ?s
 /// </summary>
-public class MapBuilder : MonoBehaviour {
+public class MapBuilder : MonoBehaviour{
 
     private MapGenerator _mapGenerator;
-
-    public GameObject RoadTile;
-    public GameObject GroundTile;
-    public GameObject Bridge;
-    public GameObject SectionPillar;
+    public MapBuilderData MapBuilderData;
 
     [Inject]
-    public void Construct(MapGenerator mapGenerator)
+    public void  Constuct(IMapGenerator mapGenerator)
     {
-        _mapGenerator = mapGenerator;
+        _mapGenerator = (MapGenerator)mapGenerator;
     }
 
     public void BuildMap()
@@ -36,15 +32,15 @@ public class MapBuilder : MonoBehaviour {
         {
             for (int i = 0; i < bridge.BridgeTiles.Length; i++)
             {
-                Instantiate(RoadTile, bridge.BridgeTiles[i], Quaternion.identity, transform).name = "Bridge";
+                Instantiate(MapBuilderData.RoadTile, bridge.BridgeTiles[i], Quaternion.identity, transform).name = "Bridge";
             }
         }
     }
 
     void BuildEntrance(int place)//HACK
     {
-        Instantiate(RoadTile, new Vector3(place, 0, 2), Quaternion.identity,gameObject.transform).name = "EntranceRoad 1";
-        Instantiate(RoadTile, new Vector3(place, 0, 1), Quaternion.identity,gameObject.transform).name = "EntranceRoad 2";
+        Instantiate(MapBuilderData.RoadTile, new Vector3(place, 0, 2), Quaternion.identity,gameObject.transform).name = "EntranceRoad 1";
+        Instantiate(MapBuilderData.RoadTile, new Vector3(place, 0, 1), Quaternion.identity,gameObject.transform).name = "EntranceRoad 2";
     }
 
     public void BuildMapSection(MapSection section)
@@ -72,13 +68,13 @@ public class MapBuilder : MonoBehaviour {
                     case TileType.Empty:
                         break;
                     case TileType.Ground:
-                        tileToBuild = GroundTile;
+                        tileToBuild = MapBuilderData.GroundTile;
                         break;
                     case TileType.Road:
-                        tileToBuild = RoadTile;
+                        tileToBuild = MapBuilderData.RoadTile;
                         break;
                     case TileType.Bridge:
-                        tileToBuild = Bridge;
+                        tileToBuild = MapBuilderData.Bridge;
                         break;
                     default:
                         break;
@@ -106,7 +102,7 @@ public class MapBuilder : MonoBehaviour {
     {
         var PivotOffset = new Vector3(section.Xsize * 0.5f - 0.5f, -1, -section.Ysize * 0.5f + 0.5f);
 
-        var pillar = Instantiate(SectionPillar);
+        var pillar = Instantiate(MapBuilderData.SectionPillar);
         pillar.name = "Section Pillar " + section.SectionId;
         pillar.transform.localScale = new Vector3(section.Xsize, 10, section.Ysize);
         pillar.transform.position = section.PivotPosition + PivotOffset;
