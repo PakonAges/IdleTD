@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class CreepWayBuilder {
 
-    public Dictionary<int, List<Vector2>> pathInSections = new Dictionary<int, List<Vector2>>();
+    public Dictionary<int, List<Vector2>> PathInSections = new Dictionary<int, List<Vector2>>();
 
-    public CreepWayBuilder(Map map)
+    public CreepWayBuilder(IMapGenerator mapGenerator)
     {
+        var _mapGenerator = (MapGenerator)mapGenerator;
+        var map = _mapGenerator.GeneratedMap;
+
         foreach (var section in map.MapSections)
         {
-            pathInSections.Add(section.Key, GeneratePathInSection(section.Value));
+            PathInSections.Add(section.Key, GeneratePathInSection(section.Value));
         }
     }
 

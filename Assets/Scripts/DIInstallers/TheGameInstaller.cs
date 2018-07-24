@@ -35,6 +35,10 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         Container.Bind<IMapGenerator>().To<MapGenerator>().AsSingle().NonLazy();
         Container.Bind<MapBuilder>().FromComponentsOn(this.gameObject).AsSingle().NonLazy();
         Container.Bind<NavMeshCreator>().FromComponentsOn(this.gameObject).AsSingle();
+        Container.Bind<CreepWayBuilder>().AsSingle().NonLazy();
+        Container.Bind<WaypointsSpawner>().AsSingle().NonLazy();
+        Container.Bind<MapManager>().AsSingle().NonLazy();
+        Container.Bind<CreepPath>().AsSingle().NonLazy();
         //add some rules where which model to build (How to choose based on player progress!
 
     }

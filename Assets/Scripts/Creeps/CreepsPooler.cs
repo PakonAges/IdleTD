@@ -24,7 +24,7 @@ public class CreepsPooler : MonoBehaviour {
             GameObject obj = (GameObject)Instantiate(pooledObject);
             obj.GetComponent<NavMeshAgent>().enabled = false;
             obj.transform.parent = this.transform;
-            obj.transform.position = CreepPath.instance.path[0];
+            //obj.transform.position = CreepPath.instance.path[0];
             obj.name = "Creep_" + i;
             obj.SetActive(false);
             Pool.Add(obj);

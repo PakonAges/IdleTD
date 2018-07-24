@@ -1,20 +1,28 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class MapManager {
 
     public Map Map { get; set; }
-    WaypointsSpawner wayPointSpawner;
-    public CreepWayBuilder wayBuilder;
 
-    public void Init(WaypointsSpawner wpSpawner)
+    //readonly CreepWayBuilder _creepWayBuilder; //? Where is used?
+    readonly WaypointsSpawner _wayPointSpawner;
+
+    public MapManager(  IMapGenerator mapGenerator,
+                        //CreepWayBuilder creepWayBuilder,
+                        WaypointsSpawner waypointsSpawner)
+    {
+        var _mapGenerator = (MapGenerator)mapGenerator;
+        Map = _mapGenerator.GeneratedMap;
+        //_creepWayBuilder = creepWayBuilder;
+        _wayPointSpawner = waypointsSpawner;
+    }
+
+    public void PrepareMapNavigation()
     {
         //check for map state to calculate proper path (locked/unlocked sections)
         LockAllSections(Map.MapSections);
-
-        wayBuilder = new CreepWayBuilder(Map);
-        wayPointSpawner = wpSpawner;
-        wayPointSpawner.Init(this);
     }
 
     void LockAllSections(Dictionary<int, MapSection> map)
@@ -35,6 +43,6 @@ public class MapManager {
 
     public void UnlockSection(int Sectionid)
     {
-        wayPointSpawner.AddNewSection(Sectionid);
+        _wayPointSpawner.AddNewSection(Sectionid);
     }
 }

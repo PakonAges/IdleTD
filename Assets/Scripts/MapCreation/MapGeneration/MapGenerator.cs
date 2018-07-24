@@ -43,12 +43,26 @@ public class LocallSectionCell
 
 public class MapGenerator : IMapGenerator
 {
+    Map generatedMap;
+    public Map GeneratedMap
+    { get
+        {
+            if (generatedMap == null)
+            {
+                generatedMap = GenerateMap();
+            }
+
+            return generatedMap;
+        }
+    }
+
     private MapGenerationData _mapGenerationInput;
     private SectionPositioner sectionPositioner;
 
     public MapGenerator(SaveLoader saveLoader)
     {
         _mapGenerationInput = saveLoader.GetMapData();
+        generatedMap = GenerateMap();
     }
 
     /// <summary>

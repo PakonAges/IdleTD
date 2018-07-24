@@ -106,7 +106,7 @@ public class CreepsManager : MonoBehaviour {
     {
         GameObject creep = CreepsPooler.current.GetPooledObject();
 
-        creep.transform.position = CreepPath.instance.path[0];
+        //creep.transform.position = CreepPath.instance.path[0];
         creep.GetComponent<CreepMain>().Init(HP, CoinsReward);
 
         creep.SetActive(true);

@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class CreepPath {
 
-    static CreepPath creepPath;
-    public static CreepPath instance
-    {
-        get
-        {
-            if (creepPath == null)
-            {
-                creepPath = new CreepPath();
-            }
+    //static CreepPath creepPath;
+    //public static CreepPath instance
+    //{
+    //    get
+    //    {
+    //        if (creepPath == null)
+    //        {
+    //            creepPath = new CreepPath();
+    //        }
 
-            return creepPath;
-        }
-    }
+    //        return creepPath;
+    //    }
+    //}
 
     public List<Vector3> path = new List<Vector3>();
 

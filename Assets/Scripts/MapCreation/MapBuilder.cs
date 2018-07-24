@@ -19,7 +19,7 @@ public class MapBuilder : MonoBehaviour{
 
     public void BuildMap()
     {
-        var map = _mapGenerator.GenerateMap();
+        var map = _mapGenerator.GeneratedMap;
 
         BuildEntrance(map.MapSections[1].Xsize / 2);
 

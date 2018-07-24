@@ -28,15 +28,15 @@ public class CreepMovement : MonoBehaviour {
 
     public void ResetMovement()
     {
-        prevTarget = CreepPath.instance.path[0];
-        targetToMove = CreepPath.instance.path[1];
+        //prevTarget = CreepPath.instance.path[0];
+        //targetToMove = CreepPath.instance.path[1];
     }
 
     void GetNextWayPoint()
     {
-        Vector3 newTarget = CreepPath.instance.GetNextWp(prevTarget, targetToMove);
+        //Vector3 newTarget = CreepPath.instance.GetNextWp(prevTarget, targetToMove);
         prevTarget = targetToMove;
-        targetToMove = newTarget;
+        //targetToMove = newTarget;
 
         //Vector3 dir = targetToMove - transform.position;
         //transform.rotation = Quaternion.LookRotation(dir);

@@ -2,37 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WaypointsSpawner : MonoBehaviour {
+public class WaypointsSpawner {
 
-    MapManager myManager;
+    private readonly MapBuilderData _mapBuilderData;
 
-    public GameObject WayPointGO;
+    private readonly MapManager _mapManager;
+    private readonly CreepPath _creepPath;
+    private readonly CreepWayBuilder _creepWayBuilder;
+
     Vector2 Entrance = new Vector2(3, -2);
     int index = 0; //used for naming waypoints
 
-    public void Init(MapManager manager)
+    public WaypointsSpawner(    MapManager mapManager,
+                                CreepPath creepPath,
+                                CreepWayBuilder creepWayBuilder,
+                                MapBuilderData mapBuilderData)
     {
-        myManager = manager;
-        Entrance.x = myManager.Map.MapSections[1].Xsize / 2;
-        CreepPath.instance.AddPath(CreateEntrance());
+        _mapManager = mapManager;
+        _creepPath = creepPath;
+        _creepWayBuilder = creepWayBuilder;
+        _mapBuilderData = mapBuilderData; // Just for a Waypoint prefab? hmm
+
+        Entrance.x = _mapManager.Map.MapSections[1].Xsize / 2;
+        _creepPath.AddPath(CreateEntrance());
         GenerateCurrentPath();
     }
 
     public Vector3 CreateEntrance()
     {
         Vector3 wayPointPlace = new Vector3(Entrance.x, 0.0f, -Entrance.y);
-        GameObject wayPoint = Instantiate(WayPointGO, wayPointPlace, Quaternion.identity, transform.GetChild(1));
+        GameObject wayPoint = GameObject.Instantiate(_mapBuilderData.WayPoint, wayPointPlace, Quaternion.identity);
         wayPoint.name = "Spawning Point";
         return wayPoint.transform.position;
     }
 
     public void GenerateCurrentPath()
     {
-        CreepPath.instance.AddPath(GetWpOfSection(1));
+        _creepPath.AddPath(GetWpOfSection(1));
 
-        for (int i = 2; i <= myManager.Map.MapSections.Count; i++)
+        for (int i = 2; i <= _mapManager.Map.MapSections.Count; i++)
         {
-            if (myManager.Map.MapSections[i].IsUnlocked)
+            if (_mapManager.Map.MapSections[i].IsUnlocked)
             {
                 AddNewSection(i);
             }
@@ -53,7 +63,7 @@ public class WaypointsSpawner : MonoBehaviour {
 
     List<Vector3> GetWpOfSection(int id)
     {
-        return SpawnWpOfSection(myManager.wayBuilder.pathInSections[id]);
+        return SpawnWpOfSection(_creepWayBuilder.PathInSections[id]);
     }
 
     public void AddNewSection(int id)
@@ -62,17 +72,17 @@ public class WaypointsSpawner : MonoBehaviour {
 
         List<Vector3> newPath = GetWpOfSection(id);
         //add Section Entrance to The End of the new Path
-        newPath.Add(CreateWayPoint(myManager.Map.MapSections[id].EntranceCell, myManager.Map.MapSections[id].PivotPosition));
+        newPath.Add(CreateWayPoint(_mapManager.Map.MapSections[id].EntranceCell, _mapManager.Map.MapSections[id].PivotPosition));
         //add prev.Section Exit to the End of the End
-        Vector3 injectionPoint = FindOtherSideOfThePortal(myManager.Map.MapSections[id].EntranceCell, myManager.Map.MapSections[id].EntranceSide, myManager.Map.MapSections[id].PivotPosition);
+        Vector3 injectionPoint = FindOtherSideOfThePortal(_mapManager.Map.MapSections[id].EntranceCell, _mapManager.Map.MapSections[id].EntranceSide, _mapManager.Map.MapSections[id].PivotPosition);
         newPath.Add(injectionPoint);
 
-        Place = CreepPath.instance.path.LastIndexOf(injectionPoint);
+        Place = _creepPath.path.LastIndexOf(injectionPoint);
         
 
         //Check if this is a corner place, and there might be several same places!!! I need latest one!
 
-        CreepPath.instance.AddPath(Place + 1, newPath);
+        _creepPath.AddPath(Place + 1, newPath);
     }
 
     Vector3 FindOtherSideOfThePortal(MapCell Entrance, Side side, Vector3 pivot)
@@ -102,7 +112,7 @@ public class WaypointsSpawner : MonoBehaviour {
     Vector3 CreateWayPoint(float x, float y)
     {
         Vector3 wayPointPlace = new Vector3(x, 0.0f, -y);
-        GameObject wayPoint = Instantiate(WayPointGO, wayPointPlace, Quaternion.identity, transform.GetChild(1));
+        GameObject wayPoint = GameObject.Instantiate(_mapBuilderData.WayPoint, wayPointPlace, Quaternion.identity);
         wayPoint.name = "Waypoint " + index;
         index++;
 
@@ -113,7 +123,7 @@ public class WaypointsSpawner : MonoBehaviour {
     Vector3 CreateWayPoint(MapCell cell, Vector3 pivot)
     {
         Vector3 wayPointPlace = new Vector3(cell.X + pivot.x, 0.0f, -cell.Y + pivot.z);
-        GameObject wayPoint = Instantiate(WayPointGO, wayPointPlace, Quaternion.identity, transform.GetChild(1));
+        GameObject wayPoint = GameObject.Instantiate(_mapBuilderData.WayPoint, wayPointPlace, Quaternion.identity);
         wayPoint.name = "Waypoint " + index;
         index++;
 
