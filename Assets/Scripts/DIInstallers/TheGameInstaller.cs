@@ -34,6 +34,7 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     {
         Container.Bind<IMapGenerator>().To<MapGenerator>().AsSingle().NonLazy();
         Container.Bind<MapBuilder>().FromComponentsOn(this.gameObject).AsSingle().NonLazy();
+        Container.Bind<NavMeshCreator>().FromComponentsOn(this.gameObject).AsSingle();
         //add some rules where which model to build (How to choose based on player progress!
 
     }

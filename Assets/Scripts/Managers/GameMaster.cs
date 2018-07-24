@@ -4,20 +4,21 @@ using Zenject;
 public class GameMaster : MonoBehaviour {
 
     //public MapManager mapManager = new MapManager();
-    //public NavMeshSurface navMesh;
 
     private MapBuilder _mapBuilder;
+    private NavMeshCreator _navMeshCreator;
 
 
     [Inject]
-    public void Construct(MapBuilder mapBuilder)
+    public void Construct(  MapBuilder mapBuilder,
+                            NavMeshCreator navMeshCreator)
     {
         _mapBuilder = mapBuilder;
+        _navMeshCreator = navMeshCreator;
     }
 
 	void Awake () {
 
-        //mapManager.Map =  GetComponentInChildren<MapGenerator>().GenerateMap();
         //mapManager.Init(GetComponent<WaypointsSpawner>());
 
         //navMesh.BuildNavMesh();
@@ -30,6 +31,7 @@ public class GameMaster : MonoBehaviour {
     void Start()
     {
         _mapBuilder.BuildMap();
+        _navMeshCreator.GenerateNavMesh();
 
         //Start spawning Creeps
         //BuildManager.instance.BuildLoadedTowers();
