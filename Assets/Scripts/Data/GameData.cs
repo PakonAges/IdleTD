@@ -42,8 +42,9 @@
     //Wave spawner states
     public enum SpawnState
     {
+        PAUSE,
         SPAWNING,
         WAITING,
-        COUNTING,
+        COUNTDOWN,
     };
 }

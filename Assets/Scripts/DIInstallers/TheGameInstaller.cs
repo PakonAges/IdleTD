@@ -7,10 +7,8 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     {
         InstallDataProviders();
         InstallMapBuilder();
-        
+        InstallCreeps();
         //Init UI Manager
-
-        //Build Navigaton
 
         //Check offline duration and simulate it
         //Show UI "WelcomeBack"
@@ -40,5 +38,10 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         Container.Bind<GlobalCreepPath>().AsSingle().NonLazy();
         //add some rules where which model to build (How to choose based on player progress!
 
+    }
+
+    private void InstallCreeps()
+    {
+        Container.Bind<CreepsManager>().AsSingle();
     }
 }

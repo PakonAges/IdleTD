@@ -7,7 +7,7 @@ public class CreepsPooler : MonoBehaviour {
 
     public static CreepsPooler current;
     public GameObject pooledObject;
-    int PoolSize = 64;
+    readonly int PoolSize = 64;
     public bool IsExpandable = true;
 
     public List<GameObject> Pool;
@@ -51,7 +51,7 @@ public class CreepsPooler : MonoBehaviour {
             return obj;
         }
 
-        Debug.Log("ObjectPool is full and can't epxand");
+        Debug.Log("Creep Pool is full and can't epxand");
         return null;
     }
     

@@ -2,31 +2,26 @@
 using UnityEngine;
 using GameData;
 
-public class CreepsManager : MonoBehaviour {
+public class CreepsManager {
 
     int WaveNum = 1;
-    float delayBetweenWaves = 3f;
+    readonly float delayBetweenWaves = 3f;
     float waveCountDown;
 
     float searchCountdown = 1f;
 
-    public SpawnState SpawnerState = SpawnState.COUNTING;
+    public SpawnState SpawnerState = SpawnState.PAUSE;
 
-
-
-    public void Init()
+    public CreepsManager()
     {
         //WaveNum = PlayerStats.instance.WaveNumber;
     }
 
-
-
-    void Start()
+    public void StartSpawningCreeps()
     {
         waveCountDown = delayBetweenWaves;
+        SpawnerState = SpawnState.COUNTDOWN;
     }
-
-
 
 	void Update () {
 
@@ -138,7 +133,7 @@ public class CreepsManager : MonoBehaviour {
 
     void WaveCompleted()
     {
-        SpawnerState = SpawnState.COUNTING;
+        SpawnerState = SpawnState.COUNTDOWN;
         waveCountDown = delayBetweenWaves;
 
         WaveNum++;
