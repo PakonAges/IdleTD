@@ -3,6 +3,9 @@ using GameData;
 using System.Collections.Generic;
 using UnityEditor;
 
+/// <summary>
+/// Used to vusialize generated local Map Data
+/// </summary>
 public class DebugSectionBuilder : MonoBehaviour {
 
     public GameObject EmptyTile;

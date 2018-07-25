@@ -45,7 +45,8 @@ public class MapGenerator : IMapGenerator
 {
     Map generatedMap;
     public Map GeneratedMap
-    { get
+    {
+        get
         {
             if (generatedMap == null)
             {
@@ -54,14 +55,20 @@ public class MapGenerator : IMapGenerator
 
             return generatedMap;
         }
+        set
+        {
+            Debug.Log("Something is Trying to set Generated Map from outside!");
+        }
     }
 
-    private MapGenerationData _mapGenerationInput;
+    private readonly MapGenerationData _mapGenerationInput;
     private SectionPositioner sectionPositioner;
 
-    public MapGenerator(SaveLoader saveLoader)
+    public MapGenerator(IMapDataProvider dataProvider)
     {
-        _mapGenerationInput = saveLoader.GetMapData();
+        //var _dataProvider = (MapDataProvider)dataProvider;
+
+        _mapGenerationInput = dataProvider.GetMapGenerationData();
         generatedMap = GenerateMap();
     }
 

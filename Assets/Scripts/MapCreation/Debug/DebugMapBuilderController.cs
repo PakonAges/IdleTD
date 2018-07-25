@@ -7,7 +7,7 @@ public class DebugMapBuilderController : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("MAP BUILDER INITIATED");
+        Debug.Log("MAP BUILDER INITIATED. Press B to build");
     }
 
     void Update()

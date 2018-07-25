@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
 using Zenject;
 
+
+/// <summary>
+/// Used as Input Point to manipulate Generated local Map Data
+/// </summary>
 public class DebugMapGenController : MonoBehaviour {
 
     IMapGenerator _mapGenerator;
@@ -21,11 +24,7 @@ public class DebugMapGenController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.G))
         {
             _mapGenerator.GenerateMap();
+            Debug.Log("Map Generated!");
         }
-
-        //if (Input.GetKeyDown(KeyCode.R))
-        //{
-        //    SceneManager.LoadScene("MapGenerator");
-        //}
     }
 }

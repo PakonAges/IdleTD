@@ -11,10 +11,11 @@ public class DebugMapGenerator : IMapGenerator {
     private readonly DebugSectionBuilder _debugSectionBuilder;
     private SectionPositioner sectionPositioner;
 
-    public DebugMapGenerator(   MapGenerationData mapGenerationInput,
+    public DebugMapGenerator(   IMapDataProvider debugMapDataProvider,
                                 DebugSectionBuilder debugSectionBuilder)
     {
-        _mapData = mapGenerationInput;
+
+        _mapData = debugMapDataProvider.GetMapGenerationData();
         _debugSectionBuilder = debugSectionBuilder;
     }
 
