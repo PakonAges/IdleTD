@@ -20,7 +20,6 @@ public class DeBugMapGeneratorInstaller : MonoInstaller
     private void CreateGenerator()
     {
         Container.BindInstance(MapGeneratorGO).AsSingle();
-        //Instantiate(MapGeneratorGO);
     }
 
     private void InstallDebugModules()

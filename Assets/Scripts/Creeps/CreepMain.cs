@@ -50,6 +50,6 @@ public class CreepMain : MonoBehaviour {
 
     protected virtual void OnCreepDied()
     {
-        EventManager.Broadcast(gameEvent.CreepDied, new eventArgExtend() { creep = this });
+        //EventManager.Broadcast(gameEvent.CreepDied, new eventArgExtend() { creep = this });
     }
 }

@@ -26,9 +26,7 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         //Check for Save game
         //if yes -> Build saved map
         //if no -> build new one
-        //And map state!
-
-        //GetMapGenerationData from save! And Bind it!
+        //And load map state!
     }
 
     private void InstallMapBuilder()

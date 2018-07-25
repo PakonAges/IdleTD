@@ -42,7 +42,7 @@ public class BuildManager : MonoBehaviour {
         PlayerStats.instance.PlayerTowers.Add(MapTile.MyTower.GetComponent<TowerCode>().myTower);
 
         PlayerStats.instance.Coins -= TowersManager.instance.GetTowerCost(type);
-        EventManager.Broadcast(gameEvent.TowerBuild, new eventArgExtend() { /* tower = towerToBuild */ });
+        //EventManager.Broadcast(gameEvent.TowerBuild, new eventArgExtend() { /* tower = towerToBuild */ });
 
         GameObject buildEffect = (GameObject)Instantiate(BuildEffect, MapTile.transform.position, MapTile.transform.rotation);
         Destroy(buildEffect, 2f);   //REFACTOR

@@ -13,28 +13,28 @@ public class TowerTile : MapTile {
     void OnMouseDown()
     {
         //If Tile already selected - deselect it
-        if (UIManager.instance.IsTowerSelected)
-        {
-            DeselectTower();
-            TowersManager.instance.SelectedTower = null;
-            return;
-        }
+        //if (UIManager.instance.IsTowerSelected)
+        //{
+        //    DeselectTower();
+        //    TowersManager.instance.SelectedTower = null;
+        //    return;
+        //}
 
         //If tile has a tower on it -> show details about this tower
-        if (HasTower)
-        {
-            UIManager.instance.IsTowerSelected = true;
+        //if (HasTower)
+        //{
+        //    UIManager.instance.IsTowerSelected = true;
             
-            TowersManager.instance.SelectedTower = MyTower;
-            UIManager.instance.ShowTowerDetailsWindow(MyTower);
+        //    TowersManager.instance.SelectedTower = MyTower;
+        //    UIManager.instance.ShowTowerDetailsWindow(MyTower);
 
-            return;
-        }
+        //    return;
+        //}
 
         //Tile is empty, we can build here;
-        UIManager.instance.IsTowerSelected = true;
-        UIManager.instance.ShopWindow.GetComponent<TowerShop>().SelectedMapTile = this;
-        UIManager.instance.ShowShop(true);
+        //UIManager.instance.IsTowerSelected = true;
+        //UIManager.instance.ShopWindow.GetComponent<TowerShop>().SelectedMapTile = this;
+        //UIManager.instance.ShowShop(true);
     }
 
     public void TowerWasBuildHere(GameObject tower)
@@ -45,8 +45,8 @@ public class TowerTile : MapTile {
 
     void DeselectTower()
     {
-        UIManager.instance.HideAll();
-        UIManager.instance.IsTowerSelected = false;
-        TowersManager.instance.SelectedTower = null;
+        //UIManager.instance.HideAll();
+        //UIManager.instance.IsTowerSelected = false;
+        //TowersManager.instance.SelectedTower = null;
     }
 }
