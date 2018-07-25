@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreepWayBuilder {
+public class LocalCreepWayBuilder {
 
     public Dictionary<int, List<Vector2>> PathInSections = new Dictionary<int, List<Vector2>>();
 
-    public CreepWayBuilder(IMapGenerator mapGenerator)
+    public LocalCreepWayBuilder(IMapGenerator mapGenerator)
     {
         var _mapGenerator = (MapGenerator)mapGenerator;
         var map = _mapGenerator.GeneratedMap;

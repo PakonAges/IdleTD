@@ -7,21 +7,21 @@ public class WaypointsSpawner {
     private readonly MapBuilderData _mapBuilderData;
 
     private readonly MapManager _mapManager;
-    private readonly CreepPath _creepPath;
-    private readonly CreepWayBuilder _creepWayBuilder;
+    private readonly GlobalCreepPath _creepPath;
+    private readonly LocalCreepWayBuilder _creepWayBuilder;
 
     Vector2 Entrance = new Vector2(3, -2);
     int index = 0; //used for naming waypoints
 
     public WaypointsSpawner(    MapManager mapManager,
-                                CreepPath creepPath,
-                                CreepWayBuilder creepWayBuilder,
-                                MapBuilderData mapBuilderData)
+                                GlobalCreepPath creepPath,
+                                LocalCreepWayBuilder creepWayBuilder,
+                                MapBuilder mapBuilder)
     {
         _mapManager = mapManager;
         _creepPath = creepPath;
         _creepWayBuilder = creepWayBuilder;
-        _mapBuilderData = mapBuilderData; // Just for a Waypoint prefab? hmm
+        _mapBuilderData = mapBuilder.MapBuilderData; // Just for a Waypoint prefab? hmm
 
         Entrance.x = _mapManager.Map.MapSections[1].Xsize / 2;
         _creepPath.AddPath(CreateEntrance());
@@ -77,7 +77,7 @@ public class WaypointsSpawner {
         Vector3 injectionPoint = FindOtherSideOfThePortal(_mapManager.Map.MapSections[id].EntranceCell, _mapManager.Map.MapSections[id].EntranceSide, _mapManager.Map.MapSections[id].PivotPosition);
         newPath.Add(injectionPoint);
 
-        Place = _creepPath.path.LastIndexOf(injectionPoint);
+        Place = _creepPath.Path.LastIndexOf(injectionPoint);
         
 
         //Check if this is a corner place, and there might be several same places!!! I need latest one!

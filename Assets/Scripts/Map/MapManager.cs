@@ -2,21 +2,25 @@
 using UnityEngine;
 using Zenject;
 
+/// <summary>
+/// Used to Manipulate Map logic: lock/unlock sections. Add Section to new waypoint path
+/// </summary>
 public class MapManager {
 
     public Map Map { get; set; }
 
     //readonly CreepWayBuilder _creepWayBuilder; //? Where is used?
-    readonly WaypointsSpawner _wayPointSpawner;
+    //readonly WaypointsSpawner _wayPointSpawner;
 
-    public MapManager(  IMapGenerator mapGenerator,
+    public MapManager(  IMapGenerator mapGenerator
                         //CreepWayBuilder creepWayBuilder,
-                        WaypointsSpawner waypointsSpawner)
+                        //WaypointsSpawner waypointsSpawner
+                        )
     {
         var _mapGenerator = (MapGenerator)mapGenerator;
         Map = _mapGenerator.GeneratedMap;
         //_creepWayBuilder = creepWayBuilder;
-        _wayPointSpawner = waypointsSpawner;
+        //_wayPointSpawner = waypointsSpawner;
     }
 
     public void PrepareMapNavigation()
@@ -43,6 +47,6 @@ public class MapManager {
 
     public void UnlockSection(int Sectionid)
     {
-        _wayPointSpawner.AddNewSection(Sectionid);
+        //_wayPointSpawner.AddNewSection(Sectionid);
     }
 }
