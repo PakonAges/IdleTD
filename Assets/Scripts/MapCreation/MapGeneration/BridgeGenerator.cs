@@ -26,7 +26,11 @@ public class BridgeGenerator {
     public void GenerateBridges()
     {
         BuildStartingSection();
-        BuildNextLane(SectionLanes[iteration]);
+
+        if (myMap.MapSections.Count > 1)
+        {
+            BuildNextLane(SectionLanes[iteration]);
+        }
     }
 
     void FindSectionTangency(int sectionId)

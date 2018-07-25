@@ -36,7 +36,7 @@ public class SectionPositioner {
         Gap = _mapData.GapSize;
 
         localZero = new Vector2(_mapData.MapSizeX * 0.5f, 0);
-        zeroOffset = new Vector2(((1 - _mapData.StartingSecionSize) * 0.5f), 0);
+        zeroOffset = new Vector2(Mathf.CeilToInt((1 - _mapData.StartingSecionSize) * 0.5f), 0);
 
         buildCoordList = new List<Vector2>();
 

@@ -2,10 +2,9 @@
 using UnityEngine;
 
 public class DebugMapGenerator : IMapGenerator {
-
-    public bool DeBugDrawSections = true;
-    public bool DeBugDrawBridges = true;
-    public bool DeBugDrawIndexMap = false;
+    public bool DeBugDrawSections = false;
+    public bool DeBugDrawBridges = false;
+    public bool DeBugDrawIndexMap = true;
 
     private readonly MapGenerationData _mapData;
     private readonly DebugSectionBuilder _debugSectionBuilder;
@@ -60,6 +59,7 @@ public class DebugMapGenerator : IMapGenerator {
         }
 
         Random.InitState(seed);
+        Debug.Log("Seed: " + seed);
         return seed;
     }
 
@@ -77,6 +77,7 @@ public class DebugMapGenerator : IMapGenerator {
                 _debugSectionBuilder.BuildSection(section.Value);
             }
         }
+
         if (DeBugDrawBridges)
         {
             _debugSectionBuilder.BuildPortals(map.Bridges);
