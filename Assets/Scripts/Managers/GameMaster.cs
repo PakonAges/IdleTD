@@ -6,16 +6,18 @@ public class GameMaster : MonoBehaviour {
     private MapBuilder _mapBuilder;
     private NavMeshCreator _navMeshCreator;
     private MapManager _mapManager;
-
+    //private CreepsManager _creepsManager;
 
     [Inject]
     public void Construct(  MapBuilder mapBuilder,
                             NavMeshCreator navMeshCreator,
                             MapManager mapManager)
+                            //CreepsManager creepsManager)
     {
         _mapBuilder = mapBuilder;
         _navMeshCreator = navMeshCreator;
         _mapManager = mapManager;
+      //  _creepsManager = creepsManager;
     }
 
 	void Awake () {
@@ -42,14 +44,18 @@ public class GameMaster : MonoBehaviour {
     }
 
     //debug
-    //void Update()
-    //{        
+    void Update()
+    {
+        //if (Input.GetKeyDown(KeyCode.G))
+        //{
+        //    UnlockSection();
+        //}
 
-    //    if (Input.GetKeyDown(KeyCode.G))
-    //    {
-    //        UnlockSection();
-    //    }
-    //}
+        //if (Input.GetKeyDown(KeyCode.S))
+        //{
+        //    _creepsManager.SpawnCreep();
+        //}
+    }
 
     void OnApplicationQuit()
     {

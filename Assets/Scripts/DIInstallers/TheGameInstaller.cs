@@ -45,7 +45,7 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     private void InstallCreeps()
     {
         Container.BindInstance(creepsCollection).AsSingle().NonLazy();
-        Container.BindInterfacesTo<CreepsManager>().AsSingle();
+        Container.BindInterfacesTo<CreepsManager>().AsSingle().NonLazy();
         Container.BindFactory<CreepData, Creep, Creep.Factory>().FromComponentInNewPrefab(creepsCollection.CreepsList[0].Prefab);
     }
 }

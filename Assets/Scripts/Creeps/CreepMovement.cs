@@ -1,44 +1,47 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// Setup Move parameters, Get Movement Targets
+/// </summary>
 public class CreepMovement {
 
-    float moveSpeed = 5.0f;
+    private readonly GlobalCreepPath _creepPath;
+    public NavMeshAgent Agent;
 
-    Vector3 targetToMove;
-    Vector3 prevTarget;    
+    private readonly float moveSpeed;
+    //private Vector3 TargetToMove;
+    public Vector3 TargetToMove { get; set; }
+    Vector3 prevTarget;
 
-    // Use this for initialization
-    void Start() {
+
+    public CreepMovement(   CreepData creepData,
+                            GlobalCreepPath globalCreepPath,
+                            NavMeshAgent navMeshAgent)
+    {
+        _creepPath = globalCreepPath;
+        Agent = navMeshAgent;
+        Agent.speed = creepData.MoveSpeed;
         ResetMovement();
-        //GetComponent<NavMeshAgent>().speed = moveSpeed;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        //Vector3 dir = targetToMove - transform.position;
-       // transform.Translate(dir.normalized * moveSpeed * Time.deltaTime, Space.World);
-        //transform.rotation = Quaternion.LookRotation(dir);
-
-        //if (Vector3.Distance(transform.position,targetToMove) <= 0.1f)
-        //{
-        //    GetNextWayPoint();
-        //}
-	}
+    }
 
     public void ResetMovement()
     {
-        //prevTarget = CreepPath.instance.path[0];
-        //targetToMove = CreepPath.instance.path[1];
+        prevTarget = _creepPath.Path[0];
+        TargetToMove = _creepPath.Path[1];
+        Agent.SetDestination(TargetToMove);
     }
 
-    void GetNextWayPoint()
+    public void GetNextWayPoint()
     {
-        //Vector3 newTarget = CreepPath.instance.GetNextWp(prevTarget, targetToMove);
-        prevTarget = targetToMove;
-        //targetToMove = newTarget;
+        Vector3 newTarget = _creepPath.GetNextWp(prevTarget, TargetToMove);
+        prevTarget = TargetToMove;
+        TargetToMove = newTarget;
+        Agent.SetDestination(TargetToMove);
+    }
 
-        //Vector3 dir = targetToMove - transform.position;
-        //transform.rotation = Quaternion.LookRotation(dir);
+    public Vector3 GetSpawnPosition()
+    {
+        return _creepPath.Path[0];
     }
 }

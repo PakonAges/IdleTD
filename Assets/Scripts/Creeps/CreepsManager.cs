@@ -33,12 +33,22 @@ public class CreepsManager : ITickable {
         SpawnerState = SpawnState.COUNTDOWN;
     }
 
+    public void SpawnCreep()
+    {
+        var creep = _creepFactory.Create(_creepsCollection.CreepsList[0]);
+    }
+
     public void Tick()
     {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SpawnCreep();
+        }
+
         if (Spawn)
         {
-            var creep = _creepFactory.Create(_creepsCollection.CreepsList[0]);
-            var creep2 = _creepFactory.Create(_creepsCollection.CreepsList[1]);
+            //var creep = _creepFactory.Create(_creepsCollection.CreepsList[0]);
+            //var creep2 = _creepFactory.Create(_creepsCollection.CreepsList[1]);
             Spawn = false;
         }
 
