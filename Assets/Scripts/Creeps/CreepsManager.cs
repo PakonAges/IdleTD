@@ -38,8 +38,7 @@ public class CreepsManager : ITickable {
         if (Spawn)
         {
             var creep = _creepFactory.Create(_creepsCollection.CreepsList[0]);
-            var creep2 = _creepFactory.Create(_creepsCollection.CreepsList[0]);
-            var creep3 = _creepFactory.Create(_creepsCollection.CreepsList[0]);
+            var creep2 = _creepFactory.Create(_creepsCollection.CreepsList[1]);
             Spawn = false;
         }
 

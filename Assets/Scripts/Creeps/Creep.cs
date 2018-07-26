@@ -4,8 +4,9 @@ using Zenject;
 public class Creep : MonoBehaviour {
 
     private CreepData _creepData;
+
+    private CreepVisual _creepVisual;
     //Parameters
-    //Visual
     //Movement
 
 
@@ -13,7 +14,8 @@ public class Creep : MonoBehaviour {
     public void Construct(CreepData creepData)
     {
         _creepData = creepData;
-        //We need Data from Collection when created + Add setup Movement
+        _creepVisual = new CreepVisual(this, _creepData);
+
     }
 
     public class Factory : PlaceholderFactory<CreepData, Creep> { }

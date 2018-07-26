@@ -7,8 +7,13 @@ public class CreepData : ScriptableObject {
     public GameObject Prefab;
 
     [Header("Visual")]
+    public float Scale = 1;
+
+    public bool changeMesh = false;
     public Mesh Mesh;
+    public bool changeMaterial = false;
     public Material Material;
+    public bool changeTexture = false;
     public Texture2D Texture;
 
     [Header("Parameters")]
