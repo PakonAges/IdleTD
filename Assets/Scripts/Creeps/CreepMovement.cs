@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-public class CreepMovement : MonoBehaviour {
+public class CreepMovement {
 
     float moveSpeed = 5.0f;
 
@@ -11,19 +11,19 @@ public class CreepMovement : MonoBehaviour {
     // Use this for initialization
     void Start() {
         ResetMovement();
-        GetComponent<NavMeshAgent>().speed = moveSpeed;
+        //GetComponent<NavMeshAgent>().speed = moveSpeed;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        Vector3 dir = targetToMove - transform.position;
-        transform.Translate(dir.normalized * moveSpeed * Time.deltaTime, Space.World);
+        //Vector3 dir = targetToMove - transform.position;
+       // transform.Translate(dir.normalized * moveSpeed * Time.deltaTime, Space.World);
         //transform.rotation = Quaternion.LookRotation(dir);
 
-        if (Vector3.Distance(transform.position,targetToMove) <= 0.1f)
-        {
-            GetNextWayPoint();
-        }
+        //if (Vector3.Distance(transform.position,targetToMove) <= 0.1f)
+        //{
+        //    GetNextWayPoint();
+        //}
 	}
 
     public void ResetMovement()

@@ -1,8 +1,15 @@
 ﻿using System.Collections;
 using UnityEngine;
 using GameData;
+using Zenject;
 
-public class CreepsManager {
+public class CreepsManager : ITickable {
+
+    readonly Creep.Factory _creepFactory;
+    readonly CreepsCollection _creepsCollection;
+
+    //debug
+    private bool Spawn = true;
 
     int WaveNum = 1;
     readonly float delayBetweenWaves = 3f;
@@ -12,8 +19,11 @@ public class CreepsManager {
 
     public SpawnState SpawnerState = SpawnState.PAUSE;
 
-    public CreepsManager()
+    public CreepsManager(   Creep.Factory creepFactory,
+                            CreepsCollection creepsCollection)
     {
+        _creepFactory = creepFactory;
+        _creepsCollection = creepsCollection;
         //WaveNum = PlayerStats.instance.WaveNumber;
     }
 
@@ -23,28 +33,38 @@ public class CreepsManager {
         SpawnerState = SpawnState.COUNTDOWN;
     }
 
-	void Update () {
+    public void Tick()
+    {
+        if (Spawn)
+        {
+            var creep = _creepFactory.Create(_creepsCollection.CreepsList[0]);
+            var creep2 = _creepFactory.Create(_creepsCollection.CreepsList[0]);
+            var creep3 = _creepFactory.Create(_creepsCollection.CreepsList[0]);
+            Spawn = false;
+        }
 
         switch (SpawnerState)
         {
             case SpawnState.WAITING:
-                if (!WaveIsAlive())
-                {
-                    WaveCompleted();
-                    return;
-                } else
-                {
-                    return;
-                }
+            if (!WaveIsAlive())
+            {
+                WaveCompleted();
+                return;
+            }
+            else
+            {
+                return;
+            }
         }
 
         if (waveCountDown <= 0)
         {
             if (SpawnerState != SpawnState.SPAWNING)
             {
-                StartCoroutine(SpawnWave(GenerateWave(WaveNum)));
-            } 
-        } else
+                //StartCoroutine(SpawnWave(GenerateWave(WaveNum)));
+            }
+        }
+        else
         {
             waveCountDown -= Time.deltaTime;
         }
@@ -99,13 +119,10 @@ public class CreepsManager {
 
     void SpawnCreep(CreepType type, int HP, int CoinsReward)
     {
-        GameObject creep = CreepsPooler.current.GetPooledObject();
-
+        //GameObject creep = CreepsPooler.current.GetPooledObject();
         //creep.transform.position = CreepPath.instance.path[0];
-        creep.GetComponent<CreepMain>().Init(HP, CoinsReward);
-
-        creep.SetActive(true);
-
+        //creep.GetComponent<CreepMain>().Init(HP, CoinsReward);
+        //creep.SetActive(true);
         //EventManager.Broadcast(gameEvent.CreepSpawned, new eventArgExtend() { creep = creep.GetComponent<CreepMain>() });
     }
 
@@ -141,4 +158,6 @@ public class CreepsManager {
 
         //EventManager.Broadcast(gameEvent.WaveCompleted, new eventArgExtend());
     }
+
+
 }
