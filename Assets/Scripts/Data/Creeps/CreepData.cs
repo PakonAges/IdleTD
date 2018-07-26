@@ -6,18 +6,19 @@ public class CreepData : ScriptableObject {
     public string Name;
     public GameObject Prefab;
 
-    [Header("Visual")]
-    public float Scale = 1;
-
-    public bool changeMesh = false;
-    public Mesh Mesh;
-    public bool changeMaterial = false;
-    public Material Material;
-    public bool changeTexture = false;
-    public Texture2D Texture;
-
     [Header("Parameters")]
     public float MoveSpeed;
     public int HitPoints;
     public int Reward;
+
+    [Header("Visual")]
+    public float Scale = 1;
+    
+    [HideInInspector] public bool changeMesh = false;
+    [HideInInspector] public Mesh Mesh;
+    [HideInInspector] public bool changeMaterial = false;
+    [HideInInspector] public Material Material;
+    [HideInInspector] public bool changeTexture = false;
+    [HideInInspector] public Texture2D Texture;
+
 }

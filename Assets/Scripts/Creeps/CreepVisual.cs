@@ -11,7 +11,7 @@ public class CreepVisual  {
     {
         _creep = creep;
         _creepData = creepData;
-        _creepVisual = _creep.gameObject.transform.GetChild(0).gameObject;
+        _creepVisual = _creep.gameObject.transform.GetChild(0).gameObject; //There could be problems If there is more than one child GO
 
         SetupVisual();
     }
@@ -20,11 +20,25 @@ public class CreepVisual  {
     {
         SetScale(_creepData.Scale);
 
+        if (_creepData.changeMesh && _creepData.Mesh != null)
+        {
+            SetMesh(_creepData.Mesh);
+        }
+
+        if (_creepData.changeMaterial && _creepData.Material != null)
+        {
+            SetMaterial(_creepData.Material);
+        }
+
+        if (_creepData.changeTexture && _creepData.Texture != null)
+        {
+            SetTexture(_creepData.Texture);
+        }
     }
 
     private void SetScale(float scale)
     {
-        _creepVisual.transform.localScale = Vector3.one * scale;  //There could be problems If there is more than one child GO
+        _creepVisual.transform.localScale = Vector3.one * scale;  
     }
 
     private void SetMesh(Mesh mesh)
