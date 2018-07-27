@@ -10,7 +10,6 @@ public class CreepMovement {
     public NavMeshAgent Agent;
 
     private readonly float moveSpeed;
-    //private Vector3 TargetToMove;
     public Vector3 TargetToMove { get; set; }
     Vector3 prevTarget;
 
