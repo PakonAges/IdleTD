@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using GameData;
 using Zenject;
 
 public class CreepsManager : ITickable {
-
-    readonly Creep.Factory _creepFactory;
     readonly CreepsCollection _creepsCollection;
     readonly CreepWavesCollection _creepWavesCollection;
+    readonly WaveSpawner _waveSpawner;
 
     private int DisplayWaveNum; //To display in UI
     private int WaveNum = 0; //Wave number from waves collection. Mayhap change later. Dependant on how we decided to spawn waves: predefined or choose from list and then additionaly modify
@@ -17,13 +15,13 @@ public class CreepsManager : ITickable {
 
     public SpawnState SpawnerState = SpawnState.PAUSE;
 
-    public CreepsManager(   Creep.Factory creepFactory,
-                            CreepsCollection creepsCollection,
-                            CreepWavesCollection creepWavesCollection)
+    public CreepsManager(   CreepsCollection creepsCollection,
+                            CreepWavesCollection creepWavesCollection,
+                            WaveSpawner waveSpawner)
     {
-        _creepFactory = creepFactory;
         _creepsCollection = creepsCollection;
         _creepWavesCollection = creepWavesCollection;
+        _waveSpawner = waveSpawner;
     }
 
     public void StartSpawningCreeps()
@@ -76,13 +74,7 @@ public class CreepsManager : ITickable {
         }
 
         var currentWave = _creepWavesCollection.CreepWaves[WaveNum];
-
-        for (int i = 0; i < currentWave.CreepAmount; i++)
-        {
-            SpawnCreep(currentWave.Creep);
-            //wait for a delay
-        }
-
+        _waveSpawner.SpawnWave(currentWave);
         SpawnerState = SpawnState.WAITING;
     }
 
@@ -108,8 +100,6 @@ public class CreepsManager : ITickable {
         //} else return true;
     }
 
-
-
     void WaveCompleted()
     {
         SpawnerState = SpawnState.COUNTDOWN;
@@ -117,10 +107,4 @@ public class CreepsManager : ITickable {
         DisplayWaveNum++;
         WaveNum++;
     }
-
-    public void SpawnCreep(CreepData creepData)
-    {
-        var creep = _creepFactory.Create(creepData);
-    }
-
 }

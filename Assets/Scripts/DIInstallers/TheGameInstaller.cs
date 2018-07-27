@@ -47,6 +47,7 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     {
         Container.BindInstance(CreepsCollection).AsSingle().NonLazy();
         Container.BindInstance(CreepWavesCollection).AsSingle().NonLazy();
+        Container.BindInterfacesAndSelfTo<WaveSpawner>().AsSingle().NonLazy();
         Container.BindInterfacesTo<CreepsManager>().AsSingle().NonLazy();
         Container.BindFactory<CreepData, Creep, Creep.Factory>().FromComponentInNewPrefab(CreepsCollection.CreepsList[0].Prefab);
     }
