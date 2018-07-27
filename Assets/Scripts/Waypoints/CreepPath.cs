@@ -3,20 +3,6 @@ using UnityEngine;
 
 public class GlobalCreepPath {
 
-    //static CreepPath creepPath;
-    //public static CreepPath instance
-    //{
-    //    get
-    //    {
-    //        if (creepPath == null)
-    //        {
-    //            creepPath = new CreepPath();
-    //        }
-
-    //        return creepPath;
-    //    }
-    //}
-
     public List<Vector3> Path = new List<Vector3>();
 
     public void AddPath(Vector3 wp)

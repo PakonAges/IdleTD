@@ -22,13 +22,14 @@ public class CreepMovement {
         _creepPath = globalCreepPath;
         Agent = navMeshAgent;
         Agent.speed = creepData.MoveSpeed;
-        ResetMovement();
     }
 
     public void ResetMovement()
     {
         prevTarget = _creepPath.Path[0];
         TargetToMove = _creepPath.Path[1];
+
+        Agent.Warp(prevTarget);
         Agent.SetDestination(TargetToMove);
     }
 
@@ -38,10 +39,5 @@ public class CreepMovement {
         prevTarget = TargetToMove;
         TargetToMove = newTarget;
         Agent.SetDestination(TargetToMove);
-    }
-
-    public Vector3 GetSpawnPosition()
-    {
-        return _creepPath.Path[0];
     }
 }

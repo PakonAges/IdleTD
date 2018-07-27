@@ -18,9 +18,12 @@ public class Creep : MonoBehaviour {
         _creepData = creepData;
         _creepVisual = new CreepVisual(this, _creepData);
         _creepParameters = new CreepParameters(_creepData);
-        _creepMovement = new CreepMovement(_creepData, globalCreepPath, this.gameObject.GetComponentInChildren<NavMeshAgent>());
+        _creepMovement = new CreepMovement(_creepData, globalCreepPath, this.gameObject.GetComponent<NavMeshAgent>());
+    }
 
-        gameObject.transform.position = _creepMovement.GetSpawnPosition();
+    private void Start()
+    {
+        _creepMovement.ResetMovement();
     }
 
     void Update()
