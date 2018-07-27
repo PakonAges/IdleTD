@@ -34,9 +34,28 @@ public class CreepVisual  {
         }
     }
 
-    private void SetScale(float scale) // Buggy
+    private void SetScale(float scale)
     {
-        _creep.gameObject.transform.localScale = Vector3.one * scale;  
+        var mesh = _creep.gameObject.GetComponent<MeshFilter>().mesh;
+        var baseVertices = mesh.vertices;
+        var newVertices = new Vector3[baseVertices.Length];
+
+        for (int i = 0; i < newVertices.Length; i++)
+        {
+            var vertex = baseVertices[i];
+            vertex.x *= scale;
+            vertex.y *= scale;
+            vertex.z *= scale;
+
+            newVertices[i] = vertex;
+        }
+
+        mesh.vertices = newVertices;
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+
+        //TODO: Change scale of a collider
+        //Change scale of a Nav Agent...
     }
 
     private void SetMesh(Mesh mesh)
