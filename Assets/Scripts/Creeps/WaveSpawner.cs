@@ -4,7 +4,10 @@ using Zenject;
 
 public class WaveSpawner : ITickable
 {
-    readonly Creep.Factory _creepFactory;
+    readonly Creep.Pool _creepPool;
+    readonly List<Creep> _creeps = new List<Creep>();
+    readonly GlobalCreepPath _globalCreepPath;
+
 
     private CreepWave _wave;
     private readonly Dictionary<float,CreepData> _spawnTimeLine = new Dictionary<float, CreepData>();
@@ -13,9 +16,11 @@ public class WaveSpawner : ITickable
     private float _spawnTimer = 0;
     private int _spawnedCreepsCounter = 0;
 
-    public WaveSpawner(Creep.Factory creepFactory)
+    public WaveSpawner( Creep.Pool creepPool,
+                        GlobalCreepPath globalCreepPath)
     {
-        _creepFactory = creepFactory;
+        _creepPool = creepPool;
+        _globalCreepPath = globalCreepPath;
     }
 
     public void Tick()
@@ -27,7 +32,7 @@ public class WaveSpawner : ITickable
             {
                 if (_spawnTimer >= _spawnTimeLine.Keys.ElementAt(_spawnedCreepsCounter))
                 {
-                    SpawnCreep(_wave.Creep);
+                    AddCreep(_wave.Creep);
                 }
 
                 _spawnTimer += UnityEngine.Time.deltaTime;
@@ -63,9 +68,16 @@ public class WaveSpawner : ITickable
         _spawnedCreepsCounter = 0;
     }
 
-    public void SpawnCreep(CreepData creepData)
+    public void AddCreep(CreepData creepData)
     {
-        var creep = _creepFactory.Create(creepData);
+        _creeps.Add(_creepPool.Spawn(creepData, _globalCreepPath));
         _spawnedCreepsCounter++;
+    }
+
+    public void RemoveCreep()
+    {
+        var creep = _creeps[0];
+        _creepPool.Despawn(creep);
+        _creeps.Remove(creep);
     }
 }
