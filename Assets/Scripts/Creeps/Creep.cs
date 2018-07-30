@@ -6,20 +6,18 @@ public class Creep : MonoBehaviour {
 
     private CreepData _creepData;
 
+    private GlobalCreepPath _globalCreepPath;
+
     private CreepVisual _creepVisual;
     private CreepParameters _creepParameters;
     private CreepMovement _creepMovement;
 
 
-    //[Inject]
-    //public void Construct(  CreepData creepData,
-    //                        GlobalCreepPath globalCreepPath)
-    //{
-    //    _creepData = creepData;
-    //    _creepVisual = new CreepVisual(this, _creepData);
-    //    _creepParameters = new CreepParameters(_creepData);
-    //    _creepMovement = new CreepMovement(_creepData, globalCreepPath, this.gameObject.GetComponent<NavMeshAgent>());
-    //}
+    [Inject]
+    public void Construct(GlobalCreepPath globalCreepPath)
+    {
+        _globalCreepPath = globalCreepPath;
+    }
 
     private void Start()
     {
@@ -34,21 +32,20 @@ public class Creep : MonoBehaviour {
         }
     }
 
-    private void Reset(CreepData creepData, GlobalCreepPath globalCreepPath)
+    private void Reset(CreepData creepData)
     {
         _creepData = creepData;
         _creepVisual = new CreepVisual(this, _creepData);
         _creepParameters = new CreepParameters(_creepData);
-        _creepMovement = new CreepMovement(_creepData, globalCreepPath, this.gameObject.GetComponent<NavMeshAgent>());
+        _creepMovement = new CreepMovement(_creepData, _globalCreepPath, this.gameObject.GetComponent<NavMeshAgent>());
     }
 
-    public class Pool : MonoMemoryPool<CreepData, GlobalCreepPath,  Creep>
+    public class Pool : MonoMemoryPool<CreepData,  Creep>
     {
         protected override void Reinitialize(   CreepData creepData,
-                                                GlobalCreepPath globalCreepPath,
                                                 Creep creep)
         {
-            creep.Reset(creepData, globalCreepPath);
+            creep.Reset(creepData);
         }
     }
 

@@ -6,8 +6,6 @@ public class WaveSpawner : ITickable
 {
     readonly Creep.Pool _creepPool;
     readonly List<Creep> _creeps = new List<Creep>();
-    readonly GlobalCreepPath _globalCreepPath;
-
 
     private CreepWave _wave;
     private readonly Dictionary<float,CreepData> _spawnTimeLine = new Dictionary<float, CreepData>();
@@ -16,11 +14,9 @@ public class WaveSpawner : ITickable
     private float _spawnTimer = 0;
     private int _spawnedCreepsCounter = 0;
 
-    public WaveSpawner( Creep.Pool creepPool,
-                        GlobalCreepPath globalCreepPath)
+    public WaveSpawner( Creep.Pool creepPool)
     {
         _creepPool = creepPool;
-        _globalCreepPath = globalCreepPath;
     }
 
     public void Tick()
@@ -70,7 +66,7 @@ public class WaveSpawner : ITickable
 
     public void AddCreep(CreepData creepData)
     {
-        _creeps.Add(_creepPool.Spawn(creepData, _globalCreepPath));
+        _creeps.Add(_creepPool.Spawn(creepData));
         _spawnedCreepsCounter++;
     }
 
