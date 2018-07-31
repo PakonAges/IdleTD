@@ -36,11 +36,14 @@ public class Creep : MonoBehaviour {
     {
         _creepData = creepData;
         _creepVisual = new CreepVisual(this, _creepData);
+        _creepVisual.SetupVisual();
+
         _creepParameters = new CreepParameters(_creepData);
 
         var navAgent = this.gameObject.GetComponent<NavMeshAgent>();
         navAgent.enabled = false;
         _creepMovement = new CreepMovement(_creepData, _globalCreepPath, navAgent);
+        _creepMovement.ResetMovement();
     }
 
     public class Pool : MonoMemoryPool<CreepData,  Creep>

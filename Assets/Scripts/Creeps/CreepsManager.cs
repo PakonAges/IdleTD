@@ -81,23 +81,19 @@ public class CreepsManager : ITickable {
 
     bool WaveIsKilled()
     {
-        return false; //WE will change pooler, so we need to also change where we check for alive creeps
+        waveCheckForCompletionCD -= Time.deltaTime;
 
-        //waveCheckForCompletionCD -= Time.deltaTime;
+        if (waveCheckForCompletionCD <= 0)
+        {
+            waveCheckForCompletionCD = 1f;
 
-        //if (waveCheckForCompletionCD <= 0)
-        //{
-        //    waveCheckForCompletionCD = 1f;
-
-        //    for (int i = 0; i < CreepsPooler.current.Pool.Count; i++)
-        //    {
-        //        if (CreepsPooler.current.Pool[i] != null && CreepsPooler.current.Pool[i].activeInHierarchy)
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //} else return true;
+            if (_waveSpawner.IsAllCreepDead())
+            {
+                return true;
+            }
+            else return false;
+        }
+        else return false;
     }
 
     void WaveCompleted()

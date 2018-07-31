@@ -6,18 +6,18 @@ public class GameMaster : MonoBehaviour {
     private MapBuilder _mapBuilder;
     private NavMeshCreator _navMeshCreator;
     private MapManager _mapManager;
-    //private CreepsManager _creepsManager;
+    private WaveSpawner _waveSpawner;
 
     [Inject]
     public void Construct(  MapBuilder mapBuilder,
                             NavMeshCreator navMeshCreator,
-                            MapManager mapManager)
-                            //CreepsManager creepsManager)
+                            MapManager mapManager,
+                            WaveSpawner waveSpawner)
     {
         _mapBuilder = mapBuilder;
         _navMeshCreator = navMeshCreator;
+        _waveSpawner = waveSpawner;
         _mapManager = mapManager;
-      //  _creepsManager = creepsManager;
     }
 
 	void Awake () {
@@ -46,10 +46,10 @@ public class GameMaster : MonoBehaviour {
     //debug
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.G))
-        //{
-        //    UnlockSection();
-        //}
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            _waveSpawner.RemoveCreep();
+        }
 
         //if (Input.GetKeyDown(KeyCode.S))
         //{

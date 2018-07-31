@@ -14,7 +14,7 @@ public class CreepVisual  {
         SetupVisual();
     }
 
-    private void SetupVisual()
+    public void SetupVisual()
     {
         SetScale(_creepData.Scale);
 
