@@ -24,7 +24,7 @@ public class TimeManager : MonoBehaviour {
 
     public void Init()
     {
-        TimeSpan awayDuration = DateTime.Now.Subtract(PlayerStats.instance.ExitDate);
+        //TimeSpan awayDuration = DateTime.Now.Subtract(PlayerStats.instance.ExitDate);
         //UIManager.instance.WelcomeWindow.GetComponent<WelcomeWindowView>().SetAwayDudration(TimeFormater.CovertTime(awayDuration));
     }
 

@@ -28,6 +28,7 @@ public class CreepMovement {
         prevTarget = _creepPath.Path[0];
         TargetToMove = _creepPath.Path[1];
 
+        Agent.enabled = true;
         Agent.Warp(prevTarget);
         Agent.SetDestination(TargetToMove);
     }

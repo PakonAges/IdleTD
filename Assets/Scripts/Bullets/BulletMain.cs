@@ -69,10 +69,10 @@ public class BulletMain : MonoBehaviour {
         GameObject effectInstance = (GameObject)Instantiate(impactEffect, transform.position, transform.rotation);
         Destroy(effectInstance, 2f);            //smelly code
 
-        if (enemy.GetComponent<CreepMain>().RecieveDamageAndDie(_bulletDmg))
-        {
-            _myTower.MyTarget = null;
-        }
+        //if (enemy.GetComponent<CreepMain>().RecieveDamageAndDie(_bulletDmg))
+        //{
+        //    _myTower.MyTarget = null;
+        //}
     }
 
     void AoEDamae()
