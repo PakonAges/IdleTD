@@ -9,7 +9,6 @@ public class CreepVisual  {
     {
         _creep = creep;
         _creepData = creepData;
-        //_creepVisual = _creep.gameObject; //There could be problems If there is more than one child GO
 
         SetupVisual();
     }

@@ -35,14 +35,14 @@ public class Creep : MonoBehaviour {
     private void Reset(CreepData creepData)
     {
         _creepData = creepData;
+        _creepParameters = new CreepParameters(_creepData);
         _creepVisual = new CreepVisual(this, _creepData);
         _creepVisual.SetupVisual();
 
-        _creepParameters = new CreepParameters(_creepData);
 
         var navAgent = this.gameObject.GetComponent<NavMeshAgent>();
         navAgent.enabled = false;
-        _creepMovement = new CreepMovement(_creepData, _globalCreepPath, navAgent);
+        _creepMovement = new CreepMovement(_creepParameters, _globalCreepPath, navAgent);
         _creepMovement.ResetMovement();
     }
 

@@ -6,7 +6,7 @@ public class BulletMain : MonoBehaviour {
     public GameObject impactEffect;
 
     float _bulletSpeed;
-    int _bulletDmg;
+    //int _bulletDmg;
     float _bulletAoERadius;
 
     Transform _target;
@@ -19,7 +19,7 @@ public class BulletMain : MonoBehaviour {
     public void SetTower(TowerCode tower)
     {
         _myTower = tower;
-        _bulletDmg = tower.MyDmg;
+        //_bulletDmg = tower.MyDmg;
         _bulletSpeed = tower.MyBulletSpeed;
         _bulletAoERadius = tower.MyBulletAoERadius;
     }

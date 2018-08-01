@@ -9,18 +9,18 @@ public class CreepMovement {
     private readonly GlobalCreepPath _creepPath;
     public NavMeshAgent Agent;
 
-    private readonly float moveSpeed;
+    //private readonly float moveSpeed;
     public Vector3 TargetToMove { get; set; }
     Vector3 prevTarget;
 
 
-    public CreepMovement(   CreepData creepData,
+    public CreepMovement(   CreepParameters creepParameters,
                             GlobalCreepPath globalCreepPath,
                             NavMeshAgent navMeshAgent)
     {
         _creepPath = globalCreepPath;
         Agent = navMeshAgent;
-        Agent.speed = creepData.MoveSpeed;
+        Agent.speed = creepParameters.MoveSpeed;
     }
 
     public void ResetMovement()
