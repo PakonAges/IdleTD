@@ -16,7 +16,10 @@ public class CreepVisual  {
 
     public void SetupVisual()
     {
-        SetScale(_creepData.Scale);
+        if (_creepData.Scale != 1)
+        {
+            SetScale(_creepData.Scale);
+        }
 
         if (_creepData.changeMesh && _creepData.Mesh != null)
         {
@@ -32,6 +35,16 @@ public class CreepVisual  {
         {
             SetTexture(_creepData.Texture);
         }
+    }
+
+    public void SetOriginalScale()
+    {
+        var mesh = _creep.gameObject.GetComponent<MeshFilter>().mesh;
+        var origMesh = _creepData.Prefab.GetComponent<MeshFilter>().sharedMesh;
+
+        mesh.vertices = origMesh.vertices;
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
     }
 
     private void SetScale(float scale)

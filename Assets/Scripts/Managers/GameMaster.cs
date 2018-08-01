@@ -35,6 +35,7 @@ public class GameMaster : MonoBehaviour {
     void Start()
     {
         PrepareLevel();
+        _creepsManager.StartSpawningCreeps();
         //Build Creep Way
         // Build Creep Path
         // Build Waypoints
@@ -54,10 +55,10 @@ public class GameMaster : MonoBehaviour {
             _waveSpawner.RemoveCreep();
         }
 
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            _creepsManager.StartSpawningCreeps();
-        }
+        //if (Input.GetKeyDown(KeyCode.S))
+        //{
+        //    _creepsManager.StartSpawningCreeps();
+        //}
     }
 
     void OnApplicationQuit()

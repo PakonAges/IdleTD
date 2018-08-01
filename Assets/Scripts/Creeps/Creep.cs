@@ -53,6 +53,12 @@ public class Creep : MonoBehaviour {
         {
             creep.Reset(creepData);
         }
+
+        protected override void OnDespawned(Creep creep)
+        {
+            base.OnDespawned(creep);
+            creep._creepVisual.SetOriginalScale();
+        }
     }
 
 }
