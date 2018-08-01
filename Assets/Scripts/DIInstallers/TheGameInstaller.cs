@@ -3,6 +3,7 @@ using Zenject;
 
 public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 {
+    public GameObject TowerPrefab;
     public GameObject CreepPrefab;
     public CreepWavesCollection CreepWavesCollection;
 
@@ -11,11 +12,11 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         InstallDataProviders();
         InstallMapBuilder();
         InstallCreeps();
-        //Init UI Manager
+        InstallTowers();
 
+        //Init UI Manager
         //Check offline duration and simulate it
         //Show UI "WelcomeBack"
-
         //The game process
     }
 
@@ -49,5 +50,10 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         Container.BindInterfacesAndSelfTo<WaveSpawner>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CreepsManager>().AsSingle().NonLazy();
         Container.BindMemoryPool<Creep, Creep.Pool>().WithInitialSize(20).FromComponentInNewPrefab(CreepPrefab).UnderTransformGroup("Creeps");
+    }
+
+    private void InstallTowers()
+    {
+        Container.BindFactory<Vector3, TowerData, Tower, Tower.Factory>().FromComponentInNewPrefab(TowerPrefab);
     }
 }

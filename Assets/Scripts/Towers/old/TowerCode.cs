@@ -116,12 +116,12 @@ public class TowerCode : MonoBehaviour {
     public void SetupTowerSettings(int id, TowerType type, TowerTile tile)
     {
         MyId = id;
-        myTower = new Tower(MyId, type, tile.MyMapPositionX, tile.MyMapPositionY, MyDmg, MyRange, MyFireSpeed);
+        //myTower = new Tower(MyId, type, tile.MyMapPositionX, tile.MyMapPositionY, MyDmg, MyRange, MyFireSpeed);
     }
 
     public void UpdateTowerParamsInSave()
     {
-        PlayerStats.instance.PlayerTowers.Find(twr => twr.TowerId == MyId).UpdateParam(MyDmg,MyRange,MyFireSpeed);
+        //PlayerStats.instance.PlayerTowers.Find(twr => twr.TowerId == MyId).UpdateParam(MyDmg,MyRange,MyFireSpeed);
     } 
 
 

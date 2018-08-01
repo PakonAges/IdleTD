@@ -1,4 +1,5 @@
-﻿public class CreepParameters {
+﻿public class CreepParameters
+{
     private readonly CreepData _creepData;
 
     public float MoveSpeed;

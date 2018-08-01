@@ -19,18 +19,18 @@ public class TowerTargeting {
         float shortestDistance = Mathf.Infinity;
         GameObject nearestEnemy = null;
 
-        foreach (GameObject enemy in CreepsPooler.current.Pool)
-        {
-            if (enemy != null && enemy.activeInHierarchy)
-            {
-                float distanceToEnemy = Vector3.Distance(_myTower.transform.position, enemy.transform.position);
-                if (distanceToEnemy < shortestDistance)
-                {
-                    shortestDistance = distanceToEnemy;
-                    nearestEnemy = enemy;
-                }
-            }
-        }
+        //foreach (GameObject enemy in CreepsPooler.current.Pool)
+        //{
+        //    if (enemy != null && enemy.activeInHierarchy)
+        //    {
+        //        float distanceToEnemy = Vector3.Distance(_myTower.transform.position, enemy.transform.position);
+        //        if (distanceToEnemy < shortestDistance)
+        //        {
+        //            shortestDistance = distanceToEnemy;
+        //            nearestEnemy = enemy;
+        //        }
+        //    }
+        //}
 
         if (nearestEnemy != null && shortestDistance <= towerRange)
         {
