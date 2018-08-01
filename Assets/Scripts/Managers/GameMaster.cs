@@ -7,17 +7,20 @@ public class GameMaster : MonoBehaviour {
     private NavMeshCreator _navMeshCreator;
     private MapManager _mapManager;
     private WaveSpawner _waveSpawner;
+    private CreepsManager _creepsManager;
 
     [Inject]
     public void Construct(  MapBuilder mapBuilder,
                             NavMeshCreator navMeshCreator,
                             MapManager mapManager,
-                            WaveSpawner waveSpawner)
+                            WaveSpawner waveSpawner,
+                            CreepsManager creepsManager)
     {
         _mapBuilder = mapBuilder;
         _navMeshCreator = navMeshCreator;
         _waveSpawner = waveSpawner;
         _mapManager = mapManager;
+        _creepsManager = creepsManager;
     }
 
 	void Awake () {
@@ -51,10 +54,10 @@ public class GameMaster : MonoBehaviour {
             _waveSpawner.RemoveCreep();
         }
 
-        //if (Input.GetKeyDown(KeyCode.S))
-        //{
-        //    _creepsManager.SpawnCreep();
-        //}
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            _creepsManager.StartSpawningCreeps();
+        }
     }
 
     void OnApplicationQuit()

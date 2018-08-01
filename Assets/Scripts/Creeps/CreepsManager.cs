@@ -7,13 +7,18 @@ public class CreepsManager : ITickable {
     readonly CreepWavesCollection _creepWavesCollection;
     readonly WaveSpawner _waveSpawner;
 
-    private int DisplayWaveNum; //To display in UI
-    private int WaveNum = 0; //Wave number from waves collection. Mayhap change later. Dependant on how we decided to spawn waves: predefined or choose from list and then additionaly modify
+    //Wave number To display in UI. Always incremented
+    private int DisplayWaveNum = 0;
+
+    //Wave number from waves collection. Mayhap change later. Dependant on how we decided to spawn waves: predefined or choose from list and then additionaly modify
+    private int WaveNum = 0; 
+
     private readonly float delayBetweenWaves = 3f;
     private float waveCountDown;
     private float waveCheckForCompletionCD = 1f;
 
     public SpawnState SpawnerState = SpawnState.PAUSE;
+
 
     public CreepsManager(   CreepsCollection creepsCollection,
                             CreepWavesCollection creepWavesCollection,
@@ -24,12 +29,14 @@ public class CreepsManager : ITickable {
         _waveSpawner = waveSpawner;
     }
 
+
     public void StartSpawningCreeps()
     {
-        DisplayWaveNum = WaveNum + 1;
+        DisplayWaveNum = 1;
         waveCountDown = delayBetweenWaves;
         SpawnerState = SpawnState.COUNTDOWN;
     }
+
 
     public void Tick()
     {
@@ -47,28 +54,27 @@ public class CreepsManager : ITickable {
                 WaveCompleted();
                 return;
             }
+            break;
 
-            return;
-        }
-
-        if (waveCountDown <= 0)
-        {
-            if (SpawnerState != SpawnState.SPAWNING)
+            case SpawnState.COUNTDOWN:
+            if (waveCountDown <= 0)
             {
                 SpawnerState = SpawnState.SPAWNING;
                 SpawnWave();
             }
-        }
-        else
-        {
-            waveCountDown -= Time.deltaTime;
+            else
+            {
+                waveCountDown -= Time.deltaTime;
+            }
+
+            return;
         }
     }
 
 
     void SpawnWave()
     {
-        if (WaveNum > _creepWavesCollection.CreepWaves.Count)
+        if (WaveNum >= _creepWavesCollection.CreepWaves.Count)
         {
             WaveNum = 0;
         }
@@ -96,11 +102,13 @@ public class CreepsManager : ITickable {
         else return false;
     }
 
+
     void WaveCompleted()
     {
-        SpawnerState = SpawnState.COUNTDOWN;
-        waveCountDown = delayBetweenWaves;
+        //Next Wave indexes
         DisplayWaveNum++;
         WaveNum++;
+        SpawnerState = SpawnState.COUNTDOWN;
+        waveCountDown = delayBetweenWaves;
     }
 }
