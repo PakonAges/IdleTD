@@ -3,7 +3,6 @@ using GameData;
 using Zenject;
 
 public class CreepsManager : ITickable {
-    //readonly CreepsCollection _creepsCollection;
     readonly CreepWavesCollection _creepWavesCollection;
     readonly WaveSpawner _waveSpawner;
 
@@ -20,11 +19,9 @@ public class CreepsManager : ITickable {
     public SpawnState SpawnerState = SpawnState.PAUSE;
 
 
-    public CreepsManager(   //CreepsCollection creepsCollection,
-                            CreepWavesCollection creepWavesCollection,
+    public CreepsManager(   CreepWavesCollection creepWavesCollection,
                             WaveSpawner waveSpawner)
     {
-        //_creepsCollection = creepsCollection;
         _creepWavesCollection = creepWavesCollection;
         _waveSpawner = waveSpawner;
     }

@@ -3,7 +3,7 @@ using Zenject;
 
 public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 {
-    public CreepsCollection CreepsCollection;
+    public GameObject CreepPrefab;
     public CreepWavesCollection CreepWavesCollection;
 
     public override void InstallBindings()
@@ -45,10 +45,9 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 
     private void InstallCreeps()
     {
-        Container.BindInstance(CreepsCollection).AsSingle().NonLazy();
         Container.BindInstance(CreepWavesCollection).AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<WaveSpawner>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CreepsManager>().AsSingle().NonLazy();
-        Container.BindMemoryPool<Creep, Creep.Pool>().WithInitialSize(20).FromComponentInNewPrefab(CreepsCollection.CreepsList[0].Prefab).UnderTransformGroup("Creeps");
+        Container.BindMemoryPool<Creep, Creep.Pool>().WithInitialSize(20).FromComponentInNewPrefab(CreepPrefab).UnderTransformGroup("Creeps");
     }
 }
