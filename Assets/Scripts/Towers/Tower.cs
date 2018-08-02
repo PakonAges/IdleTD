@@ -5,7 +5,7 @@ public class Tower : MonoBehaviour
 {
     public TowerParameters TowerParameters;
 
-    private TowerData _towerData;
+    public TowerData TowerData;
     private TowerVisual _towerVisual;
     private TowerTargeting _towerTargeting;
     private TowerShooting _towerShooting;
@@ -16,26 +16,25 @@ public class Tower : MonoBehaviour
                             WaveSpawner waveSpawner,
                             Bullet.Pool bulletPool)
     {
-        _towerData = towerData;
-        TowerParameters = new TowerParameters(_towerData);
-        _towerVisual = new TowerVisual(this, _towerData);
+        TowerData = towerData;
+        TowerParameters = new TowerParameters(TowerData);
+        _towerVisual = new TowerVisual(this, TowerData);
         _towerTargeting = new TowerTargeting(this, waveSpawner);
-        _towerShooting = new TowerShooting(_towerData, bulletPool);
+        _towerShooting = new TowerShooting(this, bulletPool);
 
         gameObject.transform.position = position;
         _towerVisual.SetupVisual();
     }
 
-
+    public Transform Target()
+    {
+        return _towerTargeting.Target;
+    }
 
     private void LateUpdate()
     {
         _towerTargeting.ManageTarget();
-
-        if (_towerTargeting.Target != null)
-        {
-            _towerShooting.ManageShooting();
-        }
+        _towerShooting.ManageShooting();
     }
 
 

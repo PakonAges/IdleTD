@@ -28,18 +28,19 @@ public class Bullet : MonoBehaviour
         //destroy bullet
     }
 
-    private void Reset(BulletData bulletData)
+    private void Reset(BulletData bulletData, Transform target)
     {
         _moveSpeed = bulletData.MoveSpeed;
         _dmg = bulletData.Damage;
     }
 
-    public class Pool : MonoMemoryPool<BulletData, Bullet>
+    public class Pool : MonoMemoryPool<BulletData, Transform, Bullet>
     {
         protected override void Reinitialize(   BulletData bulletData,
+                                                Transform target,
                                                 Bullet bullet)
         {
-            bullet.Reset(bulletData);
+            bullet.Reset(bulletData, target);
         }
     }
 
