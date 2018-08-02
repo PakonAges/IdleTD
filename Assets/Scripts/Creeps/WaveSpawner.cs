@@ -72,9 +72,12 @@ public class WaveSpawner : ITickable
 
     public void RemoveCreep()
     {
-        var creep = CreepsAlive[0];
-        _creepPool.Despawn(creep);
-        CreepsAlive.Remove(creep);
+        if (CreepsAlive.Any())
+        {
+            var creep = CreepsAlive[0];
+            _creepPool.Despawn(creep);
+            CreepsAlive.Remove(creep);
+        }
     }
 
     public bool IsAllCreepDead()

@@ -48,7 +48,7 @@ public class Creep : MonoBehaviour, ITargetable {
 
     public bool IsAlive()
     {
-        if (_creepParameters.HitPoints > 0)
+        if (_creepParameters.CurrentHitPoints > 0)
         {
             return true;
         }
@@ -70,6 +70,7 @@ public class Creep : MonoBehaviour, ITargetable {
         {
             base.OnDespawned(creep);
             creep._creepVisual.SetOriginalScale();
+            creep._creepParameters.CurrentHitPoints = 0;
         }
     }
 

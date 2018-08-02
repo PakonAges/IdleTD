@@ -4,6 +4,7 @@
 
     public float MoveSpeed;
     public int HitPoints;
+    public int CurrentHitPoints;
     public int Reward;
 
     public CreepParameters(CreepData creepData)
@@ -18,5 +19,6 @@
         MoveSpeed = _creepData.MoveSpeed;
         HitPoints = _creepData.HitPoints;
         Reward = _creepData.Reward;
+        CurrentHitPoints = HitPoints;
     }
 }
