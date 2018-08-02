@@ -42,7 +42,7 @@ public class TowerCode : MonoBehaviour {
     {
         //_myTargeting = new TowerTargeting(this);
         MyUpgrader = new TowerUpgrader(this);
-        _myShooting = gameObject.AddComponent<TowerShooting>();
+        //_myShooting = gameObject.AddComponent<TowerShooting>();
         _myShooting.Init(this);
 
         MyUpgrader.UpdateCostOfUpgrades();
@@ -83,7 +83,7 @@ public class TowerCode : MonoBehaviour {
             {
                 if (IsTargetInRange(_myTarget))
                 {
-                    _myShooting.Lazer(MylazerLine, LazerEffect, LazerLight, _myTarget);
+                    //_myShooting.Lazer(MylazerLine, LazerEffect, LazerLight, _myTarget);
                 }
 
             } else

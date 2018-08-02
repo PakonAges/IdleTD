@@ -5,6 +5,7 @@ public class TowerData : ScriptableObject
 {
     public string Name;
     public GameObject Prefab;
+    public GameObject BulletPrefab;
 
     [Header("Parameters")]
     public int Damage;
