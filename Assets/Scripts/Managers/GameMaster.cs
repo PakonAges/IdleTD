@@ -65,6 +65,11 @@ public class GameMaster : MonoBehaviour {
         {
             _towerFactory.Create(new Vector3(6.0f,0.5f,-1.5f), _towerData);
         }
+
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            _towerFactory.Create(new Vector3(8.0f, 0.5f, -1.5f), _towerData);
+        }
     }
 
     void OnApplicationQuit()

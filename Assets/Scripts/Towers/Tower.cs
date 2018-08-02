@@ -20,9 +20,10 @@ public class Tower : MonoBehaviour
         TowerParameters = new TowerParameters(_towerData);
         _towerVisual = new TowerVisual(this, _towerData);
         _towerTargeting = new TowerTargeting(this, waveSpawner);
-        _towerShooting = new TowerShooting(bulletPool);
+        _towerShooting = new TowerShooting(_towerData, bulletPool);
 
         gameObject.transform.position = position;
+        _towerVisual.SetupVisual();
     }
 
 

@@ -2,6 +2,7 @@
 
 public class TowerShooting
 {
+    private TowerData _towerData;
     private readonly Bullet.Pool _bulletPool;
     //Bullet Factory
     //My Bullet
@@ -14,8 +15,10 @@ public class TowerShooting
     //    _myTower = tower;
     //}
 
-    public TowerShooting(Bullet.Pool pool)
+    public TowerShooting(   TowerData towerData,
+                            Bullet.Pool pool)
     {
+        _towerData = towerData;
         _bulletPool = pool;
     }
 
@@ -28,7 +31,7 @@ public class TowerShooting
 
     private void Shot()
     {
-        _bulletPool.Spawn();
+        _bulletPool.Spawn(_towerData.BulletData);
     }
 
     //public void Shoot(GameObject myBullet, TowerCode myTower)

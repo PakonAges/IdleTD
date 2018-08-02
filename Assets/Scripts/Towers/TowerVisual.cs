@@ -9,8 +9,6 @@ public class TowerVisual
     {
         _tower = tower;
         _towerData = towerData;
-
-        SetupVisual();
     }
 
     public void SetupVisual()

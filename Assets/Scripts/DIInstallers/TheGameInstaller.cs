@@ -4,6 +4,7 @@ using Zenject;
 public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 {
     public GameObject TowerPrefab;
+    public GameObject BulletPrefab;
     public GameObject CreepPrefab;
     public CreepWavesCollection CreepWavesCollection;
 
@@ -55,5 +56,6 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     private void InstallTowers()
     {
         Container.BindFactory<Vector3, TowerData, Tower, Tower.Factory>().FromComponentInNewPrefab(TowerPrefab);
+        Container.BindMemoryPool<Bullet, Bullet.Pool>().WithInitialSize(32).FromComponentInNewPrefab(BulletPrefab).UnderTransformGroup("Bullet");
     }
 }
