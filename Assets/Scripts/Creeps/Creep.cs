@@ -2,7 +2,7 @@
 using UnityEngine.AI;
 using Zenject;
 
-public class Creep : MonoBehaviour {
+public class Creep : MonoBehaviour, ITargetable {
 
     private CreepData _creepData;
 
@@ -44,6 +44,18 @@ public class Creep : MonoBehaviour {
         navAgent.enabled = false;
         _creepMovement = new CreepMovement(_creepParameters, _globalCreepPath, navAgent);
         _creepMovement.ResetMovement();
+    }
+
+    public bool IsAlive()
+    {
+        if (_creepParameters.HitPoints > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public class Pool : MonoMemoryPool<CreepData,  Creep>

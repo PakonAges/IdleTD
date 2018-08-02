@@ -40,7 +40,7 @@ public class TowerCode : MonoBehaviour {
 
     void Awake()
     {
-        _myTargeting = new TowerTargeting(this);
+        //_myTargeting = new TowerTargeting(this);
         MyUpgrader = new TowerUpgrader(this);
         _myShooting = gameObject.AddComponent<TowerShooting>();
         _myShooting.Init(this);
@@ -65,7 +65,7 @@ public class TowerCode : MonoBehaviour {
 
         if (_myTarget == null)                                      //If I dont have a target -> look for a target
         {
-            _myTarget = _myTargeting.ChooseTarget(MyRange);
+            //_myTarget = _myTargeting.ChooseTarget(MyRange);
 
             if (isLazer)
             {

@@ -1,53 +1,128 @@
 ﻿using UnityEngine;
+using Zenject;
 
-public class TowerTargeting {
+public class TowerTargeting
+{
+    readonly Tower _tower;
+    public Transform Target;
+    TargetingState _targetingState;
 
-    TowerCode _myTower;
-    bool _targetAvailable = false;
-    public bool TargetAvailable
+    WaveSpawner _waveSpawner;
+
+    enum TargetingState
     {
-        get { return _targetAvailable; }
+        NeedNewTarget,
+        TargetDefined
     }
 
-    public TowerTargeting(TowerCode tower)
+    public TowerTargeting(  Tower tower,
+                            WaveSpawner waveSpawner)
     {
-        _myTower = tower;
+        _tower = tower;
+        _waveSpawner = waveSpawner;
+
+        Target = null;
+        _targetingState = TargetingState.NeedNewTarget;
     }
 
-    public Transform ChooseTarget(float towerRange)
+    public void ManageTarget()
+    {
+        switch (_targetingState)
+        {
+            case TargetingState.NeedNewTarget:
+            FindNewTarget();
+            break;
+
+            case TargetingState.TargetDefined:
+            if (IfTargetIsStillAvailabile())
+            {
+                return;
+            }
+            else
+            {
+                TargetNoLongerAvailable();
+            }
+
+            break;
+        }
+    }
+
+    void TargetNoLongerAvailable()
+    {
+        Target = null;
+        _targetingState = TargetingState.NeedNewTarget;
+    }
+
+    void TowerTaunted(Transform creep)
+    {
+        Target = creep;
+    }
+
+    void FindNewTarget()
     {
         float shortestDistance = Mathf.Infinity;
-        GameObject nearestEnemy = null;
+        Creep nearestEnemy = null;
 
-        //foreach (GameObject enemy in CreepsPooler.current.Pool)
-        //{
-        //    if (enemy != null && enemy.activeInHierarchy)
-        //    {
-        //        float distanceToEnemy = Vector3.Distance(_myTower.transform.position, enemy.transform.position);
-        //        if (distanceToEnemy < shortestDistance)
-        //        {
-        //            shortestDistance = distanceToEnemy;
-        //            nearestEnemy = enemy;
-        //        }
-        //    }
-        //}
+        foreach (Creep creep in _waveSpawner.CreepsAlive)
+        {
 
-        if (nearestEnemy != null && shortestDistance <= towerRange)
-        {
-            _targetAvailable = true;
-            return nearestEnemy.transform;
-        } else
-        {
-            _targetAvailable = false;
-            return null;
+            float distanceToEnemy = Vector3.Distance(_tower.transform.position, creep.transform.position);
+
+            if (distanceToEnemy < shortestDistance)
+            {
+                shortestDistance = distanceToEnemy;
+                nearestEnemy = creep;
+            }
         }
-    }   
 
-    public void SetTarget(Transform target)
-    {
-        if (_myTower.IsTargetInRange(target))
+        if (nearestEnemy != null && shortestDistance <= _tower.TowerParameters.Range)
         {
-           _myTower.MyTarget = target;
+            Target = nearestEnemy.transform;
+            _targetingState = TargetingState.TargetDefined;
+        }
+    }
+
+    bool IfTargetIsStillAvailabile()
+    {
+        //Check if target not yet dead
+        if (Target.gameObject.GetComponent<ITargetable>().IsAlive())
+        {
+            //If Target is still alive -> check if it is still in range of Tower
+            if (IsTargetInRange(Target.position))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool IsTargetInRange(Vector3 targetPosition)
+    {
+        var distance = Vector3.Distance(_tower.gameObject.transform.position, targetPosition);
+
+        if (distance > _tower.TowerParameters.Range)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    } 
+
+    public void TrySetTarget(Transform newTarget)
+    {
+        if (IsTargetInRange(newTarget.position))
+        {
+            Target = newTarget;
         }
     }
 }

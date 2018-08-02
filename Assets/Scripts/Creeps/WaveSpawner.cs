@@ -5,7 +5,7 @@ using Zenject;
 public class WaveSpawner : ITickable
 {
     readonly Creep.Pool _creepPool;
-    readonly List<Creep> _creeps = new List<Creep>();
+    public readonly List<Creep> CreepsAlive = new List<Creep>();
 
     private CreepWave _wave;
     private readonly Dictionary<float,CreepData> _spawnTimeLine = new Dictionary<float, CreepData>();
@@ -66,20 +66,20 @@ public class WaveSpawner : ITickable
 
     public void AddCreep(CreepData creepData)
     {
-        _creeps.Add(_creepPool.Spawn(creepData));
+        CreepsAlive.Add(_creepPool.Spawn(creepData));
         _spawnedCreepsCounter++;
     }
 
     public void RemoveCreep()
     {
-        var creep = _creeps[0];
+        var creep = CreepsAlive[0];
         _creepPool.Despawn(creep);
-        _creeps.Remove(creep);
+        CreepsAlive.Remove(creep);
     }
 
     public bool IsAllCreepDead()
     {
-        if (_creeps.Count > 0)
+        if (CreepsAlive.Count > 0)
         {
             return false;
         }
