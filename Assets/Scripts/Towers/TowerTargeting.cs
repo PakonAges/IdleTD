@@ -51,6 +51,7 @@ public class TowerTargeting
     {
         Target = null;
         _targetingState = TargetingState.NeedNewTarget;
+        _tower.TargetIsUnavailable();
     }
 
     void TowerTaunted(Transform creep)

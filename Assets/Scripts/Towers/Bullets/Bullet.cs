@@ -10,37 +10,52 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        Vector3 dir = Target.position - transform.position;
-        float distanceThisFrame = _moveSpeed * Time.deltaTime;
-
-        if (dir.magnitude <= distanceThisFrame)
+        if (Target)
         {
-            HitTarget();
-            return;
-        }
+            Vector3 dir = Target.position - transform.position;
+            float distanceThisFrame = _moveSpeed * Time.deltaTime;
 
-        transform.Translate(dir.normalized*distanceThisFrame, Space.World);
+            if (dir.magnitude <= distanceThisFrame)
+            {
+                HitTarget();
+                return;
+            }
+
+            transform.Translate(dir.normalized*distanceThisFrame, Space.World);
+        }
     }
 
     private void HitTarget()
     {
         //do damage
-        //destroy bullet
+        //despawn this bullet?
     }
 
-    private void Reset(BulletData bulletData, Transform target)
+    private void Reset(BulletData bulletData, Vector3 tower, Transform target)
     {
+        tower += new Vector3(0, 1, 0); //calibration form shooting point
+        gameObject.transform.position = tower;
+        Target = target;
         _moveSpeed = bulletData.MoveSpeed;
         _dmg = bulletData.Damage;
     }
 
-    public class Pool : MonoMemoryPool<BulletData, Transform, Bullet>
+    public class Pool : MonoMemoryPool<BulletData, Vector3, Transform, Bullet>
     {
+        protected override void OnSpawned(Bullet item)
+        {
+            //Fill needed Data
+            base.OnSpawned(item);
+        }
+
+
+        //Called immediately after the item is removed (used) from the pool
         protected override void Reinitialize(   BulletData bulletData,
+                                                Vector3 shootingPosition,
                                                 Transform target,
                                                 Bullet bullet)
         {
-            bullet.Reset(bulletData, target);
+            bullet.Reset(bulletData, shootingPosition, target);
         }
     }
 

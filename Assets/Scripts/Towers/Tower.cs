@@ -31,6 +31,12 @@ public class Tower : MonoBehaviour
         return _towerTargeting.Target;
     }
 
+    public void TargetIsUnavailable()
+    {
+        _towerShooting.TowerShootingState = TowerShooting.ShootingState.NoTarget;
+    }
+
+
     private void LateUpdate()
     {
         _towerTargeting.ManageTarget();
@@ -38,9 +44,7 @@ public class Tower : MonoBehaviour
     }
 
 
-
     public class Factory : PlaceholderFactory<Vector3, TowerData, Tower> { }
-
 
 
     private void OnDrawGizmos()
