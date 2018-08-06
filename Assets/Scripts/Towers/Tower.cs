@@ -14,13 +14,13 @@ public class Tower : MonoBehaviour
     public void Construct(  Vector3 position,
                             TowerData towerData,
                             WaveSpawner waveSpawner,
-                            Bullet.Pool bulletPool)
+                            Bullet.Factory bulletFactory)
     {
         TowerData = towerData;
         TowerParameters = new TowerParameters(TowerData);
         _towerVisual = new TowerVisual(this, TowerData);
         _towerTargeting = new TowerTargeting(this, waveSpawner);
-        _towerShooting = new TowerShooting(this, bulletPool);
+        _towerShooting = new TowerShooting(this, bulletFactory);
 
         gameObject.transform.position = position;
         _towerVisual.SetupVisual();

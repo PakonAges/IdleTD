@@ -1,12 +1,37 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Zenject;
 
-public class Bullet : MonoBehaviour
+public class Bullet : MonoBehaviour, IDisposable, IPoolable<BulletData, Vector3, Transform, IMemoryPool>
 {
+    IMemoryPool _pool;
     private float _moveSpeed;
     private int _dmg;
 
     public Transform Target;
+
+    public void OnSpawned(BulletData bulletData, Vector3 tower, Transform target, IMemoryPool pool)
+    {
+        _pool = pool;
+        tower += new Vector3(0, 1, 0); //calibration form shooting point
+        gameObject.transform.position = tower;
+        Target = target;
+        _moveSpeed = bulletData.MoveSpeed;
+        _dmg = bulletData.Damage;
+    }
+
+    public void Dispose()
+    {
+        _pool.Despawn(this);
+    }
+
+    public void OnDespawned()
+    {
+        _pool = null;
+        _moveSpeed = 0f;
+        _dmg = 0;
+        Target = null;
+    }
 
     private void Update()
     {
@@ -28,44 +53,21 @@ public class Bullet : MonoBehaviour
     private void HitTarget()
     {
         //do damage
+        //void Damage(Transform enemy)
+        //{
+        //    GameObject effectInstance = (GameObject)Instantiate(impactEffect, transform.position, transform.rotation);
+        //    Destroy(effectInstance, 2f);            //smelly code
+
+        //if (enemy.GetComponent<CreepMain>().RecieveDamageAndDie(_bulletDmg))
+        //{
+        //    _myTower.MyTarget = null;
+        //}
+        //}
+        Dispose();
     }
 
-    private void Reset(BulletData bulletData, Vector3 tower, Transform target)
+    public class Factory : PlaceholderFactory<BulletData, Vector3, Transform, Bullet>
     {
-        tower += new Vector3(0, 1, 0); //calibration form shooting point
-        gameObject.transform.position = tower;
-        Target = target;
-        _moveSpeed = bulletData.MoveSpeed;
-        _dmg = bulletData.Damage;
+
     }
-
-    public class Pool : MonoMemoryPool<BulletData, Vector3, Transform, Bullet>
-    {
-        protected override void OnSpawned(Bullet item)
-        {
-            //Fill needed Data
-            base.OnSpawned(item);
-        }
-
-
-        //Called immediately after the item is removed (used) from the pool
-        protected override void Reinitialize(   BulletData bulletData,
-                                                Vector3 shootingPosition,
-                                                Transform target,
-                                                Bullet bullet)
-        {
-            bullet.Reset(bulletData, shootingPosition, target);
-        }
-    }
-
-    //void Damage(Transform enemy)
-    //{
-    //    GameObject effectInstance = (GameObject)Instantiate(impactEffect, transform.position, transform.rotation);
-    //    Destroy(effectInstance, 2f);            //smelly code
-
-    //if (enemy.GetComponent<CreepMain>().RecieveDamageAndDie(_bulletDmg))
-    //{
-    //    _myTower.MyTarget = null;
-    //}
-    //}
 }

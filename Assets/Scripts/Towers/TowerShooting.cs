@@ -4,7 +4,7 @@ using UnityEngine;
 public class TowerShooting
 {
     private Tower _tower;
-    private readonly Bullet.Pool _bulletPool;
+    private readonly Bullet.Factory _bulletFactory;
     //private List<Bullet> _bullets;              //Why do I need this? here or do I need omewhat global Bullet Manager?
 
     private float _shootCD;
@@ -20,10 +20,10 @@ public class TowerShooting
 
 
     public TowerShooting(   Tower tower,
-                            Bullet.Pool pool)
+                            Bullet.Factory factory)
     {
         _tower = tower;
-        _bulletPool = pool;
+        _bulletFactory = factory;
         TowerShootingState = ShootingState.NoTarget;
         _shootCD = _tower.TowerParameters.AttackDelay;
     }
@@ -68,8 +68,7 @@ public class TowerShooting
 
     private void Shoot()
     {
-        //_bullets.Add(_bulletPool.Spawn(_tower.TowerData.BulletData, _tower.transform.position, _tower.Target()));
-        _bulletPool.Spawn(_tower.TowerData.BulletData, _tower.transform.position, _tower.GetTarget());
+        _bulletFactory.Create(_tower.TowerData.BulletData, _tower.transform.position, _tower.GetTarget());
         _shootCD = _tower.TowerParameters.AttackDelay;
     }
 }

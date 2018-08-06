@@ -56,6 +56,12 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     private void InstallTowers()
     {
         Container.BindFactory<Vector3, TowerData, Tower, Tower.Factory>().FromComponentInNewPrefab(TowerPrefab);
-        Container.BindMemoryPool<Bullet, Bullet.Pool>().WithInitialSize(2).FromComponentInNewPrefab(BulletPrefab).UnderTransformGroup("Bullet");
+        Container.BindFactory<BulletData, Vector3, Transform, Bullet, Bullet.Factory>().FromMonoPoolableMemoryPool(x => x.WithInitialSize(3).FromComponentInNewPrefab(BulletPrefab).UnderTransformGroup("Bullet"));
     }
+
+    //Try with IL2CPP -> Hack
+    //public class BulletPool : MonoPoolableMemoryPool<BulletData, Vector3, Transform, IMemoryPool, Bullet>
+    //{
+
+    //}
 }
