@@ -10,8 +10,9 @@ public class WaypointsSpawner {
     private readonly GlobalCreepPath _creepPath;
     private readonly LocalCreepWayBuilder _creepWayBuilder;
 
-    Vector2 Entrance = new Vector2(3, -2);
+    Vector2 Entrance = new Vector2(3, -3);
     int index = 0; //used for naming waypoints
+    private Transform _wayPointHolder;
 
     public WaypointsSpawner(    MapManager mapManager,
                                 GlobalCreepPath creepPath,
@@ -23,6 +24,9 @@ public class WaypointsSpawner {
         _creepWayBuilder = creepWayBuilder;
         _mapBuilderData = mapBuilder.MapBuilderData; // Just for a Waypoint prefab? hmm
 
+        _wayPointHolder = new GameObject().transform;
+        _wayPointHolder.name = "Way Points";
+
         Entrance.x = _mapManager.Map.MapSections[1].Xsize / 2;
         _creepPath.AddPath(CreateEntrance());
         GenerateCurrentPath();
@@ -33,6 +37,7 @@ public class WaypointsSpawner {
         Vector3 wayPointPlace = new Vector3(Entrance.x, 0.0f, -Entrance.y);
         GameObject wayPoint = GameObject.Instantiate(_mapBuilderData.WayPoint, wayPointPlace, Quaternion.identity);
         wayPoint.name = "Spawning Point";
+        wayPoint.transform.parent = _wayPointHolder;
         return wayPoint.transform.position;
     }
 
@@ -114,6 +119,7 @@ public class WaypointsSpawner {
         Vector3 wayPointPlace = new Vector3(x, 0.0f, -y);
         GameObject wayPoint = GameObject.Instantiate(_mapBuilderData.WayPoint, wayPointPlace, Quaternion.identity);
         wayPoint.name = "Waypoint " + index;
+        wayPoint.transform.parent = _wayPointHolder;
         index++;
 
         return wayPoint.transform.position;
@@ -125,6 +131,7 @@ public class WaypointsSpawner {
         Vector3 wayPointPlace = new Vector3(cell.X + pivot.x, 0.0f, -cell.Y + pivot.z);
         GameObject wayPoint = GameObject.Instantiate(_mapBuilderData.WayPoint, wayPointPlace, Quaternion.identity);
         wayPoint.name = "Waypoint " + index;
+        wayPoint.transform.parent = _wayPointHolder;
         index++;
 
         return wayPoint.transform.position;
