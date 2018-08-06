@@ -26,7 +26,7 @@ public class Tower : MonoBehaviour
         _towerVisual.SetupVisual();
     }
 
-    public Transform Target()
+    public Transform GetTarget()
     {
         return _towerTargeting.Target;
     }

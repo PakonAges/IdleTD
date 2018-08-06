@@ -33,7 +33,7 @@ public class TowerShooting
         switch (TowerShootingState)
         {
             case ShootingState.NoTarget:
-            if (_tower.Target() != null)
+            if (_tower.GetTarget() != null)
             {
                 TowerShootingState = ShootingState.TargetLocked;
             }
@@ -69,7 +69,7 @@ public class TowerShooting
     private void Shoot()
     {
         //_bullets.Add(_bulletPool.Spawn(_tower.TowerData.BulletData, _tower.transform.position, _tower.Target()));
-        _bulletPool.Spawn(_tower.TowerData.BulletData, _tower.transform.position, _tower.Target());
+        _bulletPool.Spawn(_tower.TowerData.BulletData, _tower.transform.position, _tower.GetTarget());
         _shootCD = _tower.TowerParameters.AttackDelay;
     }
 }

@@ -28,7 +28,6 @@ public class Bullet : MonoBehaviour
     private void HitTarget()
     {
         //do damage
-        //despawn this bullet?
     }
 
     private void Reset(BulletData bulletData, Vector3 tower, Transform target)
@@ -58,20 +57,6 @@ public class Bullet : MonoBehaviour
             bullet.Reset(bulletData, shootingPosition, target);
         }
     }
-
-    //void HitTarget()
-    //{
-    //    if (_bulletAoERadius > 0f)
-    //    {
-    //        AoEDamae();
-    //    }
-    //    else
-    //    {
-    //        Damage(_target);
-    //    }
-
-    //    gameObject.SetActive(false);
-    //}
 
     //void Damage(Transform enemy)
     //{
