@@ -23,8 +23,7 @@ public class WaveSpawner : ITickable
     {
         if (_shouldSpawn)
         {
-            //Not all creeps have been spawned
-            if (_spawnedCreepsCounter < _wave.CreepAmount)
+            if (!AreAllCreepsSpawned())
             {
                 if (_spawnTimer >= _spawnTimeLine.Keys.ElementAt(_spawnedCreepsCounter))
                 {
@@ -79,7 +78,16 @@ public class WaveSpawner : ITickable
         }
     }
 
-    public bool IsAllCreepDead()
+    public bool AreAllCreepsSpawned()
+    {
+        if (_spawnedCreepsCounter < _wave.CreepAmount)
+        {
+            return false;
+        }
+        else return true;
+    }
+
+    public bool AreAllCreepsDead()
     {
         if (CreepsAlive.Count > 0)
         {

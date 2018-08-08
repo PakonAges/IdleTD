@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using GameData;
 using Zenject;
-using System.Collections.Generic;
 
 public class CreepsManager : ITickable
 {
@@ -45,6 +44,10 @@ public class CreepsManager : ITickable
             break;
 
             case SpawnState.SPAWNING:
+            if (_waveSpawner.AreAllCreepsSpawned())
+            {
+                SpawnerState = SpawnState.WAITING;
+            }
             break;
 
             case SpawnState.WAITING:
@@ -80,7 +83,6 @@ public class CreepsManager : ITickable
 
         var currentWave = _creepWavesCollection.CreepWaves[WaveNum];
         _waveSpawner.SpawnWave(currentWave);
-        SpawnerState = SpawnState.WAITING;
     }
 
 
@@ -92,7 +94,7 @@ public class CreepsManager : ITickable
         {
             waveCheckForCompletionCD = 1f;
 
-            if (_waveSpawner.IsAllCreepDead())
+            if (_waveSpawner.AreAllCreepsDead())
             {
                 return true;
             }
