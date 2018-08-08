@@ -25,6 +25,14 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
         _creepsAlive = waveSpawner.CreepsAlive;
     }
 
+    public void Dispose()
+    {
+        _creepVisual.SetOriginalScale();
+        _creepMovement.ResetMovement();
+        _creepsAlive.Remove(this);
+        _pool.Despawn(this);
+    }
+
     public void OnSpawned(CreepData creepData, IMemoryPool pool)
     {
         _creepData = creepData;
@@ -33,17 +41,11 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
         _creepVisual = new CreepVisual(this, _creepData);
         _creepVisual.SetupVisual();
 
-        var navAgent = this.gameObject.GetComponent<NavMeshAgent>();
-        navAgent.enabled = false;
+        var navAgent = gameObject.GetComponent<NavMeshAgent>();
         _creepMovement = new CreepMovement(_creepParameters, _globalCreepPath, navAgent);
-        _creepMovement.ResetMovement();
-        _isAlive = true;
-    }
+        _creepMovement.StartMovement();
 
-    public void Dispose()
-    {
-        _creepsAlive.Remove(this);
-        _pool.Despawn(this);
+        _isAlive = true;
     }
 
     public void OnDespawned()
@@ -53,14 +55,18 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
         _creepVisual = null;
         _creepParameters = null;
         _creepMovement = null;
+
         _isAlive = false;
     }
 
     void Update()
     {
-        if (Vector3.Distance(transform.position, _creepMovement.TargetToMove) <= 0.1f)
+        if (_isAlive)
         {
-            _creepMovement.GetNextWayPoint();
+            if (Vector3.Distance(transform.position, _creepMovement.TargetToMove) <= 0.1f)
+            {
+                _creepMovement.GetNextWayPoint();
+            }
         }
     }
 

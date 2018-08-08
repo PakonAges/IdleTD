@@ -76,7 +76,6 @@ public class WaveSpawner : ITickable
         {
             var creep = CreepsAlive[0];
             creep.Dispose();
-            CreepsAlive.Remove(creep);
         }
     }
 

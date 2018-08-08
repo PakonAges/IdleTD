@@ -21,15 +21,23 @@ public class CreepMovement {
         _creepPath = globalCreepPath;
         Agent = navMeshAgent;
         Agent.speed = creepParameters.MoveSpeed;
+        ResetMovement();
     }
 
     public void ResetMovement()
     {
+        Agent.enabled = true;
         prevTarget = _creepPath.Path[0];
         TargetToMove = _creepPath.Path[1];
 
-        Agent.enabled = true;
         Agent.Warp(prevTarget);
+        Agent.gameObject.transform.LookAt(TargetToMove);
+        Agent.enabled = false;
+    }
+
+    public void StartMovement()
+    {
+        Agent.enabled = true;
         Agent.SetDestination(TargetToMove);
     }
 
