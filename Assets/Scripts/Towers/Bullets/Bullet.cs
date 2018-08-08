@@ -52,17 +52,8 @@ public class Bullet : MonoBehaviour, IDisposable, IPoolable<BulletData, Vector3,
 
     private void HitTarget()
     {
-        //do damage
-        //void Damage(Transform enemy)
-        //{
-        //    GameObject effectInstance = (GameObject)Instantiate(impactEffect, transform.position, transform.rotation);
-        //    Destroy(effectInstance, 2f);            //smelly code
-
-        //if (enemy.GetComponent<CreepMain>().RecieveDamageAndDie(_bulletDmg))
-        //{
-        //    _myTower.MyTarget = null;
-        //}
-        //}
+        var creep = Target.gameObject.GetComponent<Creep>();
+        creep.TakeDamage(_dmg);
         Dispose();
     }
 

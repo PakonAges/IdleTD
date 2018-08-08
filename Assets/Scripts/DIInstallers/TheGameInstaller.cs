@@ -50,13 +50,14 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         Container.BindInstance(CreepWavesCollection).AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<WaveSpawner>().AsSingle().NonLazy();
         Container.BindInterfacesAndSelfTo<CreepsManager>().AsSingle().NonLazy();
-        Container.BindMemoryPool<Creep, Creep.Pool>().WithInitialSize(20).FromComponentInNewPrefab(CreepPrefab).UnderTransformGroup("Creeps");
+        //Container.BindMemoryPool<Creep, Creep.Pool>().WithInitialSize(20).FromComponentInNewPrefab(CreepPrefab).UnderTransformGroup("Creeps");
+        Container.BindFactory<CreepData, Creep, Creep.Factory>().FromMonoPoolableMemoryPool(x => x.WithInitialSize(16).FromComponentInNewPrefab(CreepPrefab).UnderTransformGroup("Creeps"));
     }
 
     private void InstallTowers()
     {
         Container.BindFactory<Vector3, TowerData, Tower, Tower.Factory>().FromComponentInNewPrefab(TowerPrefab);
-        Container.BindFactory<BulletData, Vector3, Transform, Bullet, Bullet.Factory>().FromMonoPoolableMemoryPool(x => x.WithInitialSize(3).FromComponentInNewPrefab(BulletPrefab).UnderTransformGroup("Bullet"));
+        Container.BindFactory<BulletData, Vector3, Transform, Bullet, Bullet.Factory>().FromMonoPoolableMemoryPool(x => x.WithInitialSize(8).FromComponentInNewPrefab(BulletPrefab).UnderTransformGroup("Bullets"));
     }
 
     //Try with IL2CPP -> Hack
