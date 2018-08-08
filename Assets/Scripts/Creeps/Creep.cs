@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
@@ -9,6 +10,7 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
     private CreepData _creepData;
 
     private GlobalCreepPath _globalCreepPath;
+    private List<Creep> _creepsAlive;
 
     private CreepVisual _creepVisual;
     private CreepParameters _creepParameters;
@@ -16,9 +18,11 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
     bool _isAlive = false;
 
     [Inject]
-    public void  Construct(GlobalCreepPath globalCreepPath)
+    public void  Construct( GlobalCreepPath globalCreepPath,
+                            WaveSpawner waveSpawner)
     {
         _globalCreepPath = globalCreepPath;
+        _creepsAlive = waveSpawner.CreepsAlive;
     }
 
     public void OnSpawned(CreepData creepData, IMemoryPool pool)
@@ -38,7 +42,7 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
 
     public void Dispose()
     {
-        //Remove from WaveSpawner List<Creep> _CreepsAlive, so we would know that all creeps have died;
+        _creepsAlive.Remove(this);
         _pool.Despawn(this);
     }
 
