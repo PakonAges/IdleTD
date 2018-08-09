@@ -9,6 +9,7 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
     IMemoryPool _pool;
     private CreepData _creepData;
 
+    private SignalBus _signalBus;
     private GlobalCreepPath _globalCreepPath;
     private List<Creep> _creepsAlive;
 
@@ -19,10 +20,12 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
 
     [Inject]
     public void  Construct( GlobalCreepPath globalCreepPath,
-                            WaveSpawner waveSpawner)
+                            WaveSpawner waveSpawner,
+                            SignalBus signalBus)
     {
         _globalCreepPath = globalCreepPath;
         _creepsAlive = waveSpawner.CreepsAlive;
+        _signalBus = signalBus;
     }
 
     public void Dispose()
@@ -31,6 +34,7 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
         _creepMovement.ResetMovement();
         _creepsAlive.Remove(this);
         _pool.Despawn(this);
+        _signalBus.Fire<SignalCreepDied>();
     }
 
     public void OnSpawned(CreepData creepData, IMemoryPool pool)

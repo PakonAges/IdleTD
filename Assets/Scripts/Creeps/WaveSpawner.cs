@@ -4,6 +4,7 @@ using Zenject;
 
 public class WaveSpawner : ITickable
 {
+    readonly SignalBus _signalBus;
     readonly Creep.Factory _creepFactory;
     public readonly List<Creep> CreepsAlive = new List<Creep>();
 
@@ -14,9 +15,11 @@ public class WaveSpawner : ITickable
     private float _spawnTimer = 0;
     private int _spawnedCreepsCounter = 0;
 
-    public WaveSpawner( Creep.Factory creepFactory)
+    public WaveSpawner( Creep.Factory creepFactory,
+                        SignalBus signalBus)
     {
         _creepFactory = creepFactory;
+        _signalBus = signalBus;
     }
 
     public void Tick()
@@ -67,6 +70,7 @@ public class WaveSpawner : ITickable
     {
         CreepsAlive.Add(_creepFactory.Create(creepData));
         _spawnedCreepsCounter++;
+        _signalBus.Fire<SignalCreepSpawned>();
     }
 
     public void RemoveCreep()

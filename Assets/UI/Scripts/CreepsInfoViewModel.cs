@@ -8,6 +8,7 @@ public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
 {
     private CreepsManager _creepsManager;
     private WaveSpawner _waveSpawner;
+    private SignalBus _signalBus;
 
     private string creepsAmount = string.Empty;
     private string waveNumber = string.Empty;
@@ -44,10 +45,37 @@ public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
 
     [Inject]
     public void Construct(  CreepsManager creepsManager,
-                            WaveSpawner waveSpawner)
+                            WaveSpawner waveSpawner,
+                            SignalBus signalBus)
     {
         _waveSpawner = waveSpawner;
         _creepsManager = creepsManager;
+        _signalBus = signalBus;
+    }
+
+    void OnEnable()
+    {
+        _signalBus.Subscribe<SignalNewWave>(OnNewWave);
+        _signalBus.Subscribe<SignalCreepDied>(OnCreepsChanged);
+        _signalBus.Subscribe<SignalCreepSpawned>(OnCreepsChanged);
+
+    }
+
+    void OnDisable()
+    {
+        _signalBus.Unsubscribe<SignalNewWave>(OnNewWave);
+        _signalBus.Unsubscribe<SignalCreepDied>(OnCreepsChanged);
+        _signalBus.Unsubscribe<SignalCreepSpawned>(OnCreepsChanged);
+    }
+
+    void OnNewWave()
+    {
+        SetWaveNumber();
+    }
+
+    void OnCreepsChanged()
+    {
+        SetCreepsText();
     }
 
     void Start()

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Zenject;
 
@@ -10,15 +11,20 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 
     public override void InstallBindings()
     {
+        InstalSignals();
         InstallDataProviders();
         InstallMapBuilder();
         InstallCreeps();
         InstallTowers();
 
-        //Init UI Manager
-        //Check offline duration and simulate it
-        //Show UI "WelcomeBack"
-        //The game process
+    }
+
+    private void InstalSignals()
+    {
+        SignalBusInstaller.Install(Container);
+        Container.DeclareSignal<SignalNewWave>();
+        Container.DeclareSignal<SignalCreepDied>();
+        Container.DeclareSignal<SignalCreepSpawned>();
     }
 
     private void InstallDataProviders()
@@ -26,10 +32,6 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         Container.Bind<SaveLoader>().AsSingle().NonLazy();
         Container.Bind<PlayerSaveData>().FromComponentsOn(this.gameObject).AsSingle();
         Container.Bind<IMapDataProvider>().To<MapDataProvider>().AsSingle().WhenInjectedInto<MapGenerator>();
-        //Check for Save game
-        //if yes -> Build saved map
-        //if no -> build new one
-        //And load map state!
     }
 
     private void InstallMapBuilder()
