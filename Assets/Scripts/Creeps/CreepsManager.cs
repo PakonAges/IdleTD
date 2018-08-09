@@ -8,7 +8,7 @@ public class CreepsManager : ITickable
     readonly WaveSpawner _waveSpawner;
 
     //Wave number To display in UI. Always incremented
-    private int DisplayWaveNum = 0;
+    public int DisplayWaveNum = 0;
 
     //Wave number from waves collection. Mayhap change later. Dependant on how we decided to spawn waves: predefined or choose from list and then additionaly modify
     private int WaveNum = 0; 
