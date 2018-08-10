@@ -6,12 +6,21 @@ using Zenject;
 [Binding]
 public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
 {
-    private CreepsManager _creepsManager;
-    private WaveSpawner _waveSpawner;
+    //Injections
+    private PlayerData _playerData;
     private SignalBus _signalBus;
 
+    //UI elements
     private string creepsAmount = string.Empty;
     private string waveNumber = string.Empty;
+
+    [Inject]
+    public void Construct(  SignalBus signalBus,
+                            PlayerData playerData)
+    {
+        _signalBus = signalBus;
+        _playerData = playerData;
+    }
 
     [Binding]
     public string CreepsText
@@ -41,16 +50,6 @@ public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
             waveNumber = value;
             OnPropertyChanged("WaveNumber");
         }
-    }
-
-    [Inject]
-    public void Construct(  CreepsManager creepsManager,
-                            WaveSpawner waveSpawner,
-                            SignalBus signalBus)
-    {
-        _waveSpawner = waveSpawner;
-        _creepsManager = creepsManager;
-        _signalBus = signalBus;
     }
 
     void OnEnable()
@@ -93,11 +92,11 @@ public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
 
     private void SetCreepsText()
     {
-        CreepsText = string.Format("Current Creeps: {0}", _waveSpawner.CreepsAlive.Count.ToString());
+        CreepsText = string.Format("Current Creeps: {0}", _playerData.CurrentCreepsAlive.Value.ToString());
     }
 
     private void SetWaveNumber()
     {
-        WaveNumber = string.Format("Wave: {0}", _creepsManager.DisplayWaveNum.ToString());
+        WaveNumber = string.Format("Wave: {0}", _playerData.CurrentWave.Value.ToString());
     }
 }

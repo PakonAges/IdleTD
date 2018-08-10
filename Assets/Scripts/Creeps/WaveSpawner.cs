@@ -8,6 +8,8 @@ public class WaveSpawner : ITickable
     readonly Creep.Factory _creepFactory;
     public readonly List<Creep> CreepsAlive = new List<Creep>();
 
+    private IntVariable _displayCurrentCreeps;
+
     private CreepWave _wave;
     private readonly Dictionary<float,CreepData> _spawnTimeLine = new Dictionary<float, CreepData>();
 
@@ -16,10 +18,12 @@ public class WaveSpawner : ITickable
     private int _spawnedCreepsCounter = 0;
 
     public WaveSpawner( Creep.Factory creepFactory,
-                        SignalBus signalBus)
+                        SignalBus signalBus,
+                        PlayerData playerData)
     {
         _creepFactory = creepFactory;
         _signalBus = signalBus;
+        _displayCurrentCreeps = playerData.CurrentCreepsAlive.Variable;
     }
 
     public void Tick()
@@ -70,6 +74,7 @@ public class WaveSpawner : ITickable
     {
         CreepsAlive.Add(_creepFactory.Create(creepData));
         _spawnedCreepsCounter++;
+        _displayCurrentCreeps.Value = CreepsAlive.Count();
         _signalBus.Fire<SignalCreepSpawned>();
     }
 

@@ -8,6 +8,7 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     public GameObject BulletPrefab;
     public GameObject CreepPrefab;
     public CreepWavesCollection CreepWavesCollection;
+    public PlayerData PlayerData; 
 
     public override void InstallBindings()
     {
@@ -32,6 +33,7 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
         Container.Bind<SaveLoader>().AsSingle().NonLazy();
         Container.Bind<PlayerSaveData>().FromComponentsOn(this.gameObject).AsSingle();
         Container.Bind<IMapDataProvider>().To<MapDataProvider>().AsSingle().WhenInjectedInto<MapGenerator>();
+        Container.BindInstance(PlayerData).AsSingle().NonLazy();
     }
 
     private void InstallMapBuilder()

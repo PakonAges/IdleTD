@@ -13,6 +13,9 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
     private GlobalCreepPath _globalCreepPath;
     private List<Creep> _creepsAlive;
 
+    //Meh. I don't realy like it here. I don't want to know how many creeps are alive here...
+    private IntVariable _displayCurrentCreeps;
+
     private CreepVisual _creepVisual;
     private CreepParameters _creepParameters;
     private CreepMovement _creepMovement;
@@ -21,11 +24,13 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
     [Inject]
     public void  Construct( GlobalCreepPath globalCreepPath,
                             WaveSpawner waveSpawner,
-                            SignalBus signalBus)
+                            SignalBus signalBus,
+                            PlayerData playerData)
     {
         _globalCreepPath = globalCreepPath;
         _creepsAlive = waveSpawner.CreepsAlive;
         _signalBus = signalBus;
+        _displayCurrentCreeps = playerData.CurrentCreepsAlive.Variable;
     }
 
     public void Dispose()
@@ -34,6 +39,7 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
         _creepMovement.ResetMovement();
         _creepsAlive.Remove(this);
         _pool.Despawn(this);
+        _displayCurrentCreeps.Value--;
         _signalBus.Fire<SignalCreepDied>();
     }
 

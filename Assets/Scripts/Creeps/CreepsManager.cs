@@ -8,8 +8,7 @@ public class CreepsManager : ITickable
     readonly WaveSpawner _waveSpawner;
     readonly SignalBus _signalBus;
 
-    //Wave number To display in UI. Always incremented
-    public int DisplayWaveNum = 0;
+    private IntVariable _displayWaveNum;
 
     //Wave number from waves collection. Mayhap change later. Dependant on how we decided to spawn waves: predefined or choose from list and then additionaly modify
     private int WaveNum = 0; 
@@ -23,17 +22,19 @@ public class CreepsManager : ITickable
 
     public CreepsManager(   CreepWavesCollection creepWavesCollection,
                             WaveSpawner waveSpawner,
-                            SignalBus signalBus)
+                            SignalBus signalBus,
+                            PlayerData playerData)
     {
         _creepWavesCollection = creepWavesCollection;
         _waveSpawner = waveSpawner;
         _signalBus = signalBus;
+        _displayWaveNum = playerData.CurrentWave.Variable;
     }
 
 
     public void StartSpawningCreeps()
     {
-        DisplayWaveNum = 1;
+        _displayWaveNum.Value = 1;
         waveCountDown = delayBetweenWaves;
         SpawnerState = SpawnState.COUNTDOWN;
         _signalBus.Fire<SignalNewWave>();
@@ -111,7 +112,7 @@ public class CreepsManager : ITickable
     void WaveCompleted()
     {
         //Next Wave indexes
-        DisplayWaveNum++;
+        _displayWaveNum.Value++;
         WaveNum++;
         SpawnerState = SpawnState.COUNTDOWN;
         waveCountDown = delayBetweenWaves;
