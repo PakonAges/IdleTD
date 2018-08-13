@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Zenject;
@@ -7,14 +6,10 @@ using Zenject;
 public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepData, IMemoryPool>
 {
     IMemoryPool _pool;
-    private CreepData _creepData;
+    public CreepData CreepData;
 
     private SignalBus _signalBus;
     private GlobalCreepPath _globalCreepPath;
-    private List<Creep> _creepsAlive;
-
-    //Meh. I don't realy like it here. I don't want to know how many creeps are alive here...
-    private IntVariable _displayCurrentCreeps;
 
     private CreepVisual _creepVisual;
     private CreepParameters _creepParameters;
@@ -23,32 +18,25 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
 
     [Inject]
     public void  Construct( GlobalCreepPath globalCreepPath,
-                            WaveSpawner waveSpawner,
-                            SignalBus signalBus,
-                            PlayerData playerData)
+                            SignalBus signalBus)
     {
         _globalCreepPath = globalCreepPath;
-        _creepsAlive = waveSpawner.CreepsAlive;
         _signalBus = signalBus;
-        _displayCurrentCreeps = playerData.CurrentCreepsAlive.Variable;
     }
 
     public void Dispose()
     {
         _creepVisual.SetOriginalScale();
         _creepMovement.ResetMovement();
-        _creepsAlive.Remove(this);
         _pool.Despawn(this);
-        _displayCurrentCreeps.Value--;
-        _signalBus.Fire<SignalCreepDied>();
     }
 
     public void OnSpawned(CreepData creepData, IMemoryPool pool)
     {
-        _creepData = creepData;
+        CreepData = creepData;
         _pool = pool;
-        _creepParameters = new CreepParameters(_creepData);
-        _creepVisual = new CreepVisual(this, _creepData);
+        _creepParameters = new CreepParameters(CreepData);
+        _creepVisual = new CreepVisual(this, CreepData);
         _creepVisual.SetupVisual();
 
         var navAgent = gameObject.GetComponent<NavMeshAgent>();
@@ -61,7 +49,7 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
     public void OnDespawned()
     {
         _pool = null;
-        _creepData = null;
+        CreepData = null;
         _creepVisual = null;
         _creepParameters = null;
         _creepMovement = null;
@@ -102,6 +90,7 @@ public class Creep : MonoBehaviour, ITargetable, IDisposable, IPoolable<CreepDat
     private void Die()
     {
         _creepParameters.CurrentHitPoints = 0;
+        _signalBus.Fire(new SignalCreepDied(this));
         Dispose();
     }
 

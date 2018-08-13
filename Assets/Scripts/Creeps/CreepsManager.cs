@@ -1,14 +1,20 @@
 ﻿using UnityEngine;
 using GameData;
 using Zenject;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-public class CreepsManager : ITickable
+public class CreepsManager : ITickable, IInitializable, IDisposable
 {
+    public readonly List<Creep> CreepsAlive = new List<Creep>();
+
     readonly CreepWavesCollection _creepWavesCollection;
     readonly WaveSpawner _waveSpawner;
     readonly SignalBus _signalBus;
 
     private IntVariable _displayWaveNum;
+    private IntVariable _displayCurrentCreeps;
 
     //Wave number from waves collection. Mayhap change later. Dependant on how we decided to spawn waves: predefined or choose from list and then additionaly modify
     private int WaveNum = 0; 
@@ -16,9 +22,7 @@ public class CreepsManager : ITickable
     private readonly float delayBetweenWaves = 3f;
     private float waveCountDown;
     private float waveCheckForCompletionCD = 1f;
-
     public SpawnState SpawnerState = SpawnState.PAUSE;
-
 
     public CreepsManager(   CreepWavesCollection creepWavesCollection,
                             WaveSpawner waveSpawner,
@@ -29,8 +33,34 @@ public class CreepsManager : ITickable
         _waveSpawner = waveSpawner;
         _signalBus = signalBus;
         _displayWaveNum = playerData.CurrentWave.Variable;
+        _displayCurrentCreeps = playerData.CurrentCreepsAlive.Variable;
     }
 
+    public void Initialize()
+    {
+        _signalBus.Subscribe<SignalCreepSpawned>(OnCreepSpawned);
+        _signalBus.Subscribe<SignalCreepDied>(OnCreepDied);
+    }
+
+
+    public void Dispose()
+    {
+        _signalBus.Unsubscribe<SignalCreepSpawned>(OnCreepSpawned);
+        _signalBus.Unsubscribe<SignalCreepDied>(OnCreepDied);
+    }
+
+
+    private void OnCreepSpawned(SignalCreepSpawned args)
+    {
+        CreepsAlive.Add(args.Creep);
+        _displayCurrentCreeps.Value++;
+    }
+
+    private void OnCreepDied(SignalCreepDied args)
+    {
+        CreepsAlive.Remove(args.Creep);
+        _displayCurrentCreeps.Value--;
+    }
 
     public void StartSpawningCreeps()
     {
@@ -99,7 +129,7 @@ public class CreepsManager : ITickable
         {
             waveCheckForCompletionCD = 1f;
 
-            if (_waveSpawner.AreAllCreepsDead())
+            if (AreAllCreepsDead())
             {
                 return true;
             }
@@ -117,5 +147,23 @@ public class CreepsManager : ITickable
         SpawnerState = SpawnState.COUNTDOWN;
         waveCountDown = delayBetweenWaves;
         _signalBus.Fire<SignalNewWave>();
+    }
+
+    public void RemoveFirstCreep()
+    {
+        if (CreepsAlive.Any())
+        {
+            var creep = CreepsAlive[0];
+            creep.Dispose();
+        }
+    }
+
+    public bool AreAllCreepsDead()
+    {
+        if (CreepsAlive.Count > 0)
+        {
+            return false;
+        }
+        else return true;
     }
 }

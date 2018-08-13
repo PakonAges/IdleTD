@@ -13,13 +13,13 @@ public class Tower : MonoBehaviour
     [Inject]
     public void Construct(  Vector3 position,
                             TowerData towerData,
-                            WaveSpawner waveSpawner,
+                            CreepsManager creepsManager,
                             Bullet.Factory bulletFactory)
     {
         TowerData = towerData;
         TowerParameters = new TowerParameters(TowerData);
         _towerVisual = new TowerVisual(this, TowerData);
-        _towerTargeting = new TowerTargeting(this, waveSpawner);
+        _towerTargeting = new TowerTargeting(this, creepsManager);
         _towerShooting = new TowerShooting(this, bulletFactory);
 
         gameObject.transform.position = position;

@@ -30,10 +30,11 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 
     private void InstallDataProviders()
     {
+        Container.BindInstance(PlayerData).AsSingle().NonLazy();
+        Container.BindInterfacesTo<PlayerAccountant>().AsSingle();
         Container.Bind<SaveLoader>().AsSingle().NonLazy();
         Container.Bind<PlayerSaveData>().FromComponentsOn(this.gameObject).AsSingle();
         Container.Bind<IMapDataProvider>().To<MapDataProvider>().AsSingle().WhenInjectedInto<MapGenerator>();
-        Container.BindInstance(PlayerData).AsSingle().NonLazy();
     }
 
     private void InstallMapBuilder()

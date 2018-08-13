@@ -7,7 +7,7 @@ public class TowerTargeting
     public Transform Target;
     TargetingState _targetingState;
 
-    WaveSpawner _waveSpawner;
+    CreepsManager _creepsManager;
 
     enum TargetingState
     {
@@ -16,10 +16,10 @@ public class TowerTargeting
     }
 
     public TowerTargeting(  Tower tower,
-                            WaveSpawner waveSpawner)
+                            CreepsManager creepsManager)
     {
         _tower = tower;
-        _waveSpawner = waveSpawner;
+        _creepsManager = creepsManager;
 
         Target = null;
         _targetingState = TargetingState.NeedNewTarget;
@@ -64,7 +64,7 @@ public class TowerTargeting
         float shortestDistance = Mathf.Infinity;
         Creep nearestEnemy = null;
 
-        foreach (Creep creep in _waveSpawner.CreepsAlive)
+        foreach (Creep creep in _creepsManager.CreepsAlive)
         {
 
             float distanceToEnemy = Vector3.Distance(_tower.transform.position, creep.transform.position);

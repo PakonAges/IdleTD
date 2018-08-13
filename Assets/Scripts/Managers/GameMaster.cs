@@ -8,7 +8,6 @@ public class GameMaster : MonoBehaviour {
     private MapBuilder _mapBuilder;
     private NavMeshCreator _navMeshCreator;
     private MapManager _mapManager;
-    private WaveSpawner _waveSpawner;
     private CreepsManager _creepsManager;
 
     private Tower.Factory _towerFactory;
@@ -17,13 +16,11 @@ public class GameMaster : MonoBehaviour {
     public void Construct(  MapBuilder mapBuilder,
                             NavMeshCreator navMeshCreator,
                             MapManager mapManager,
-                            WaveSpawner waveSpawner,
                             CreepsManager creepsManager,
                             Tower.Factory towerFactory)
     {
         _mapBuilder = mapBuilder;
         _navMeshCreator = navMeshCreator;
-        _waveSpawner = waveSpawner;
         _mapManager = mapManager;
         _creepsManager = creepsManager;
         _towerFactory = towerFactory;
@@ -58,7 +55,7 @@ public class GameMaster : MonoBehaviour {
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
-            _waveSpawner.RemoveCreep();
+            _creepsManager.RemoveFirstCreep();
         }
 
         if (Input.GetKeyDown(KeyCode.S))

@@ -6,9 +6,6 @@ public class WaveSpawner : ITickable
 {
     readonly SignalBus _signalBus;
     readonly Creep.Factory _creepFactory;
-    public readonly List<Creep> CreepsAlive = new List<Creep>();
-
-    private IntVariable _displayCurrentCreeps;
 
     private CreepWave _wave;
     private readonly Dictionary<float,CreepData> _spawnTimeLine = new Dictionary<float, CreepData>();
@@ -18,12 +15,10 @@ public class WaveSpawner : ITickable
     private int _spawnedCreepsCounter = 0;
 
     public WaveSpawner( Creep.Factory creepFactory,
-                        SignalBus signalBus,
-                        PlayerData playerData)
+                        SignalBus signalBus)
     {
         _creepFactory = creepFactory;
         _signalBus = signalBus;
-        _displayCurrentCreeps = playerData.CurrentCreepsAlive.Variable;
     }
 
     public void Tick()
@@ -72,33 +67,14 @@ public class WaveSpawner : ITickable
 
     public void AddCreep(CreepData creepData)
     {
-        CreepsAlive.Add(_creepFactory.Create(creepData));
+        var newCreep = _creepFactory.Create(creepData);
         _spawnedCreepsCounter++;
-        _displayCurrentCreeps.Value = CreepsAlive.Count();
-        _signalBus.Fire<SignalCreepSpawned>();
-    }
-
-    public void RemoveCreep()
-    {
-        if (CreepsAlive.Any())
-        {
-            var creep = CreepsAlive[0];
-            creep.Dispose();
-        }
+        _signalBus.Fire(new SignalCreepSpawned(newCreep));
     }
 
     public bool AreAllCreepsSpawned()
     {
         if (_spawnedCreepsCounter < _wave.CreepAmount)
-        {
-            return false;
-        }
-        else return true;
-    }
-
-    public bool AreAllCreepsDead()
-    {
-        if (CreepsAlive.Count > 0)
         {
             return false;
         }
