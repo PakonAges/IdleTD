@@ -1,7 +1,5 @@
 fileFormatVersion: 2
-guid: a3723f540b0f04c4fb0df0a2cb293f83
-timeCreated: 1510294430
-licenseType: Store
+guid: a2284c517ee274c19a6ba4c1a8c96fb6
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -29,4 +27,4 @@ PluginImporter:
         CPU: AnyCPU
   userData: 
   assetBundleName: 
-  assetBundleVariant: 
+  assetBundleVariant:

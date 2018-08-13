@@ -40,6 +40,9 @@ public class CreepsManager : ITickable, IInitializable, IDisposable
     {
         _signalBus.Subscribe<SignalCreepSpawned>(OnCreepSpawned);
         _signalBus.Subscribe<SignalCreepDied>(OnCreepDied);
+
+        //Reset Creeps Counter
+        _displayCurrentCreeps.Value = 0;
     }
 
 
@@ -52,14 +55,16 @@ public class CreepsManager : ITickable, IInitializable, IDisposable
 
     private void OnCreepSpawned(SignalCreepSpawned args)
     {
-        CreepsAlive.Add(args.Creep);
         _displayCurrentCreeps.Value++;
+        CreepsAlive.Add(args.Creep);
+        _signalBus.Fire(new SignalCreepsCounterChanged());
     }
 
     private void OnCreepDied(SignalCreepDied args)
     {
-        CreepsAlive.Remove(args.Creep);
         _displayCurrentCreeps.Value--;
+        CreepsAlive.Remove(args.Creep);
+        _signalBus.Fire(new SignalCreepsCounterChanged());
     }
 
     public void StartSpawningCreeps()

@@ -10,10 +10,10 @@
 #endif
 
 using UnityEngine;
-using System;
-using System.Collections.Generic;
 
 #if USECONSOLEPROREMOTESERVER
+using System;
+using System.Collections.Generic;
 using FlyingWormConsole3.LiteNetLib;
 using FlyingWormConsole3.LiteNetLib.Utils;
 #endif
@@ -50,7 +50,6 @@ public class ConsoleProRemoteServer : MonoBehaviour
 	private NetManager _netServer;
 	private NetPeer _ourPeer;
 	private NetDataWriter _dataWriter;
-	private NetSerializer _serializer;
 
 	[System.SerializableAttribute]
 	public class QueuedLog
@@ -86,7 +85,6 @@ public class ConsoleProRemoteServer : MonoBehaviour
 		_netServer.UpdateTime = 15;
 		_netServer.MergeEnabled = true;
 		_netServer.NatPunchEnabled = useNATPunch;
-		_serializer = new NetSerializer();
 	}
 
 	void OnDestroy()

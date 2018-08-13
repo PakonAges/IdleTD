@@ -4,13 +4,13 @@ using Zenject;
 public class PlayerAccountant: IInitializable, IDisposable {
 
     //Injections
-    private PlayerData _playerData;
+    private IntVariable _coins;
     private SignalBus _signalBus;
 
     public PlayerAccountant(    PlayerData playerData,
                                 SignalBus signalBus)
     {
-        _playerData = playerData;
+        _coins = playerData.Coins.Variable;
         _signalBus = signalBus;
     }
 
@@ -26,6 +26,26 @@ public class PlayerAccountant: IInitializable, IDisposable {
 
     private void OnCreepDied(SignalCreepDied args)
     {
-        _playerData.Coins.Variable.Value += args.Creep.CreepData.Reward;
+        AddCoins(args.Creep.CreepData.Reward);
+    }
+
+    private void AddCoins(int amount)
+    {
+        _coins.Value += amount;
+        _signalBus.Fire(new SignalCoinsChanged());
+    }
+
+    private bool TryRemoveCoins(int amount)
+    {
+        if (_coins.Value < amount)
+        {
+            return false;
+        }
+        else
+        {
+            _coins.Value -= amount;
+            _signalBus.Fire(new SignalCoinsChanged());
+            return true;
+        }
     }
 }

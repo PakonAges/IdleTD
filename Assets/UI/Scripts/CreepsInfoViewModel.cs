@@ -2,12 +2,14 @@
 using UnityWeld.Binding;
 using System.ComponentModel;
 using Zenject;
+using System;
 
 [Binding]
-public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
+public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged, IDisposable
 {
     //Injections
-    private PlayerData _playerData;
+    private IntVariable _creepsCounter;
+    private IntVariable _waveCounter;
     private SignalBus _signalBus;
 
     //UI elements
@@ -19,7 +21,8 @@ public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
                             PlayerData playerData)
     {
         _signalBus = signalBus;
-        _playerData = playerData;
+        _creepsCounter = playerData.CurrentCreepsAlive.Variable;
+        _waveCounter = playerData.CurrentWave.Variable;
     }
 
     [Binding]
@@ -55,32 +58,30 @@ public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
     void OnEnable()
     {
         _signalBus.Subscribe<SignalNewWave>(OnNewWave);
-        _signalBus.Subscribe<SignalCreepDied>(OnCreepsChanged);
-        _signalBus.Subscribe<SignalCreepSpawned>(OnCreepsChanged);
+        _signalBus.Subscribe<SignalCreepsCounterChanged>(OnCreepsChanged);
 
     }
 
-    void OnDisable()
+    public void Dispose()
     {
         _signalBus.Unsubscribe<SignalNewWave>(OnNewWave);
-        _signalBus.Unsubscribe<SignalCreepDied>(OnCreepsChanged);
-        _signalBus.Unsubscribe<SignalCreepSpawned>(OnCreepsChanged);
+        _signalBus.Unsubscribe<SignalCreepsCounterChanged>(OnCreepsChanged);
     }
 
     void OnNewWave()
     {
-        SetWaveNumber();
+        RefreshWaveNumber();
     }
 
     void OnCreepsChanged()
     {
-        SetCreepsText();
+        RefreshCreepsText();
     }
 
     void Start()
     {
-        SetCreepsText();
-        SetWaveNumber();
+        RefreshCreepsText();
+        RefreshWaveNumber();
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -90,13 +91,13 @@ public class CreepsInfoViewModel : MonoBehaviour, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    private void SetCreepsText()
+    private void RefreshCreepsText()
     {
-        CreepsText = string.Format("Current Creeps: {0}", _playerData.CurrentCreepsAlive.Value.ToString());
+        CreepsText = string.Format("Current Creeps: {0}", _creepsCounter.Value.ToString());
     }
 
-    private void SetWaveNumber()
+    private void RefreshWaveNumber()
     {
-        WaveNumber = string.Format("Wave: {0}", _playerData.CurrentWave.Value.ToString());
+        WaveNumber = string.Format("Wave: {0}", _waveCounter.Value.ToString());
     }
 }

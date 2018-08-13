@@ -1,13 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using UnityEngine;
 using UnityWeld.Binding;
 using Zenject;
 
 [Binding]
-public class HUDViewModel : MonoBehaviour, INotifyPropertyChanged
+public class HUDViewModel : MonoBehaviour, INotifyPropertyChanged, IDisposable
 {
     //Injections
-    private PlayerData _playerData;
+    private IntVariable _coins;
     private SignalBus _signalBus;
 
     //UI elements
@@ -18,7 +19,7 @@ public class HUDViewModel : MonoBehaviour, INotifyPropertyChanged
                             PlayerData playerData)
     {
         _signalBus = signalBus;
-        _playerData = playerData;
+        _coins = playerData.Coins.Variable;
     }
 
     [Binding]
@@ -38,22 +39,22 @@ public class HUDViewModel : MonoBehaviour, INotifyPropertyChanged
 
     void OnEnable()
     {
-        _signalBus.Subscribe<SignalCreepDied>(OnCreepDied);
+        _signalBus.Subscribe<SignalCoinsChanged>(OnCoinsChanged);
     }
 
-    void OnDisable()
+    public void Dispose()
     {
-        _signalBus.Unsubscribe<SignalCreepDied>(OnCreepDied);
+        _signalBus.Unsubscribe<SignalCoinsChanged>(OnCoinsChanged);
     }
 
     void Start()
     {
-        SetCoinsText();
+        RegreshCoinsText();
     }
 
-    private void OnCreepDied(SignalCreepDied args)
+    private void OnCoinsChanged()
     {
-        SetCoinsText();
+        RegreshCoinsText();
     }
 
     private void OnPropertyChanged(string propertyName)
@@ -63,8 +64,8 @@ public class HUDViewModel : MonoBehaviour, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler PropertyChanged;
 
-    private void SetCoinsText()
+    private void RegreshCoinsText()
     {
-        CoinsText = string.Format("Coins: {0}", _playerData.Coins.Variable.Value.ToString());
+        CoinsText = string.Format("Coins: {0}", _coins.Value.ToString());
     }
 }

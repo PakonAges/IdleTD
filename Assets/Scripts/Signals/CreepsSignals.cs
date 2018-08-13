@@ -1,4 +1,5 @@
 ﻿public struct SignalNewWave { }
+public struct SignalCreepsCounterChanged { }
 
 public struct SignalCreepSpawned
 {
