@@ -1,11 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
-using UnityEngine;
 using UnityWeld.Binding;
 using Zenject;
 
 [Binding]
-public class HUDViewModel : MonoBehaviour, INotifyPropertyChanged, IDisposable
+public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 {
     //Injections
     private IntVariable _coins;
@@ -49,23 +47,28 @@ public class HUDViewModel : MonoBehaviour, INotifyPropertyChanged, IDisposable
 
     void Start()
     {
-        RegreshCoinsText();
+        _uiManager.AddHUDtoStack();
+        RefreshCoinsText();
     }
 
     private void OnCoinsChanged()
     {
-        RegreshCoinsText();
+        RefreshCoinsText();
     }
 
-    private void OnPropertyChanged(string propertyName)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    private void RegreshCoinsText()
+    private void RefreshCoinsText()
     {
         CoinsText = string.Format("Coins: {0}", _coins.Value.ToString());
+    }
+
+    public override void OnBackPressed()
+    {
+        _uiManager.OpenWindow(_uiManager.ExitConfirmWindow);
+    }
+
+    [Binding]
+    public void OnDebugBtnPressed()
+    {
+        _uiManager.OpenWindow(_uiManager.DebugWindow);
     }
 }
