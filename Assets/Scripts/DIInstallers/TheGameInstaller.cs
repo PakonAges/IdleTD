@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -12,25 +11,13 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 
     public override void InstallBindings()
     {
-        InstalSignals();
+        SignalsInstaller.Install(Container);
+
         InstallDataProviders();
         InstallMapBuilder();
         InstallCreeps();
         InstallTowers();
 
-    }
-
-    private void InstalSignals()
-    {
-        SignalBusInstaller.Install(Container);
-        //Creeps Signals
-        Container.DeclareSignal<SignalNewWave>();
-        Container.DeclareSignal<SignalCreepDied>();
-        Container.DeclareSignal<SignalCreepSpawned>();
-        Container.DeclareSignal<SignalCreepsCounterChanged>();
-
-        //Player accounting Signals
-        Container.DeclareSignal<SignalCoinsChanged>();
     }
 
     private void InstallDataProviders()
