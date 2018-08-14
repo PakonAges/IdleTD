@@ -1,25 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-public class UIManager: ITickable
+public class UIManager : ITickable
 {
-    public HUDViewModel HUD;
-    public BankWindowViewModel BankWindow;
-    public ConfirmExitViewModel ExitConfirmWindow;
-    public deBugWindowViewModel DebugWindow;
+    public readonly UIList UI;
+    readonly UIWindow.Factory _uiFactory;
+
+    [Serializable]
+    public class UIList
+    {
+        public HUDViewModel HUD;
+        public BankWindowViewModel BankWindow;
+        public ConfirmExitViewModel ExitConfirmWindow;
+        public deBugWindowViewModel DebugWindow;
+    }
 
     private Stack<UIWindow> _menuStack = new Stack<UIWindow>();
 
-    public UIManager(   HUDViewModel hUDView,
-                        BankWindowViewModel bankWindowViewModel,
-                        ConfirmExitViewModel confirmExitViewModel,
-                        deBugWindowViewModel deBugWindowViewModel)
+    public UIManager(   UIList uIList,
+                        UIWindow.Factory UIfactory)
     {
-        HUD = hUDView;
-        BankWindow = bankWindowViewModel;
-        ExitConfirmWindow = confirmExitViewModel;
-        DebugWindow = deBugWindowViewModel;
+        UI = uIList;
+        _uiFactory = UIfactory;
     }
 
     public void Tick()
@@ -33,7 +37,7 @@ public class UIManager: ITickable
 
     public void AddHUDtoStack()
     {
-        _menuStack.Push(HUD);
+        _menuStack.Push(UI.HUD);
     }
 
     //public void CreateInstance<T>() where T: UIWindow
@@ -63,7 +67,7 @@ public class UIManager: ITickable
     {
         if (!window.hasBeenSpawned)
         {
-            GameObject.Instantiate(window);
+            _uiFactory.Create(window);
             window.hasBeenSpawned = true;
         }
 

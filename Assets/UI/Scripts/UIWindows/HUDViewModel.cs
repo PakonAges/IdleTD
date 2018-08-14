@@ -63,12 +63,12 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 
     public override void OnBackPressed()
     {
-        _uiManager.OpenWindow(_uiManager.ExitConfirmWindow);
+        _uiManager.OpenWindow(_uiManager.UI.ExitConfirmWindow);
     }
 
     [Binding]
     public void OnDebugBtnPressed()
     {
-        _uiManager.OpenWindow(_uiManager.DebugWindow);
+        _uiManager.OpenWindow(_uiManager.UI.DebugWindow);
     }
 }

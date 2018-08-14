@@ -7,6 +7,12 @@ public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
     protected UIManager _uiManager;
     public bool hasBeenSpawned = false;
 
+    [Inject]
+    public void Construct(UIManager uiManager)
+    {
+        _uiManager = uiManager;
+    }
+
     [Tooltip("Destroy the Game Object when menu is closed (reduces memory usage)")]
     public bool DestroyWhenClosed = false;
 
@@ -22,16 +28,15 @@ public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
 
 
     public abstract void OnBackPressed();
+
+    public class Factory : PlaceholderFactory<UIWindow>
+    {
+
+    }
 }
 
 public abstract class UIWindow<T> : UIWindow where T : UIWindow<T>
 {
-    [Inject]
-    public void Construct(UIManager uiManager)
-    {
-        _uiManager = uiManager;
-    }
-
     protected void Open()
     {
         _uiManager.OpenWindow(this);
