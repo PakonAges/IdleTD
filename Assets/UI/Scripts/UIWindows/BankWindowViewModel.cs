@@ -1,4 +1,4 @@
-﻿public class BankWindowViewModel : UIWindow<BankWindowViewModel>
+﻿public class BankWindowViewModel : UIWindow
 {
 
 }

@@ -1,3 +1,3 @@
-﻿public class deBugWindowViewModel : UIWindow<deBugWindowViewModel>
+﻿public class deBugWindowViewModel : UIWindow
 {
 }

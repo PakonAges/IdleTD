@@ -3,7 +3,7 @@ using UnityWeld.Binding;
 using Zenject;
 
 [Binding]
-public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
+public class HUDViewModel : UIWindow, IDisposable
 {
     //Injections
     private IntVariable _coins;
@@ -47,7 +47,7 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 
     void Start()
     {
-        _uiManager.AddHUDtoStack();
+        //_uiManager.AddHUDtoStack();
         RefreshCoinsText();
     }
 
@@ -63,12 +63,12 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 
     public override void OnBackPressed()
     {
-        _uiManager.OpenWindow(_uiManager.UI.ExitConfirmWindow);
+        _uiManager.OpenWindow(UIwindowEnum.Bank);
     }
 
     [Binding]
     public void OnDebugBtnPressed()
     {
-        _uiManager.OpenWindow(_uiManager.UI.DebugWindow);
+        _uiManager.OpenWindow(UIwindowEnum.Debug);
     }
 }

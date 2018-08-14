@@ -1,28 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 public class UIManager : ITickable
 {
-    public readonly UIList UI;
+    //Injections
     readonly UIWindow.Factory _uiFactory;
 
-    [Serializable]
-    public class UIList
-    {
-        public HUDViewModel HUD;
-        public BankWindowViewModel BankWindow;
-        public ConfirmExitViewModel ExitConfirmWindow;
-        public deBugWindowViewModel DebugWindow;
-    }
-
     private Stack<UIWindow> _menuStack = new Stack<UIWindow>();
+    //private List<GameObject> _spawnedWindows;
 
-    public UIManager(   UIList uIList,
-                        UIWindow.Factory UIfactory)
+    public UIManager(UIWindow.Factory UIfactory)
     {
-        UI = uIList;
         _uiFactory = UIfactory;
     }
 
@@ -35,46 +24,20 @@ public class UIManager : ITickable
         }
     }
 
-    public void AddHUDtoStack()
-    {
-        _menuStack.Push(UI.HUD);
-    }
-
-    //public void CreateInstance<T>() where T: UIWindow
+    //public void AddHUDtoStack()
     //{
-    //    var prefab = GetPrefab<T>();
-    //    GameObject.Instantiate(prefab);
+    //    _menuStack.Push(UI.HUD);
     //}
 
-    //private T GetPrefab<T>() where T : UIWindow
-    //{
-    //    // Get prefab dynamically, based on public fields set from Unity
-    //    // You can use private fields with SerializeField attribute too
-    //    var fields = this.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-    //    foreach (var field in fields)
-    //    {
-    //        var prefab = field.GetValue(this) as T;
-    //        if (prefab != null)
-    //        {
-    //            return prefab;
-    //        }
-    //    }
-
-    //    throw new MissingReferenceException("Prefab not found for type " + typeof(T));
-    //}
-
-    public void OpenWindow(UIWindow window)
+    public void OpenWindow(UIwindowEnum windowType)
     {
-        if (!window.hasBeenSpawned)
-        {
-            _uiFactory.Create(window);
-            window.hasBeenSpawned = true;
-        }
+        var newWindow = _uiFactory.Create(windowType);
+        //_spawnedWindows.Add(newWindow.gameObject);
 
         //Hide top Window if it is there
         if (_menuStack.Count > 0)
         {
-            if (window.DisableMenusUnderneath)
+            if (newWindow.DisableMenusUnderneath)
             {
                 foreach (var win in _menuStack)
                 {
@@ -88,13 +51,13 @@ public class UIManager : ITickable
                 }
             }
 
-            var topCanvas = window.gameObject.GetComponent<Canvas>();
+            var topCanvas = newWindow.gameObject.GetComponent<Canvas>();
             var prevCanvas = _menuStack.Peek().gameObject.GetComponent<Canvas>();
             topCanvas.sortingOrder = prevCanvas.sortingOrder + 1;
         }
 
         //add new window to the Stack
-        _menuStack.Push(window);
+        _menuStack.Push(newWindow);
     }
 
     public void CloseWindow(UIWindow window)
@@ -138,4 +101,13 @@ public class UIManager : ITickable
         }
 
     }
+}
+
+//So-so solution: order is important and should be the same as in the List in the UIInstaller
+public enum UIwindowEnum
+{
+    HUD = 0,
+    Debug,
+    Bank,
+    ConfirmExit
 }

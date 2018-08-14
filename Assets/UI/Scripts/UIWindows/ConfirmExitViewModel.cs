@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ConfirmExitViewModel : UIWindow<ConfirmExitViewModel>
+public class ConfirmExitViewModel : UIWindow
 {
     public override void OnBackPressed()
     {
