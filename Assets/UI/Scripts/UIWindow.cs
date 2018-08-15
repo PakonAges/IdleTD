@@ -1,10 +1,7 @@
 ﻿using System.ComponentModel;
 using UnityEngine;
-using UnityWeld.Binding;
 using Zenject;
 
-
-[Binding]
 public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
 {
     //Injection
@@ -19,7 +16,6 @@ public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
         _uiManager = uiManager;
     }
 
-    [Binding]
     public abstract void OnBackPressed();
 
     public event PropertyChangedEventHandler PropertyChanged;
@@ -40,11 +36,6 @@ public abstract class UIWindow<T> : UIWindow where T : UIWindow<T>
     protected void Close()
     {
         _uiManager.CloseWindow(this);
-    }
-
-    public override void OnBackPressed()
-    {
-        Close();
     }
 
     public class Factory : PlaceholderFactory<T>

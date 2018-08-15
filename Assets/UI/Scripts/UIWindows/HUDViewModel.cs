@@ -2,6 +2,7 @@
 using UnityWeld.Binding;
 using Zenject;
 
+[Binding]
 public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 {
     //Injections

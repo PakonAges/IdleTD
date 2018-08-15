@@ -5,8 +5,6 @@ using Zenject;
 
 public class UIManager : ITickable
 {
-    readonly Settings _UI;
-
     [Serializable]
     public class Settings
     {
@@ -18,16 +16,12 @@ public class UIManager : ITickable
 
     private Stack<UIWindow> _menuStack = new Stack<UIWindow>();
 
-
-
     //Injections
     readonly UIFactory _uiFactory;
 
-    public UIManager(   UIFactory UIfactory,
-                        UIManager.Settings settings)
+    public UIManager(UIFactory UIfactory)
     {
         _uiFactory = UIfactory;
-        _UI = settings;
     }
 
     public void Tick()
@@ -41,9 +35,7 @@ public class UIManager : ITickable
 
     public void OpenWindow<T>() where T : UIWindow
     {
-        //var windowPrefab = GetPrefab<T>();
         var newWindow = _uiFactory.CreateWindow<T>();
-        //_spawnedWindows.Add(newWindow.gameObject);
 
         //Hide top Window if it is there
         if (_menuStack.Count > 0)
@@ -111,20 +103,5 @@ public class UIManager : ITickable
                 break;
         }
 
-    }
-
-    private T GetPrefab<T>() where T : UIWindow
-    {
-        if (typeof(T) == typeof (HUDViewModel))
-        {
-            return _UI.HUD as T;
-        }
-
-        if (typeof(T) == typeof(deBugWindowViewModel))
-        {
-            return _UI.DeBugWindow as T;
-        }
-
-        throw new MissingReferenceException("ooops. no such window in UI Manager");
     }
 }
