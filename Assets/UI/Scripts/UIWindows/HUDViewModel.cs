@@ -47,7 +47,7 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 
     void Start()
     {
-        //_uiManager.AddHUDtoStack();
+        _uiManager.AddWindowToActiveStack(this);
         RefreshCoinsText();
     }
 
@@ -63,18 +63,18 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 
     public override void OnBackPressed()
     {
-        _uiManager.OpenWindow<ConfirmExitViewModel>();
+        _uiManager.OpenWindow(_uiManager._UI.ConfirmExit);
     }
 
     [Binding]
     public void OnDebugBtnPressed()
     {
-        _uiManager.OpenWindow<deBugWindowViewModel>();
+        _uiManager.OpenWindow(_uiManager._UI.DeBugWindow);
     }
 
     [Binding]
     public void OnBankBtnPressed()
     {
-        _uiManager.OpenWindow<BankWindowViewModel>();
+        _uiManager.OpenWindow(_uiManager._UI.Bank);
     }
 }

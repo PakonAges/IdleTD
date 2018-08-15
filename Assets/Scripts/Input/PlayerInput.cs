@@ -21,7 +21,7 @@ public class PlayerInput : MonoBehaviour {
         FingersScript.Instance.CaptureGestureHandler = CaptureGestureHandler;
 
         // show touches, only do this for debugging as it can interfere with other canvases
-        FingersScript.Instance.ShowTouches = true;
+        FingersScript.Instance.ShowTouches = false;
     }
 
     private void CreateTapGesture()

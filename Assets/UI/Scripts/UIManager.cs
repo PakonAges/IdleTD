@@ -5,6 +5,8 @@ using Zenject;
 
 public class UIManager : ITickable
 {
+    public UIManager.Settings _UI;
+
     [Serializable]
     public class Settings
     {
@@ -19,9 +21,11 @@ public class UIManager : ITickable
     //Injections
     readonly UIFactory _uiFactory;
 
-    public UIManager(UIFactory UIfactory)
+    public UIManager(   UIFactory UIfactory,
+                        UIManager.Settings settings)
     {
         _uiFactory = UIfactory;
+        _UI = settings;
     }
 
     public void Tick()
@@ -33,14 +37,12 @@ public class UIManager : ITickable
         }
     }
 
-    public void OpenWindow<T>() where T : UIWindow
+    public void OpenWindow(UIWindow window)
     {
-        var newWindow = _uiFactory.CreateWindow<T>();
-
         //Hide top Window if it is there
         if (_menuStack.Count > 0)
         {
-            if (newWindow.DisableMenusUnderneath)
+            if (window.DisableMenusUnderneath)
             {
                 foreach (var win in _menuStack)
                 {
@@ -54,13 +56,18 @@ public class UIManager : ITickable
                 }
             }
 
-            var topCanvas = newWindow.gameObject.GetComponent<Canvas>();
+            var topCanvas = window.gameObject.GetComponent<Canvas>();
             var prevCanvas = _menuStack.Peek().gameObject.GetComponent<Canvas>();
             topCanvas.sortingOrder = prevCanvas.sortingOrder + 1;
         }
 
         //add new window to the Stack
-        _menuStack.Push(newWindow);
+        _menuStack.Push(window);
+    }
+
+    public void CreateNewWindow<T>() where T : UIWindow
+    {
+        _uiFactory.CreateWindow<T>();
     }
 
     public void CloseWindow(UIWindow window)
@@ -103,5 +110,10 @@ public class UIManager : ITickable
                 break;
         }
 
+    }
+
+    public void AddWindowToActiveStack(UIWindow window)
+    {
+        _menuStack.Push(window);
     }
 }

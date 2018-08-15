@@ -30,7 +30,16 @@ public abstract class UIWindow<T> : UIWindow where T : UIWindow<T>
 {
     protected void Open()
     {
-        _uiManager.OpenWindow<T>();
+        if (gameObject == null)
+        {
+            _uiManager.CreateNewWindow<T>();
+        }
+        else
+        {
+            gameObject.GetComponent<Canvas>().enabled = true;
+        }
+
+        _uiManager.OpenWindow((T)this);
     }
 
     protected void Close()
