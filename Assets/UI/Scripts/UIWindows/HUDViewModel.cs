@@ -2,8 +2,7 @@
 using UnityWeld.Binding;
 using Zenject;
 
-[Binding]
-public class HUDViewModel : UIWindow, IDisposable
+public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 {
     //Injections
     private IntVariable _coins;
@@ -63,12 +62,18 @@ public class HUDViewModel : UIWindow, IDisposable
 
     public override void OnBackPressed()
     {
-        _uiManager.OpenWindow(UIwindowEnum.Bank);
+        _uiManager.OpenWindow<ConfirmExitViewModel>();
     }
 
     [Binding]
     public void OnDebugBtnPressed()
     {
-        _uiManager.OpenWindow(UIwindowEnum.Debug);
+        _uiManager.OpenWindow<deBugWindowViewModel>();
+    }
+
+    [Binding]
+    public void OnBankBtnPressed()
+    {
+        _uiManager.OpenWindow<BankWindowViewModel>();
     }
 }

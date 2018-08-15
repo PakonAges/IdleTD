@@ -1,7 +1,10 @@
 ﻿using System.ComponentModel;
 using UnityEngine;
+using UnityWeld.Binding;
 using Zenject;
 
+
+[Binding]
 public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
 {
     //Injection
@@ -9,15 +12,15 @@ public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
 
     public bool DestroyWhenClosed = false;
     public bool DisableMenusUnderneath = false;
-    protected UIwindowEnum _type;
 
     [Inject]
-    public void Construct(  UIManager uiManager/*,
-                            UIwindowEnum uIwindowEnum*/)
+    public void Construct(  UIManager uiManager)
     {
         _uiManager = uiManager;
-        //_type = uIwindowEnum;
     }
+
+    [Binding]
+    public abstract void OnBackPressed();
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -25,13 +28,27 @@ public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+}
 
-    public virtual void OnBackPressed()
+public abstract class UIWindow<T> : UIWindow where T : UIWindow<T>
+{
+    protected void Open()
+    {
+        _uiManager.OpenWindow<T>();
+    }
+
+    protected void Close()
     {
         _uiManager.CloseWindow(this);
     }
 
-    public class Factory : PlaceholderFactory<UIwindowEnum, UIWindow>
+    public override void OnBackPressed()
     {
+        Close();
+    }
+
+    public class Factory : PlaceholderFactory<T>
+    {
+
     }
 }

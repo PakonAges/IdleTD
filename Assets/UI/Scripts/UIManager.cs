@@ -1,18 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 public class UIManager : ITickable
 {
-    //Injections
-    readonly UIWindow.Factory _uiFactory;
+    readonly Settings _UI;
+
+    [Serializable]
+    public class Settings
+    {
+        public HUDViewModel HUD;
+        public BankWindowViewModel Bank;
+        public deBugWindowViewModel DeBugWindow;
+        public ConfirmExitViewModel ConfirmExit;
+    }
 
     private Stack<UIWindow> _menuStack = new Stack<UIWindow>();
-    //private List<GameObject> _spawnedWindows;
 
-    public UIManager(UIWindow.Factory UIfactory)
+
+
+    //Injections
+    readonly UIFactory _uiFactory;
+
+    public UIManager(   UIFactory UIfactory,
+                        UIManager.Settings settings)
     {
         _uiFactory = UIfactory;
+        _UI = settings;
     }
 
     public void Tick()
@@ -24,14 +39,10 @@ public class UIManager : ITickable
         }
     }
 
-    //public void AddHUDtoStack()
-    //{
-    //    _menuStack.Push(UI.HUD);
-    //}
-
-    public void OpenWindow(UIwindowEnum windowType)
+    public void OpenWindow<T>() where T : UIWindow
     {
-        var newWindow = _uiFactory.Create(windowType);
+        //var windowPrefab = GetPrefab<T>();
+        var newWindow = _uiFactory.CreateWindow<T>();
         //_spawnedWindows.Add(newWindow.gameObject);
 
         //Hide top Window if it is there
@@ -101,13 +112,19 @@ public class UIManager : ITickable
         }
 
     }
-}
 
-//So-so solution: order is important and should be the same as in the List in the UIInstaller
-public enum UIwindowEnum
-{
-    HUD = 0,
-    Debug,
-    Bank,
-    ConfirmExit
+    private T GetPrefab<T>() where T : UIWindow
+    {
+        if (typeof(T) == typeof (HUDViewModel))
+        {
+            return _UI.HUD as T;
+        }
+
+        if (typeof(T) == typeof(deBugWindowViewModel))
+        {
+            return _UI.DeBugWindow as T;
+        }
+
+        throw new MissingReferenceException("ooops. no such window in UI Manager");
+    }
 }
