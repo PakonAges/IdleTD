@@ -3,36 +3,24 @@ using Zenject;
 
 public class GameMaster : MonoBehaviour {
 
-    public TowerData _towerData; //temp
-
     private MapBuilder _mapBuilder;
     private NavMeshCreator _navMeshCreator;
     private MapManager _mapManager;
     private CreepsManager _creepsManager;
-
-    private Tower.Factory _towerFactory;
+    private TowerBuilder _towerBuilder;
 
     [Inject]
     public void Construct(  MapBuilder mapBuilder,
                             NavMeshCreator navMeshCreator,
                             MapManager mapManager,
                             CreepsManager creepsManager,
-                            Tower.Factory towerFactory)
+                            TowerBuilder towerBuilder)
     {
         _mapBuilder = mapBuilder;
         _navMeshCreator = navMeshCreator;
         _mapManager = mapManager;
         _creepsManager = creepsManager;
-        _towerFactory = towerFactory;
-    }
-
-	void Awake () {
-
-        //mapManager.Init(GetComponent<WaypointsSpawner>());
-
-        //DataManager.instance.LoadData();
-        //TimeManager.instance.Init();
-        //CreepsManager.instance.Init();
+        _towerBuilder = towerBuilder;
     }
 
     void Start()
@@ -60,12 +48,12 @@ public class GameMaster : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.S))
         {
-            _towerFactory.Create(new Vector3(6.0f,0.5f,-1.5f), _towerData);
+            _towerBuilder.TryBuildTower(new Vector3(6.0f, 0.5f, -1.5f));
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            _towerFactory.Create(new Vector3(8.0f, 0.5f, -1.5f), _towerData);
+            _towerBuilder.TryBuildTower(new Vector3(8.0f, 0.5f, -1.5f));
         }
     }
 

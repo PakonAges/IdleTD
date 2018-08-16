@@ -7,7 +7,10 @@ public class TowerData : ScriptableObject
     public GameObject Prefab;
     public BulletData BulletData;
 
-    [Header("Parameters")]
+    [Header("Economics Parameters")]
+    public int BuildCost;
+
+    [Header("Battle Parameters")]
     public int Damage;
     public float Range;
     public float AttackDelay;

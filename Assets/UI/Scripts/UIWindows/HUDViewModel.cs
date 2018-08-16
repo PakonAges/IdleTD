@@ -8,19 +8,16 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
     //Injections
     private IntVariable _coins;
     private SignalBus _signalBus;
-    private UIFactory _uIFactory;
 
     //UI elements
     private string coinsAmount = string.Empty;
 
     [Inject]
     public void Construct(  SignalBus signalBus,
-                            PlayerData playerData,
-                            UIFactory uIFactory)
+                            PlayerData playerData)
     {
         _signalBus = signalBus;
         _coins = playerData.Coins.Variable;
-        _uIFactory = uIFactory;
     }
 
     [Binding]

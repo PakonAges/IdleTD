@@ -7,7 +7,8 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     public GameObject BulletPrefab;
     public GameObject CreepPrefab;
     public CreepWavesCollection CreepWavesCollection;
-    public PlayerData PlayerData; 
+    public PlayerData PlayerData;
+    public TowerData DefaultTowerData;
 
     public override void InstallBindings()
     {
@@ -23,7 +24,7 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
     private void InstallDataProviders()
     {
         Container.BindInstance(PlayerData).AsSingle().NonLazy();
-        Container.BindInterfacesTo<PlayerAccountant>().AsSingle();
+        Container.BindInterfacesAndSelfTo<PlayerAccountant>().AsSingle();
         Container.Bind<SaveLoader>().AsSingle().NonLazy();
         Container.Bind<PlayerSaveData>().FromComponentsOn(this.gameObject).AsSingle();
         Container.Bind<IMapDataProvider>().To<MapDataProvider>().AsSingle().WhenInjectedInto<MapGenerator>();
@@ -53,6 +54,8 @@ public class TheGameInstaller : MonoInstaller<TheGameInstaller>
 
     private void InstallTowers()
     {
+        Container.BindInstance(DefaultTowerData).AsSingle().WhenInjectedInto<TowerBuilder>();
+        Container.Bind<TowerBuilder>().AsSingle().NonLazy();
         Container.BindFactory<Vector3, TowerData, Tower, Tower.Factory>().FromComponentInNewPrefab(TowerPrefab);
         Container.BindFactory<BulletData, Vector3, Transform, Bullet, Bullet.Factory>().FromMonoPoolableMemoryPool(x => x.WithInitialSize(8).FromComponentInNewPrefab(BulletPrefab).UnderTransformGroup("Bullets"));
         //Container.BindFactory<BulletData, Vector3, Transform, Bullet, Bullet.Factory>().FromMonoPoolableMemoryPool<BulletData, Vector3, Transform, BulletPool>(x => x.WithInitialSize(8).FromComponentInNewPrefab(BulletPrefab).UnderTransformGroup("Bullets"));

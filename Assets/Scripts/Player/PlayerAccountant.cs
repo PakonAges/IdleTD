@@ -29,13 +29,13 @@ public class PlayerAccountant: IInitializable, IDisposable {
         AddCoins(args.Creep.CreepData.Reward);
     }
 
-    private void AddCoins(int amount)
+    public void AddCoins(int amount)
     {
         _coins.Value += amount;
         _signalBus.Fire(new SignalCoinsChanged());
     }
 
-    private bool TryRemoveCoins(int amount)
+    public bool TryRemoveCoins(int amount)
     {
         if (_coins.Value < amount)
         {
