@@ -28,19 +28,19 @@ public abstract class UIWindow : MonoBehaviour, INotifyPropertyChanged
 
 public abstract class UIWindow<T> : UIWindow where T : UIWindow<T>
 {
-    protected void Open()
-    {
-        if (gameObject == null)
-        {
-            _uiManager.CreateNewWindow<T>();
-        }
-        else
-        {
-            gameObject.GetComponent<Canvas>().enabled = true;
-        }
+    //protected void Open()
+    //{
+    //    if (gameObject == null)
+    //    {
+    //        _uiManager.CreateNewWindow<T>();
+    //    }
+    //    else
+    //    {
+    //        gameObject.GetComponent<Canvas>().enabled = true;
+    //    }
 
-        _uiManager.OpenWindow((T)this);
-    }
+    //    _uiManager.OpenWindow((T)this);
+    //}
 
     protected void Close()
     {

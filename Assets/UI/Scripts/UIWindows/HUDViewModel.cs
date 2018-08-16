@@ -8,16 +8,19 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
     //Injections
     private IntVariable _coins;
     private SignalBus _signalBus;
+    private UIFactory _uIFactory;
 
     //UI elements
     private string coinsAmount = string.Empty;
 
     [Inject]
     public void Construct(  SignalBus signalBus,
-                            PlayerData playerData)
+                            PlayerData playerData,
+                            UIFactory uIFactory)
     {
         _signalBus = signalBus;
         _coins = playerData.Coins.Variable;
+        _uIFactory = uIFactory;
     }
 
     [Binding]
@@ -63,18 +66,18 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 
     public override void OnBackPressed()
     {
-        _uiManager.OpenWindow(_uiManager._UI.ConfirmExit);
+        _uiManager.OpenWindow(UIcollection.ConfirmExit);
     }
 
     [Binding]
     public void OnDebugBtnPressed()
     {
-        _uiManager.OpenWindow(_uiManager._UI.DeBugWindow);
+        _uiManager.OpenWindow(UIcollection.DeBugWindow);
     }
 
     [Binding]
     public void OnBankBtnPressed()
     {
-        _uiManager.OpenWindow(_uiManager._UI.Bank);
+        _uiManager.OpenWindow(UIcollection.Bank);
     }
 }

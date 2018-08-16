@@ -3,6 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
+public enum UIcollection
+{
+    HUD,
+    DeBugWindow,
+    Bank,
+    ConfirmExit
+}
+
+
 public class UIManager : ITickable
 {
     public UIManager.Settings _UI;
@@ -17,6 +26,7 @@ public class UIManager : ITickable
     }
 
     private Stack<UIWindow> _menuStack = new Stack<UIWindow>();
+    private Dictionary<UIcollection, UIWindow> _createdWindows = new Dictionary<UIcollection, UIWindow>();
 
     //Injections
     readonly UIFactory _uiFactory;
@@ -37,12 +47,23 @@ public class UIManager : ITickable
         }
     }
 
-    public void OpenWindow(UIWindow window)
+    public void OpenWindow(UIcollection window)
     {
+        if (_createdWindows.ContainsKey(window))
+        {
+            var windowPrefab = _createdWindows[window].gameObject;
+            windowPrefab.GetComponent<Canvas>().enabled = true;
+        }
+        else
+        {
+            var windowPrefab = _uiFactory.CreateWindow(window);
+            _createdWindows.Add(window, windowPrefab);
+        }
+
         //Hide top Window if it is there
         if (_menuStack.Count > 0)
         {
-            if (window.DisableMenusUnderneath)
+            if (_createdWindows[window].DisableMenusUnderneath)
             {
                 foreach (var win in _menuStack)
                 {
@@ -51,23 +72,17 @@ public class UIManager : ITickable
                     if (win.DisableMenusUnderneath)
                     {
                         break;
-
                     }
                 }
             }
 
-            var topCanvas = window.gameObject.GetComponent<Canvas>();
+            var topCanvas = _createdWindows[window].gameObject.GetComponent<Canvas>();
             var prevCanvas = _menuStack.Peek().gameObject.GetComponent<Canvas>();
             topCanvas.sortingOrder = prevCanvas.sortingOrder + 1;
         }
 
         //add new window to the Stack
-        _menuStack.Push(window);
-    }
-
-    public void CreateNewWindow<T>() where T : UIWindow
-    {
-        _uiFactory.CreateWindow<T>();
+        _menuStack.Push(_createdWindows[window]);
     }
 
     public void CloseWindow(UIWindow window)

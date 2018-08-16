@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Zenject;
 
 public class UIFactory
 {
@@ -20,29 +19,26 @@ public class UIFactory
         _confirmExitFactory = confirmExitFactory;
     }
 
-    public UIWindow CreateWindow<T>() where T : UIWindow
+    public UIWindow CreateWindow(UIcollection window)
     {
-        if (typeof(T) == typeof(HUDViewModel))
+        switch (window)
         {
+            case UIcollection.HUD:
             return _hudFactory.Create();
-        }
-
-        if (typeof(T) == typeof(BankWindowViewModel))
-        {
-            return _BankFactory.Create();
-        }
-
-        if (typeof(T) == typeof(deBugWindowViewModel))
-        {
+            
+            case UIcollection.DeBugWindow:
             return _deBugFactory.Create();
-        }
-
-        if (typeof(T) == typeof(ConfirmExitViewModel))
-        {
+            
+            case UIcollection.Bank:
+            return _BankFactory.Create();
+            
+            case UIcollection.ConfirmExit:
             return _confirmExitFactory.Create();
-        }
 
-        throw new MissingReferenceException("ooops. no such window in UI Manager");
+            default:
+                throw new MissingReferenceException("ooops. no such window in UI Manager");
+
+        }
     }
 }
 
