@@ -13,7 +13,7 @@ namespace DigitalRubyShared
     /// <summary>
     /// A rotate gesture uses two touches to call back rotation angles as the two touches twist around a central point
     /// </summary>
-    public class RotateGestureRecognizer : GestureRecognizer
+    public class RotateGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         // minimum angle change to rotate the other direction - helps with wobble when panning and rotating at the same time
         private const float minAngleDifferenceToChangeDirection = 0.15f;

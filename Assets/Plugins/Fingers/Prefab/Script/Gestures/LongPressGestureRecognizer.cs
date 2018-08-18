@@ -23,7 +23,7 @@ namespace DigitalRubyShared
     /// A long press gesture detects a tap and hold and then calls back for movement until
     /// the touch is released
     /// </summary>
-    public class LongPressGestureRecognizer : GestureRecognizer
+    public class LongPressGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         private readonly System.Diagnostics.Stopwatch stopWatch = new Stopwatch();
 
@@ -83,6 +83,7 @@ namespace DigitalRubyShared
         {
             MinimumDurationSeconds = 0.6f;
             ThresholdUnits = 0.35f;
+            ClearTrackedTouchesOnEndOrFail = true;
         }
 
         /// <summary>

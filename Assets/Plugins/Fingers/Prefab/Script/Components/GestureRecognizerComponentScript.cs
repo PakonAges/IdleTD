@@ -13,7 +13,7 @@ using UnityEngine;
 namespace DigitalRubyShared
 {
     [System.Serializable]
-    public class GestureRecognizerComponentStateUpdatedEvent : UnityEngine.Events.UnityEvent<GestureRecognizer> { }
+    public class GestureRecognizerComponentStateUpdatedEvent : UnityEngine.Events.UnityEvent<DigitalRubyShared.GestureRecognizer> { }
 
     public abstract class GestureRecognizerComponentScriptBase : MonoBehaviour
     {
@@ -33,10 +33,10 @@ namespace DigitalRubyShared
             AllowOnAnyGameObjectViaRaycast
         }
 
-        public GestureRecognizer GestureBase { get; protected set; }
+        public DigitalRubyShared.GestureRecognizer GestureBase { get; protected set; }
     }
 
-    public abstract class GestureRecognizerComponentScript<T> : GestureRecognizerComponentScriptBase where T : GestureRecognizer, new()
+    public abstract class GestureRecognizerComponentScript<T> : GestureRecognizerComponentScriptBase where T : DigitalRubyShared.GestureRecognizer, new()
     {
         [Header("Gesture properties")]
         [Tooltip("Gesture state updated callback")]
@@ -67,7 +67,7 @@ namespace DigitalRubyShared
 
         public T Gesture { get; private set; }
 
-        protected virtual void GestureStateUpdatedCallback(GestureRecognizer gesture)
+        protected virtual void GestureStateUpdatedCallback(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (GestureStateUpdated != null)
             {

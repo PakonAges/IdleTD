@@ -47,43 +47,55 @@ namespace DigitalRubyShared
         [Range(0.1f, 1.0f)]
         public float MoveThresholdUnits = 0.35f;
 
-        private TapGestureRecognizer jumpTap;
-        private PanGestureRecognizer movePan;
-        private SwipeGestureRecognizer swipeDown;
+        /// <summary>
+        /// Tap gesture to jump
+        /// </summary>
+        public TapGestureRecognizer TapGesture { get; private set; }
+
+        /// <summary>
+        /// Pan gesture to move
+        /// </summary>
+        public PanGestureRecognizer PanGesture { get; private set; }
+
+        /// <summary>
+        /// Swipe gesture to drop down below platforms
+        /// </summary>
+        public SwipeGestureRecognizer SwipeGesture { get; private set; }
+
         private readonly Collider2D[] overlapArray = new Collider2D[4];
 
         private void Start()
         {
             playerBody = GetComponent<Rigidbody2D>();
 
-            jumpTap = new TapGestureRecognizer();
-            jumpTap.StateUpdated += JumpTap_StateUpdated;
-            jumpTap.ClearTrackedTouchesOnEndOrFail = true;
+            TapGesture = new TapGestureRecognizer();
+            TapGesture.StateUpdated += JumpTap_StateUpdated;
+            TapGesture.ClearTrackedTouchesOnEndOrFail = true;
 
             // require fast taps
-            jumpTap.ThresholdSeconds = JumpThresholdSeconds;
+            TapGesture.ThresholdSeconds = JumpThresholdSeconds;
 
             // allow a little more slide than a normal tap
-            jumpTap.ThresholdUnits = JumpThresholdUnits;
+            TapGesture.ThresholdUnits = JumpThresholdUnits;
 
-            movePan = new PanGestureRecognizer();
-            movePan.StateUpdated += MovePan_StateUpdated;
-            movePan.ThresholdUnits = 0.35f; // require a little more slide before panning starts
+            PanGesture = new PanGestureRecognizer();
+            PanGesture.StateUpdated += MovePan_StateUpdated;
+            PanGesture.ThresholdUnits = 0.35f; // require a little more slide before panning starts
 
             // jump up and move sideways is allowed
-            movePan.AllowSimultaneousExecution(jumpTap);
+            PanGesture.AllowSimultaneousExecution(TapGesture);
 
             // swipe down requires no other gestures to be executing
-            swipeDown = new SwipeGestureRecognizer
+            SwipeGesture = new SwipeGestureRecognizer
             {
                 Direction = SwipeGestureRecognizerDirection.Down
             };
-            swipeDown.StateUpdated += SwipeDown_StateUpdated;
-            swipeDown.AllowSimultaneousExecution(movePan);
+            SwipeGesture.StateUpdated += SwipeDown_StateUpdated;
+            SwipeGesture.AllowSimultaneousExecution(PanGesture);
 
-            FingersScript.Instance.AddGesture(jumpTap);
-            FingersScript.Instance.AddGesture(movePan);
-            FingersScript.Instance.AddGesture(swipeDown);
+            FingersScript.Instance.AddGesture(TapGesture);
+            FingersScript.Instance.AddGesture(PanGesture);
+            FingersScript.Instance.AddGesture(SwipeGesture);
         }
 
         private IEnumerator StopFallThrough(PlatformEffector2D effector)
@@ -108,7 +120,7 @@ namespace DigitalRubyShared
             return null;
         }
 
-        private void SwipeDown_StateUpdated(GestureRecognizer gesture)
+        private void SwipeDown_StateUpdated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Ended)
             {
@@ -128,7 +140,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void MovePan_StateUpdated(GestureRecognizer gesture)
+        private void MovePan_StateUpdated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Executing)
             {
@@ -138,7 +150,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void JumpTap_StateUpdated(GestureRecognizer gesture)
+        private void JumpTap_StateUpdated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Ended)
             {

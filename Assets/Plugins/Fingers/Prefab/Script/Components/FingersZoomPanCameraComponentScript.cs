@@ -23,9 +23,30 @@ namespace DigitalRubyShared
         [Range(0.0f, 1.0f)]
         public float Dampening = 0.8f;
 
-        private ScaleGestureRecognizer scaleGesture;
-        private PanGestureRecognizer panGesture;
-        private TapGestureRecognizer tapGesture;
+        [Tooltip("Adjust speed of rotation gesture (two finger rotate). Set to 0 for no rotation allowed.")]
+        [Range(-10.0f, 10.0f)]
+        public float RotationSpeed = 0.0f;
+
+        /// <summary>
+        /// Zoom in and out gesture
+        /// </summary>
+        public ScaleGestureRecognizer ScaleGesture { get; private set; }
+
+        /// <summary>
+        /// Move camera gesture
+        /// </summary>
+        public PanGestureRecognizer PanGesture { get; private set; }
+
+        /// <summary>
+        /// Tap gesture to have camera look at tapped object
+        /// </summary>
+        public TapGestureRecognizer TapGesture { get; private set; }
+
+        /// <summary>
+        /// Allows rotating camera around it's forward vector
+        /// </summary>
+        public RotateGestureRecognizer RotateGesture { get; private set; }
+
         private Vector3 cameraAnimationTargetPosition;
         private Vector3 velocity;
         private Camera _camera;
@@ -54,23 +75,29 @@ namespace DigitalRubyShared
                 gameObject.AddComponent<UnityEngine.EventSystems.Physics2DRaycaster>();
             }
 
-            scaleGesture = new ScaleGestureRecognizer
+            ScaleGesture = new ScaleGestureRecognizer
             {
                 ZoomSpeed = 6.0f // for a touch screen you'd probably not do this, but if you are using ctrl + mouse wheel then this helps zoom faster
             };
-            scaleGesture.StateUpdated += Gesture_Updated;
-            FingersScript.Instance.AddGesture(scaleGesture);
+            ScaleGesture.StateUpdated += Gesture_Updated;
+            FingersScript.Instance.AddGesture(ScaleGesture);
 
-            panGesture = new PanGestureRecognizer();
-            panGesture.StateUpdated += PanGesture_Updated;
-            FingersScript.Instance.AddGesture(panGesture);
+            PanGesture = new PanGestureRecognizer();
+            PanGesture.StateUpdated += PanGesture_Updated;
+            FingersScript.Instance.AddGesture(PanGesture);
 
             // the scale and pan can happen together
-            scaleGesture.AllowSimultaneousExecution(panGesture);
+            ScaleGesture.AllowSimultaneousExecution(PanGesture);
 
-            tapGesture = new TapGestureRecognizer();
-            tapGesture.StateUpdated += TapGesture_Updated;
-            FingersScript.Instance.AddGesture(tapGesture);
+            TapGesture = new TapGestureRecognizer();
+            TapGesture.StateUpdated += TapGesture_Updated;
+            FingersScript.Instance.AddGesture(TapGesture);
+
+            RotateGesture = new RotateGestureRecognizer();
+            RotateGesture.StateUpdated += RotateGesture_Updated;
+            FingersScript.Instance.AddGesture(RotateGesture);
+            RotateGesture.AllowSimultaneousExecution(PanGesture);
+            RotateGesture.AllowSimultaneousExecution(ScaleGesture);
         }
 
         private void LateUpdate()
@@ -111,14 +138,14 @@ namespace DigitalRubyShared
             velocity *= Dampening;
         }
 
-        private void TapGesture_Updated(GestureRecognizer gesture)
+        private void TapGesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
-            if (tapGesture.State != GestureRecognizerState.Ended)
+            if (TapGesture.State != GestureRecognizerState.Ended)
             {
                 return;
             }
 
-            Ray ray = _camera.ScreenPointToRay(new Vector3(tapGesture.FocusX, tapGesture.FocusY, 0.0f));
+            Ray ray = _camera.ScreenPointToRay(new Vector3(TapGesture.FocusX, TapGesture.FocusY, 0.0f));
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
@@ -129,22 +156,22 @@ namespace DigitalRubyShared
             }
         }
 
-        private void PanGesture_Updated(GestureRecognizer gesture)
+        private void PanGesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
-            if (panGesture.State == GestureRecognizerState.Executing)
+            if (PanGesture.State == GestureRecognizerState.Executing)
             {
                 StopAllCoroutines();
 
                 // convert pan coordinates to world coordinates
                 // get z position, orthographic this is 0, otherwise it's the z coordinate of all the spheres
                 float z = (_camera.orthographic ? 0.0f : 10.0f);
-                Vector3 pan = new Vector3(panGesture.DeltaX, panGesture.DeltaY, z);
+                Vector3 pan = new Vector3(PanGesture.DeltaX, PanGesture.DeltaY, z);
                 Vector3 zero = _camera.ScreenToWorldPoint(new Vector3(0.0f, 0.0f, z));
                 Vector3 panFromZero = _camera.ScreenToWorldPoint(pan);
                 Vector3 panInWorldSpace = zero - panFromZero;
                 _camera.transform.Translate(panInWorldSpace);
             }
-            else if (panGesture.State == GestureRecognizerState.Ended)
+            else if (PanGesture.State == GestureRecognizerState.Ended)
             {
                 float z = (_camera.orthographic ? 0.0f : 10.0f);
                 Vector3 zero = _camera.ScreenToWorldPoint(new Vector3(0.0f, 0.0f, z));
@@ -153,21 +180,29 @@ namespace DigitalRubyShared
                 float worldHeight = one.y - zero.y;
                 float worldWidthRatio = Screen.width / worldWidth;
                 float worldHeightRatio = Screen.height / worldHeight;
-                float velocityX = panGesture.VelocityX / -worldWidthRatio;
-                float velocityY = panGesture.VelocityY / -worldHeightRatio;
+                float velocityX = PanGesture.VelocityX / -worldWidthRatio;
+                float velocityY = PanGesture.VelocityY / -worldHeightRatio;
                 velocity = new Vector3(velocityX, velocityY, 0.0f);
             }
         }
 
-        private void Gesture_Updated(GestureRecognizer gesture)
+        private void RotateGesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
-            if (scaleGesture.State != GestureRecognizerState.Executing || scaleGesture.ScaleMultiplier == 1.0f)
+            if (RotationSpeed != 0.0f && gesture.State == GestureRecognizerState.Executing)
+            {
+                _camera.transform.Rotate(_camera.transform.forward, RotateGesture.RotationDegreesDelta, Space.World);
+            }
+        }
+
+        private void Gesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
+        {
+            if (ScaleGesture.State != GestureRecognizerState.Executing || ScaleGesture.ScaleMultiplier == 1.0f)
             {
                 return;
             }
 
             // invert the scale so that smaller scales actually zoom out and larger scales zoom in
-            float scale = 1.0f + (1.0f - scaleGesture.ScaleMultiplier);
+            float scale = 1.0f + (1.0f - ScaleGesture.ScaleMultiplier);
 
             if (_camera.orthographic)
             {

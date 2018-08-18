@@ -248,14 +248,14 @@ namespace DigitalRubyShared
     /// <summary>
     /// Gesture recognizer state change event - gesture.CurrentTrackedTouches contains all of the current touches
     /// </summary>
-    public delegate void GestureRecognizerStateUpdatedDelegate(GestureRecognizer gesture);
+    public delegate void GestureRecognizerStateUpdatedDelegate(DigitalRubyShared.GestureRecognizer gesture);
 
     /// <summary>
     /// Obsolete, use GestureRecognizerStateUpdatedDelegate
     /// </summary>
     /// <param name="gesture"></param>
     /// <param name="touches"></param>
-    public delegate void GestureRecognizerUpdated(GestureRecognizer gesture, ICollection<GestureTouch> touches);
+    public delegate void GestureRecognizerUpdated(DigitalRubyShared.GestureRecognizer gesture, ICollection<GestureTouch> touches);
 
     /// <summary>
     /// Tracks and calculates velocity for gestures
@@ -350,17 +350,17 @@ namespace DigitalRubyShared
     /// A gesture recognizer allows handling gestures as well as ensuring that different gestures
     /// do not execute at the same time. Platform specific code is required to create GestureTouch
     /// sets and pass them to the appropriate gesture recognizer(s). Creating extension methods
-    /// on the GestureRecognizer class is a good way.
+    /// on the DigitalRubyShared.GestureRecognizer class is a good way.
     /// </summary>
     public class GestureRecognizer : IDisposable
     {
-        private static readonly GestureRecognizer allGesturesReference = new GestureRecognizer();
+        private static readonly DigitalRubyShared.GestureRecognizer allGesturesReference = new DigitalRubyShared.GestureRecognizer();
         private GestureRecognizerState state = GestureRecognizerState.Possible;
         private readonly List<GestureTouch> currentTrackedTouches = new List<GestureTouch>();
         private readonly System.Collections.ObjectModel.ReadOnlyCollection<GestureTouch> currentTrackedTouchesReadOnly;
-        private readonly HashSet<GestureRecognizer> requireGestureRecognizersToFail = new HashSet<GestureRecognizer>();
-        private readonly HashSet<GestureRecognizer> failGestures = new HashSet<GestureRecognizer>();
-        private readonly List<GestureRecognizer> simultaneousGestures = new List<GestureRecognizer>();
+        private readonly HashSet<DigitalRubyShared.GestureRecognizer> requireGestureRecognizersToFail = new HashSet<DigitalRubyShared.GestureRecognizer>();
+        private readonly HashSet<DigitalRubyShared.GestureRecognizer> failGestures = new HashSet<DigitalRubyShared.GestureRecognizer>();
+        private readonly List<DigitalRubyShared.GestureRecognizer> simultaneousGestures = new List<DigitalRubyShared.GestureRecognizer>();
         private readonly GestureVelocityTracker velocityTracker = new GestureVelocityTracker();
         private readonly List<KeyValuePair<float, float>> touchStartLocations = new List<KeyValuePair<float, float>>();
         private readonly HashSet<int> ignoreTouchIds = new HashSet<int>();
@@ -376,7 +376,7 @@ namespace DigitalRubyShared
         protected float PrevFocusX { get; private set; }
         protected float PrevFocusY { get; private set; }
 
-        internal static readonly HashSet<GestureRecognizer> ActiveGestures = new HashSet<GestureRecognizer>();
+        internal static readonly HashSet<DigitalRubyShared.GestureRecognizer> ActiveGestures = new HashSet<DigitalRubyShared.GestureRecognizer>();
 
         private void UpdateTouchState(bool executing)
         {
@@ -427,7 +427,7 @@ namespace DigitalRubyShared
             {
                 // check all the active gestures and if any are not allowed to simultaneously
                 // execute with this gesture, fail this gesture immediately
-                foreach (GestureRecognizer gesture in ActiveGestures)
+                foreach (DigitalRubyShared.GestureRecognizer gesture in ActiveGestures)
                 {
                     if (gesture != this &&
                         (!AllowSimultaneousExecutionIfPlatformSpecificViewsAreDifferent || gesture.PlatformSpecificView == PlatformSpecificView) &&
@@ -449,7 +449,7 @@ namespace DigitalRubyShared
             state = GestureRecognizerState.Failed;
             RemoveFromActiveGestures();
             StateChanged();
-            foreach (GestureRecognizer gesture in failGestures)
+            foreach (DigitalRubyShared.GestureRecognizer gesture in failGestures)
             {
                 if (gesture.state == GestureRecognizerState.EndPending)
                 {
@@ -729,7 +729,7 @@ namespace DigitalRubyShared
             if (failGestures.Count != 0 && (state == GestureRecognizerState.Began || state == GestureRecognizerState.Executing ||
                 state == GestureRecognizerState.Ended))
             {
-                foreach (GestureRecognizer gesture in failGestures)
+                foreach (DigitalRubyShared.GestureRecognizer gesture in failGestures)
                 {
                     gesture.FailGestureNow();
                 }
@@ -804,7 +804,7 @@ namespace DigitalRubyShared
             if (requireGestureRecognizersToFail.Count > 0)
             {
                 bool returnedValue = true;
-                using (HashSet<GestureRecognizer>.Enumerator gestureToFailEnumerator = requireGestureRecognizersToFail.GetEnumerator())
+                using (HashSet<DigitalRubyShared.GestureRecognizer>.Enumerator gestureToFailEnumerator = requireGestureRecognizersToFail.GetEnumerator())
                 {
                     while (gestureToFailEnumerator.MoveNext() && returnedValue)
                     {
@@ -1109,8 +1109,8 @@ namespace DigitalRubyShared
         {
             float a = (float)(x2 - x1);
             float b = (float)(y2 - y1);
-
-            return ((float)Math.Sqrt(a * a + b * b) * PlatformSpecificViewScale) / DeviceInfo.UnitMultiplier;
+            float d = (float)Math.Sqrt(a * a + b * b) * PlatformSpecificViewScale;
+            return DeviceInfo.PixelsToUnits(d);
         }
 
         /// <summary>
@@ -1121,7 +1121,8 @@ namespace DigitalRubyShared
         /// <returns>The distance of the vector in units.</returns>
         public float Distance(float xVector, float yVector)
         {
-            return ((float)Math.Sqrt(xVector * xVector + yVector * yVector) * PlatformSpecificViewScale) / DeviceInfo.UnitMultiplier;
+            float d = (float)Math.Sqrt(xVector * xVector + yVector * yVector) * PlatformSpecificViewScale;
+            return DeviceInfo.PixelsToUnits(d);
         }
 
         /// <summary>
@@ -1131,7 +1132,8 @@ namespace DigitalRubyShared
         /// <returns>Distance in units</returns>
         public float Distance(float length)
         {
-            return (Math.Abs(length) * PlatformSpecificViewScale) / DeviceInfo.UnitMultiplier;
+            float d = Math.Abs(length) * PlatformSpecificViewScale;
+            return DeviceInfo.PixelsToUnits(d);
         }
 
         /// <summary>
@@ -1140,11 +1142,11 @@ namespace DigitalRubyShared
         public virtual void Dispose()
         {
             RemoveFromActiveGestures();
-            foreach (GestureRecognizer gesture in simultaneousGestures.ToArray())
+            foreach (DigitalRubyShared.GestureRecognizer gesture in simultaneousGestures.ToArray())
             {
                 DisallowSimultaneousExecution(gesture);
             }
-            foreach (GestureRecognizer gesture in failGestures)
+            foreach (DigitalRubyShared.GestureRecognizer gesture in failGestures)
             {
                 gesture.requireGestureRecognizersToFail.Remove(this);
             }
@@ -1156,7 +1158,7 @@ namespace DigitalRubyShared
         /// Pass null to allow simultaneous execution with all gestures.
         /// </summary>
         /// <param name="other">Gesture to execute simultaneously with</param>
-        public void AllowSimultaneousExecution(GestureRecognizer other)
+        public void AllowSimultaneousExecution(DigitalRubyShared.GestureRecognizer other)
         {
             other = (other ?? allGesturesReference);
             simultaneousGestures.Add(other);
@@ -1183,7 +1185,7 @@ namespace DigitalRubyShared
         /// AllowSimultaneousExecution with a null value.
         /// </summary>
         /// <param name="other">Gesture to no longer execute simultaneously with</param>
-        public void DisallowSimultaneousExecution(GestureRecognizer other)
+        public void DisallowSimultaneousExecution(DigitalRubyShared.GestureRecognizer other)
         {
             other = (other ?? allGesturesReference);
             simultaneousGestures.Remove(other);
@@ -1205,7 +1207,7 @@ namespace DigitalRubyShared
         /// Require a gesture to fail in order for this gesture to end
         /// </summary>
         /// <param name="gesture">Gesture to require failure on</param>
-        public void AddRequiredGestureRecognizerToFail(GestureRecognizer gesture)
+        public void AddRequiredGestureRecognizerToFail(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture != null)
             {
@@ -1218,7 +1220,7 @@ namespace DigitalRubyShared
         /// Remove a gesture needing to fail in order for this gesture to end
         /// </summary>
         /// <param name="gesture">Gesture to remove</param>
-        public void RemoveRequiredGestureRecognizerToFail(GestureRecognizer gesture)
+        public void RemoveRequiredGestureRecognizerToFail(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture != null)
             {
@@ -1353,11 +1355,11 @@ namespace DigitalRubyShared
         /// <summary>
         /// Convenience method to add / remove one gesture to require failure on. Set to null to clear all require gestures to fail.
         /// </summary>
-        public GestureRecognizer RequireGestureRecognizerToFail
+        public DigitalRubyShared.GestureRecognizer RequireGestureRecognizerToFail
         {
             get
             {
-                foreach (GestureRecognizer gesture in requireGestureRecognizersToFail)
+                foreach (DigitalRubyShared.GestureRecognizer gesture in requireGestureRecognizersToFail)
                 {
                     return gesture;
                 }
@@ -1367,7 +1369,7 @@ namespace DigitalRubyShared
             {
                 if (value == null)
                 {
-                    foreach (GestureRecognizer gesture in requireGestureRecognizersToFail)
+                    foreach (DigitalRubyShared.GestureRecognizer gesture in requireGestureRecognizersToFail)
                     {
                         gesture.failGestures.Remove(this);
                     }
@@ -1386,7 +1388,7 @@ namespace DigitalRubyShared
         /// this gestures will end. If the specified gesture begins, executes or ends,
         /// then this gesture will immediately fail.
         /// </summary>
-        public IEnumerable<GestureRecognizer> RequireGestureRecognizersToFail
+        public IEnumerable<DigitalRubyShared.GestureRecognizer> RequireGestureRecognizersToFail
         {
             get { return requireGestureRecognizersToFail; }
         }
@@ -1482,7 +1484,7 @@ namespace DigitalRubyShared
         /// <param name="gesture">Gesture</param>
         /// <param name="text">Text</param>
         /// <param name="args">Args</param>
-        public static void Log(this GestureRecognizer gesture, string text, params object[] args)
+        public static void Log(this DigitalRubyShared.GestureRecognizer gesture, string text, params object[] args)
         {
 
 #if UNITY_5_3_OR_NEWER

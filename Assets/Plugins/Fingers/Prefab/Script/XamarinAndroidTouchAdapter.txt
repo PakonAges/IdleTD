@@ -66,28 +66,28 @@ namespace YourAppNamespace
             return touches;
         }
 
-        public static void ProcessMotionEvent(this View v, GestureRecognizer g, MotionEvent e)
+        public static void ProcessMotionEvent(this View v, DigitalRubyShared.GestureRecognizer g, MotionEvent e)
         {
             v.ProcessMotionEvent(e, false, g);
         }
 
-        public static void ProcessMotionEvent(this View v, MotionEvent e, params GestureRecognizer[] gestures)
+        public static void ProcessMotionEvent(this View v, MotionEvent e, params DigitalRubyShared.GestureRecognizer[] gestures)
         {
             v.ProcessMotionEvent(e, false, gestures);
         }
 
-        public static void ProcessMotionEvent(this View v, MotionEvent e, bool inScrollView, params GestureRecognizer[] gestures)
+        public static void ProcessMotionEvent(this View v, MotionEvent e, bool inScrollView, params DigitalRubyShared.GestureRecognizer[] gestures)
         {
             v.ProcessMotionEvent(e, (inScrollView ? new Rect(0, 0, v.Width, v.Height) : null), gestures);
         }
 
-        public static void ProcessMotionEvent(this View v, MotionEvent e, Rect scrollViewRect, params GestureRecognizer[] gestures)
+        public static void ProcessMotionEvent(this View v, MotionEvent e, Rect scrollViewRect, params DigitalRubyShared.GestureRecognizer[] gestures)
         {
             bool gestureStarted = (e.Action == MotionEventActions.Down && scrollViewRect != null && scrollViewRect.Contains((int)e.GetX(), (int)e.GetY()));
             bool gestureEnded = (e.Action == MotionEventActions.Up);
             bool foundGesture = false;
 
-            foreach (GestureRecognizer g in gestures)
+            foreach (DigitalRubyShared.GestureRecognizer g in gestures)
             {
                 if (e.PointerCount == 0 || (g.PlatformSpecificView != null && v != g.PlatformSpecificView))
                 {

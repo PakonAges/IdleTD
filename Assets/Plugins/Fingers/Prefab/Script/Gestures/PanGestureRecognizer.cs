@@ -14,7 +14,7 @@ namespace DigitalRubyShared
     /// <summary>
     /// A pan gesture detects movement of a touch
     /// </summary>
-    public class PanGestureRecognizer : GestureRecognizer
+    public class PanGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         private void ProcessTouches(bool resetFocus)
         {

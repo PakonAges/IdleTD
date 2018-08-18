@@ -26,6 +26,14 @@ namespace DigitalRubyShared
         [Tooltip("Whether the control key is required for mouse zoom. If true, control pluse mouse wheel zooms. If false, mouse wheel alone will zoom.")]
         public bool RequireControlKeyForMouseZoom = true;
 
+        [Tooltip("The distance (in units, default is inches) for simulated fingers to start at for a mouse zoom or rotate.")]
+        [Range(0.1f, 10.0f)]
+        public float MouseDistanceInUnitsForScaleAndRotate = 2.0f;
+
+        [Tooltip("Mouse wheel delta multiplier.")]
+        [Range(0.0001f, 1.0f)]
+        public float MouseWheelDeltaMultiplier = 0.025f;
+
         [Tooltip("Objects that should pass gestures through. By default, some UI components block gestures, such as Panel, Button, Dropdown, etc. See the SetupDefaultPassThroughComponents method for " +
             "the full list of defaults.")]
         public List<GameObject> PassThroughObjects;
@@ -54,8 +62,8 @@ namespace DigitalRubyShared
         private const int mousePointerId2 = int.MaxValue - 3;
         private const int mousePointerId3 = int.MaxValue - 4;
 
-        private readonly List<GestureRecognizer> gestures = new List<GestureRecognizer>();
-        private readonly List<GestureRecognizer> gesturesTemp = new List<GestureRecognizer>();
+        private readonly List<DigitalRubyShared.GestureRecognizer> gestures = new List<DigitalRubyShared.GestureRecognizer>();
+        private readonly List<DigitalRubyShared.GestureRecognizer> gesturesTemp = new List<DigitalRubyShared.GestureRecognizer>();
         private readonly List<GestureTouch> touchesBegan = new List<GestureTouch>();
         private readonly List<GestureTouch> touchesMoved = new List<GestureTouch>();
         private readonly List<GestureTouch> touchesEnded = new List<GestureTouch>();
@@ -154,7 +162,7 @@ namespace DigitalRubyShared
             else
             {
                 // if any gesture has a platform specific view that matches the object, use default behavior
-                foreach (GestureRecognizer gesture in gestures)
+                foreach (DigitalRubyShared.GestureRecognizer gesture in gestures)
                 {
                     if (object.ReferenceEquals(gesture.PlatformSpecificView, obj))
                     {
@@ -237,21 +245,47 @@ namespace DigitalRubyShared
             }
 
             // determine what game object, if any should capture the gesture
+            bool forcePassThrough = false;
             foreach (RaycastResult r in captureRaycastResults)
             {
                 switch (ShouldCaptureGesture(r.gameObject))
                 {
                     case CaptureResult.ForcePassThrough:
-                        list.Clear();
-                        return;
+                        forcePassThrough = true;
+                        break;
 
                     case CaptureResult.ForceDenyPassThrough:
-                        // unless a platform specific view matches, deny the gesture
-                        list.Add(r.gameObject);
-                        return;
+                        // if forcing pass through, prefer that over this behavior
+                        if (!forcePassThrough)
+                        {
+                            // unless a platform specific view matches, deny the gesture
+                            // this specific object stops any further pass through checks underneath
+                            list.Add(r.gameObject);
+                            return;
+                        } break;
 
                     case CaptureResult.Default:
-                        list.Add(r.gameObject);
+                        // if forcing pass through, only add if matches a platform specific view
+                        if (forcePassThrough)
+                        {
+                            bool matchesPlatformSpecificView = false;
+                            foreach (GestureRecognizer g in gestures)
+                            {
+                                if (object.ReferenceEquals(g.PlatformSpecificView, r.gameObject))
+                                {
+                                    matchesPlatformSpecificView = true;
+                                    break;
+                                }
+                            }
+                            if (matchesPlatformSpecificView)
+                            {
+                                list.Add(r.gameObject);
+                            } // else ignore
+                        }
+                        else
+                        {
+                            list.Add(r.gameObject);
+                        }
                         break;
 
                     default:
@@ -296,7 +330,11 @@ namespace DigitalRubyShared
                     phase = TouchPhase.Unknown;
                     break;
             }
-            return new GestureTouch(t.fingerId, t.position.x, t.position.y, prev.x, prev.y, t.pressure, t.position.x, t.position.y, t, phase);
+            GestureTouch touch = new GestureTouch(t.fingerId, t.position.x, t.position.y, prev.x, prev.y, t.pressure, t.position.x, t.position.y, t, phase);
+            prev.x = t.position.x;
+            prev.y = t.position.y;
+            previousTouchPositions[t.fingerId] = prev;
+            return touch;
         }
 
         private void FingersBeginTouch(ref GestureTouch g)
@@ -366,19 +404,18 @@ namespace DigitalRubyShared
             {
                 return;
             }
-            float prevX = float.MinValue;
-            float prevY = float.MinValue;
-            foreach (GestureTouch ex in previousTouches)
+
+            Vector2 prev;
+            if (!previousTouchPositions.TryGetValue(pointerId, out prev))
             {
-                if (ex.Id == pointerId)
-                {
-                    prevX = ex.X;
-                    prevY = ex.Y;
-                    break;
-                }
+                prev.x = x;
+                prev.y = y;
             }
-            GestureTouch g = new GestureTouch(pointerId, x, y, prevX, prevY, 0.0f, x, y, index, phase);
+            GestureTouch g = new GestureTouch(pointerId, x, y, prev.x, prev.y, 0.0f, x, y, index, phase);
             FingersProcessTouch(ref g);
+            prev.x = x;
+            prev.y = y;
+            previousTouchPositions[pointerId] = prev;
         }
 
         private void ProcessTouches()
@@ -428,10 +465,9 @@ namespace DigitalRubyShared
             }
 
             // the mouse wheel will act as a rotate and pinch / zoom
-            const float threshold = 50.0f;
-            const float deltaModifier = 0.025f;
             Vector2 delta = Input.mouseScrollDelta;
-            float scrollDelta = (delta.y == 0.0f ? delta.x : delta.y) * deltaModifier;
+            float scrollDelta = (delta.y == 0.0f ? delta.x : delta.y) * MouseWheelDeltaMultiplier;
+            float threshold = DeviceInfo.UnitsToPixels(MouseDistanceInUnitsForScaleAndRotate * 0.5f);
 
             // add type 1 = moved, 2 = begin, 3 = ended, 4 = none
             int addType1 = 4;
@@ -579,7 +615,7 @@ namespace DigitalRubyShared
                     tempTouches.Add(t);
                 }
             }
-            foreach (GestureRecognizer g in gestures)
+            foreach (DigitalRubyShared.GestureRecognizer g in gestures)
             {
                 bool reset = false;
                 foreach (GestureTouch t in g.CurrentTrackedTouches)
@@ -602,11 +638,11 @@ namespace DigitalRubyShared
                 FingersEndTouch(ref tmp, true);
                 previousTouches.Remove(tmp);
             }
-            
+
             tempTouches.Clear();
         }
 
-        private bool GameObjectMatchesPlatformSpecificView(List<GameObject> list, GestureRecognizer r)
+        private bool GameObjectMatchesPlatformSpecificView(List<GameObject> list, DigitalRubyShared.GestureRecognizer r)
         {
             GameObject platformSpecificView = r.PlatformSpecificView as GameObject;
 
@@ -639,7 +675,7 @@ namespace DigitalRubyShared
             return false;
         }
 
-        private ICollection<GestureTouch> FilterTouchesBegan(List<GestureTouch> touches, GestureRecognizer r)
+        private ICollection<GestureTouch> FilterTouchesBegan(List<GestureTouch> touches, DigitalRubyShared.GestureRecognizer r)
         {
             // in order to begin, touches must match the platform specific view
             List<GameObject> gameObjects;
@@ -683,6 +719,16 @@ namespace DigitalRubyShared
 
         private void SceneManagerSceneUnloaded(UnityEngine.SceneManagement.Scene scene)
         {
+
+#if UNITY_EDITOR
+
+            if (scene.name.IndexOf("Preview Scene", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return;
+            }
+
+#endif
+
             switch (LevelUnloadOption)
             {
                 case GestureLevelUnloadOption.ResetGestureState:
@@ -725,7 +771,7 @@ namespace DigitalRubyShared
             }
 
             // set the main thread callback so gestures can callback after a delay
-            GestureRecognizer.MainThreadCallback = (float delay, System.Action callback) =>
+            DigitalRubyShared.GestureRecognizer.MainThreadCallback = (float delay, System.Action callback) =>
             {
                 StartCoroutine(MainThreadCallback(delay, callback));
             };
@@ -738,6 +784,10 @@ namespace DigitalRubyShared
             }
             Input.simulateMouseWithTouches = SimulateMouseWithTouches;
             SetupDefaultPassThroughComponents();
+        }
+
+        private void Start()
+        {
 
 #if UNITY_EDITOR
 
@@ -784,7 +834,7 @@ namespace DigitalRubyShared
             // for each gesture, process the touches
             // copy to temp list in case gestures are added during the callbacks
             gesturesTemp.AddRange(gestures);
-            foreach (GestureRecognizer gesture in gesturesTemp)
+            foreach (DigitalRubyShared.GestureRecognizer gesture in gesturesTemp)
             {
                 gesture.ProcessTouchesBegan(FilterTouchesBegan(touchesBegan, gesture));
                 gesture.ProcessTouchesMoved(touchesMoved);
@@ -874,7 +924,7 @@ namespace DigitalRubyShared
         /// </summary>
         /// <param name="gesture">Gesture to add</param>
         /// <return>True if the gesture was added, false if the gesture was already added</return>
-        public bool AddGesture(GestureRecognizer gesture)
+        public bool AddGesture(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture == null || gestures.Contains(gesture))
             {
@@ -889,9 +939,13 @@ namespace DigitalRubyShared
         /// </summary>
         /// <param name="gesture">Gesture to remove</param>
         /// <returns>True if the gesture was removed, false if it was not in the script</returns>
-        public bool RemoveGesture(GestureRecognizer gesture)
+        public bool RemoveGesture(DigitalRubyShared.GestureRecognizer gesture)
         {
-            return gestures.Remove(gesture);
+            if (gesture != null)
+            {
+                return gestures.Remove(gesture);
+            }
+            return false;
         }
 
         /// <summary>
@@ -900,9 +954,16 @@ namespace DigitalRubyShared
         /// <param name="clearGestures">True to clear out all gestures, false otherwise</param>
         public void ResetState(bool clearGestures)
         {
-            foreach (GestureRecognizer gesture in gestures)
+            for (int i = gestures.Count - 1; i >= 0; i--)
             {
-                gesture.Reset();
+                if (gestures[i] == null)
+                {
+                    gestures.RemoveAt(i);
+                }
+                else
+                {
+                    gestures[i].Reset();
+                }
             }
             if (clearGestures)
             {
@@ -998,7 +1059,7 @@ namespace DigitalRubyShared
         /// <summary>
         /// All gestures added to the script
         /// </summary>
-        public System.Collections.ObjectModel.ReadOnlyCollection<GestureRecognizer> Gestures { get { return gestures.AsReadOnly(); } }
+        public System.Collections.ObjectModel.ReadOnlyCollection<DigitalRubyShared.GestureRecognizer> Gestures { get { return gestures.AsReadOnly(); } }
 
         /// <summary>
         /// Shared static instance of fingers script that lives forever - the prefab MUST exist in a resources folder!

@@ -151,7 +151,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void ImageGestureUpdated(GestureRecognizer imageGesture)
+        private void ImageGestureUpdated(DigitalRubyShared.GestureRecognizer imageGesture)
         {
             if (imageGesture.State == GestureRecognizerState.Ended)
             {
@@ -188,7 +188,7 @@ namespace DigitalRubyShared
             ResetLines();
         }
 
-        private void Tap_Updated(GestureRecognizer gesture)
+        private void Tap_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Ended)
             {

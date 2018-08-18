@@ -1,5 +1,40 @@
 ﻿Changelog
 --------------------
+2.4.6	(2018-08-17)
+		- Tweaks / fixes to platform specific view and pass through.
+		- Fix orbit demo to show the tap in debug log.
+
+2.4.5	(2018-07-11)
+		- Change DPad to allow multiple directions in one callback. The FingersDPadItem enum is now a flags. See DemoScriptDPad.cs.
+
+2.4.4	(2018-07-09)
+		- Allow rotation of camera zoom pan script.
+
+2.4.3	(2018-06-23)
+		- Fix pan orbit script to do max distance properly.
+
+2.4.2	(2018-06-17)
+		- Add demo scene for raycasting.
+		- Add instructions to readme to convert from screen space coordinates to canvas space coordinates.
+
+2.4.1	(2018-06-14)
+		- Add MouseDistanceInUnitsForScaleAndRotate and MouseWheelDeltaMultiplier properties to FingersScript to adjust how mouse scale and rotate works.
+
+2.4.0	(2018-06-10)
+		- Expose gestures as public properties in component scripts. This allows you to modify the gestures or have the gestures require other gestures to fail, etc.
+
+2.3.9	(2018-05-29)
+		- Add min/max scale to pan, rotate, scale component script.
+
+2.3.8	(2018-05-22)
+		- Add demo for dragging cards around and swiping them away off screen. See DemoSceneDragSwipe.
+
+2.3.7	(2018-05-21)
+		- Fix for previous touch position
+
+2.3.6	(2018-05-15)
+		- Add two finger pan option to FingersPanOrbitComponentScript and change orbit pan checkbox to an enum.
+
 2.3.5	(2018-05-11)
 		- Add separate pan speeds and limits to FingersPanOrbitComponentScript.
 
@@ -90,13 +125,13 @@
 		- Improve ScaleXMultiplier and ScaleYMultiplier on scale gesture.
 
 2.0.0	(2017-11-04)
-		- Deprecate the Updated property on GestureRecognizer. StateUpdated is the preferred property and removes the redundant touches parameter, as that is
+		- Deprecate the Updated property on DigitalRubyShared.GestureRecognizer. StateUpdated is the preferred property and removes the redundant touches parameter, as that is
 		   accessible under the CurrentTrackedTouches property of the gesture. The Updated property will be removed in a future version, so please migrate
 		   to the new property ASAP.
 		- Moved component gestures over to StateUpdated property. You'll need to re-wire these events up in the inspector using the new method signature without the touches parameter.
 		- Fix double tap issue and multiple swipes with one gesture issue.
 		- Pass Unity touch pressure to GestureTouch object.
-		- Add Pressure property to GestureRecognizer.
+		- Add Pressure property to DigitalRubyShared.GestureRecognizer.
 		- Add scale x multiplier and scale y multiplier to scale gestures.
 		- Many more bug fixes, especially for multiple touch gestures.
 
@@ -179,7 +214,7 @@
 1.2.1	- Critical bug fixes for image gesture recognizer and image demo scene.
 
 1.2.0	- Big refactor of code. Gestures now track touches, which means simultaneous gestures can execute on separate touches now.
-		- Some properties have been removed or renamed. In GestureRecognizer.cs, the public properties (at the bottom of the file) are where most things can be found now.
+		- Some properties have been removed or renamed. In DigitalRubyShared.GestureRecognizer.cs, the public properties (at the bottom of the file) are where most things can be found now.
 		- Added custom image recognition gestures.
 
 1.1.1	- Code refactoring, clear gestures when scenes change and added tutorial video link.

@@ -13,7 +13,7 @@ namespace DigitalRubyShared
     /// <summary>
     /// A scale gesture detects two fingers moving towards or away from each other to scale something
     /// </summary>
-    public class ScaleGestureRecognizer : GestureRecognizer
+    public class ScaleGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         // these five constants to determine the hysteresis to reduce or eliminate wobble as a zoom is done,
         //  think of a two finger pan and zoom at the same time, tiny changes in scale direction are ignored
@@ -94,6 +94,7 @@ namespace DigitalRubyShared
             {
                 if (previousDistance == 0.0f)
                 {
+                    // until the gesture starts, previousDistance is actually firstDistance
                     previousDistance = distance;
                     previousDistanceX = distanceX;
                     previousDistanceY = distanceY;

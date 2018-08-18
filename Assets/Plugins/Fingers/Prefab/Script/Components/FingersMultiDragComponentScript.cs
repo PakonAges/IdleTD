@@ -15,17 +15,17 @@ namespace DigitalRubyShared
     [AddComponentMenu("Fingers Gestures/Component/Multi Drag", 1)]
     public class FingersMultiDragComponentScript : MonoBehaviour
     {
-        [Tooltip("The tag of the object(s) to drag - if the tag contains this, the object can drag")]
-        public string TagToDrag;
-
-        [Tooltip("The name of the object(s) to drag - if the name contains this, the object can drag")]
-        public string NameToDrag;
-
         private class DragState
         {
             public GameObject GameObject;
             public Vector2 Offset;
         }
+
+        [Tooltip("The tag of the object(s) to drag - if the tag contains this, the object can drag")]
+        public string TagToDrag;
+
+        [Tooltip("The name of the object(s) to drag - if the name contains this, the object can drag")]
+        public string NameToDrag;
 
         // game object to drag state
         private readonly Dictionary<GameObject, DragState> draggingObjectsByGameObject = new Dictionary<GameObject, DragState>();
@@ -39,7 +39,10 @@ namespace DigitalRubyShared
         // temp list of touch ids to remove
         private readonly List<int> currentTouchIds = new List<int>();
 
-        private PanGestureRecognizer panGesture;
+        /// <summary>
+        /// Pan gesture to drag objects with
+        /// </summary>
+        public PanGestureRecognizer PanGesture { get; private set; }
 
         private bool CanDrag(GameObject obj)
         {
@@ -50,9 +53,9 @@ namespace DigitalRubyShared
 
         private void Start()
         {
-            panGesture = new PanGestureRecognizer { MinimumNumberOfTouchesToTrack = 1, MaximumNumberOfTouchesToTrack = 32, ThresholdUnits = 0.0f };
-            panGesture.StateUpdated += Pan_StateUpdated;
-            FingersScript.Instance.AddGesture(panGesture);
+            PanGesture = new PanGestureRecognizer { MinimumNumberOfTouchesToTrack = 1, MaximumNumberOfTouchesToTrack = 32, ThresholdUnits = 0.0f };
+            PanGesture.StateUpdated += Pan_StateUpdated;
+            FingersScript.Instance.AddGesture(PanGesture);
         }
 
         private void Update()
@@ -85,7 +88,7 @@ namespace DigitalRubyShared
         {
             DragState state;
             currentTouchIds.AddRange(allTouchIds);
-            foreach (GestureTouch touch in panGesture.CurrentTrackedTouches)
+            foreach (GestureTouch touch in PanGesture.CurrentTrackedTouches)
             {
                 if (draggingObjectsByTouchId.TryGetValue(touch.Id, out state))
                 {
@@ -98,7 +101,7 @@ namespace DigitalRubyShared
                     allTouchIds.Add(touch.Id);
                     StartDrag(touch);
                 }
-                if (panGesture.State != GestureRecognizerState.Ended)
+                if (PanGesture.State != GestureRecognizerState.Ended)
                 {
                     currentTouchIds.Remove(touch.Id);
                 }
@@ -117,7 +120,7 @@ namespace DigitalRubyShared
             currentTouchIds.Clear();
         }
 
-        private void Pan_StateUpdated(GestureRecognizer gesture)
+        private void Pan_StateUpdated(DigitalRubyShared.GestureRecognizer gesture)
         {
             switch (gesture.State)
             {

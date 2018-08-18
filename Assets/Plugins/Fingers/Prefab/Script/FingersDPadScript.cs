@@ -15,13 +15,15 @@ using UnityEngine.UI;
 
 namespace DigitalRubyShared
 {
+    [System.Flags]
     public enum FingersDPadItem
     {
-        Up,
-        Right,
-        Down,
-        Left,
-        Center
+        None = 0,
+        Up = 1,
+        Right = 2,
+        Down = 4,
+        Left = 8,
+        Center = 16
     }
 
     public class FingersDPadScript : MonoBehaviour
@@ -66,41 +68,46 @@ namespace DigitalRubyShared
 
 #endif
 
-        private void CheckForOverlap<T>(Vector2 point, T gesture, System.Action<FingersDPadScript, FingersDPadItem, T> action) where T : GestureRecognizer
+        private void CheckForOverlap<T>(Vector2 point, T gesture, System.Action<FingersDPadScript, FingersDPadItem, T> action) where T : DigitalRubyShared.GestureRecognizer
         {
             if (action == null)
             {
                 return;
             }
 
-            int count = Physics2D.OverlapCircleNonAlloc(point, DeviceInfo.PixelsPerInch * TouchRadiusInUnits, overlap);
+            FingersDPadItem item = FingersDPadItem.None;
+            int count = Physics2D.OverlapCircleNonAlloc(point, DeviceInfo.UnitsToPixels(TouchRadiusInUnits), overlap);
             for (int i = 0; i < count; i++)
             {
                 if (overlap[i].gameObject == DPadCenterImageSelected.gameObject)
                 {
                     DPadCenterImageSelected.enabled = true;
-                    action(this, FingersDPadItem.Center, gesture);
+                    item |= FingersDPadItem.Center;
                 }
-                else if (overlap[i].gameObject == DPadRightImageSelected.gameObject)
+                if (overlap[i].gameObject == DPadRightImageSelected.gameObject)
                 {
                     DPadRightImageSelected.enabled = true;
-                    action(this, FingersDPadItem.Right, gesture);
+                    item |= FingersDPadItem.Right;
                 }
-                else if (overlap[i].gameObject == DPadDownImageSelected.gameObject)
+                if (overlap[i].gameObject == DPadDownImageSelected.gameObject)
                 {
                     DPadDownImageSelected.enabled = true;
-                    action(this, FingersDPadItem.Down, gesture);
+                    item |= FingersDPadItem.Down;
                 }
-                else if (overlap[i].gameObject == DPadLeftImageSelected.gameObject)
+                if (overlap[i].gameObject == DPadLeftImageSelected.gameObject)
                 {
                     DPadLeftImageSelected.enabled = true;
-                    action(this, FingersDPadItem.Left, gesture);
+                    item |= FingersDPadItem.Left;
                 }
-                else if (overlap[i].gameObject == DPadUpImageSelected.gameObject)
+                if (overlap[i].gameObject == DPadUpImageSelected.gameObject)
                 {
                     DPadUpImageSelected.enabled = true;
-                    action(this, FingersDPadItem.Up, gesture);
+                    item |= FingersDPadItem.Up;
                 }
+            }
+            if (item != FingersDPadItem.None)
+            {
+                action(this, item, gesture);
             }
         }
 
@@ -113,7 +120,7 @@ namespace DigitalRubyShared
             DPadCenterImageSelected.enabled = false;
         }
 
-        private void PanGestureUpdated(GestureRecognizer gesture)
+        private void PanGestureUpdated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Began || gesture.State == GestureRecognizerState.Executing)
             {
@@ -130,7 +137,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void TapGestureUpdated(GestureRecognizer gesture)
+        private void TapGestureUpdated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Ended)
             {

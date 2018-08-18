@@ -18,7 +18,7 @@ namespace DigitalRubyShared
         [Tooltip("The content to act as a scroll view.")]
         public GameObject ScrollContent;
 
-        [Tooltip("The game object of the element containing the scroll view. Can be a canvas or a panel, etc.")]
+        [Tooltip("The game object of the element containing the scroll view. This is usually a panel with a transparent image.")]
         public GameObject ScrollContentContainer;
 
         [Tooltip("Canvas camera, null if canvas is screen space.")]
@@ -71,6 +71,21 @@ namespace DigitalRubyShared
         [Tooltip("Optional, a text element to show debug text, useful for debugging the scroll view.")]
         public UnityEngine.UI.Text DebugText;
 
+        /// <summary>
+        /// Scale gesture for zooming in and out
+        /// </summary>
+        public ScaleGestureRecognizer ScaleGesture { get; private set; }
+
+        /// <summary>
+        /// Pan gesture for moving the scroll view around
+        /// </summary>
+        public PanGestureRecognizer PanGesture { get; private set; }
+
+        /// <summary>
+        /// Double tap gesture to zoom in and out
+        /// </summary>
+        public TapGestureRecognizer DoubleTapGesture { get; private set; }
+
         private RectTransform contentRectTransform;
         private RectTransform containerRectTransform;
 
@@ -87,21 +102,6 @@ namespace DigitalRubyShared
         private float doubleTapScaleEnd;
         private Vector2 doubleTapPosStart;
         private Vector2 doubleTapPosEnd;
-
-        /// <summary>
-        /// Scale gesture for zooming in and out
-        /// </summary>
-        public ScaleGestureRecognizer ScaleGesture { get; private set; }
-
-        /// <summary>
-        /// Pan gesture for moving the scroll view around
-        /// </summary>
-        public PanGestureRecognizer PanGesture { get; private set; }
-
-        /// <summary>
-        /// Double tap gesture to zoom in and out
-        /// </summary>
-        public TapGestureRecognizer DoubleTapGesture { get; private set; }
 
         /// <summary>
         /// Get a rect that will be fully visible centered around a center point at a scale
@@ -282,7 +282,7 @@ namespace DigitalRubyShared
             EnsureVisible();
         }
 
-        private void Tap_Updated(GestureRecognizer gesture)
+        private void Tap_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (doubleTapScaleTimeSecondsRemaining == 0.0f && gesture.State == GestureRecognizerState.Ended)
             {
@@ -303,7 +303,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void Scale_Updated(GestureRecognizer gesture)
+        private void Scale_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Executing)
             {
@@ -327,7 +327,7 @@ namespace DigitalRubyShared
             WriteDebug("Scale: {0},{1}", gesture.State, (gesture as ScaleGestureRecognizer).ScaleMultiplier);
         }
 
-        private void Pan_Updated(GestureRecognizer gesture)
+        private void Pan_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Executing)
             {

@@ -40,6 +40,9 @@ namespace DigitalRubyShared
         [Range(0.0f, 10.0f)]
         public float ZoomLookAtSpeed = 1.0f;
 
+        [Tooltip("The threshold in units before zooming begins to happen. Start distance must change this much in order to start the gesture.")]
+        public float ZoomThresholdUnits = 0.15f;
+
         [Tooltip("The speed (degrees per second) at which to orbit using x delta pan gesture values. Negative or positive values will cause orbit in the opposite direction.")]
         [Range(-100.0f, 100.0f)]
         public float OrbitXSpeed = -30.0f;
@@ -49,7 +52,7 @@ namespace DigitalRubyShared
         public float OrbitXMaxDegrees = 0.0f;
 
         [Tooltip("Whether the orbit on the x axis is a pan (move sideways) instead of an orbit.")]
-        public bool OrbitXPan;
+        public PanOrbitMovementType XAxisMovementType = PanOrbitMovementType.Orbit;
 
         [Tooltip("Speed if OrbitXPan is true")]
         [Range(0.1f, 10.0f)]
@@ -67,7 +70,7 @@ namespace DigitalRubyShared
         public float OrbitYMaxDegrees = 0.0f;
 
         [Tooltip("Whether the orbit on the y axis is a pan (move sideways) instead of an orbit.")]
-        public bool OrbitYPan;
+        public PanOrbitMovementType YAxisMovementType = PanOrbitMovementType.Orbit;
 
         [Tooltip("Speed if OrbitYPan is true.")]
         [Range(0.1f, 10.0f)]
@@ -94,9 +97,42 @@ namespace DigitalRubyShared
         [Tooltip("Whether the pan and rotate orbit gestures must start on the orbit target to orbit. The tap gesture always requires that it be on the orbit target.")]
         public bool RequireOrbitGesturesToStartOnTarget;
 
-        private ScaleGestureRecognizer scaleGesture;
-        private PanGestureRecognizer panGesture;
-        private TapGestureRecognizer tapGesture;
+        /// <summary>
+        /// Types of movement
+        /// </summary>
+        public enum PanOrbitMovementType
+        {
+            /// <summary>
+            /// Orbit only
+            /// </summary>
+            Orbit,
+
+            /// <summary>
+            /// Pan only
+            /// </summary>
+            Pan,
+
+            /// <summary>
+            /// One touch orbit, two touch pan
+            /// </summary>
+            OrbitWithTwoFingerPan
+        }
+
+        /// <summary>
+        /// Scale gesture to zoom in and out
+        /// </summary>
+        public ScaleGestureRecognizer ScaleGesture { get; private set; }
+
+        /// <summary>
+        /// Pan gesture to orbit
+        /// </summary>
+        public PanGestureRecognizer PanGesture { get; private set; }
+
+        /// <summary>
+        /// Tap gesture to tap on orbit target
+        /// </summary>
+        public TapGestureRecognizer TapGesture { get; private set; }
+
         private float xDegrees;
         private float yDegrees;
         private Vector2 panVelocity;
@@ -107,27 +143,28 @@ namespace DigitalRubyShared
         private void Start()
         {
             // create a scale gesture to zoom orbiter in and out
-            scaleGesture = new ScaleGestureRecognizer();
-            scaleGesture.StateUpdated += ScaleGesture_Updated;
+            ScaleGesture = new ScaleGestureRecognizer();
+            ScaleGesture.StateUpdated += ScaleGesture_Updated;
+            ScaleGesture.ThresholdUnits = ZoomThresholdUnits;
 
             // pan gesture
-            panGesture = new PanGestureRecognizer();
-            panGesture.MaximumNumberOfTouchesToTrack = 2;
-            panGesture.StateUpdated += PanGesture_Updated;
+            PanGesture = new PanGestureRecognizer();
+            PanGesture.MaximumNumberOfTouchesToTrack = 2;
+            PanGesture.StateUpdated += PanGesture_Updated;
 
             // create a tap gesture that only executes on the target, note that this requires a physics ray caster on the camera
-            tapGesture = new TapGestureRecognizer();
-            tapGesture.StateUpdated += TapGesture_Updated;
-            tapGesture.PlatformSpecificView = OrbitTarget.gameObject;
+            TapGesture = new TapGestureRecognizer();
+            TapGesture.StateUpdated += TapGesture_Updated;
+            TapGesture.PlatformSpecificView = OrbitTarget.gameObject;
 
-            FingersScript.Instance.AddGesture(scaleGesture);
-            FingersScript.Instance.AddGesture(panGesture);
-            FingersScript.Instance.AddGesture(tapGesture);
+            FingersScript.Instance.AddGesture(ScaleGesture);
+            FingersScript.Instance.AddGesture(PanGesture);
+            FingersScript.Instance.AddGesture(TapGesture);
 
             if (RequireOrbitGesturesToStartOnTarget)
             {
-                scaleGesture.PlatformSpecificView = OrbitTarget.gameObject;
-                panGesture.PlatformSpecificView = OrbitTarget.gameObject;
+                ScaleGesture.PlatformSpecificView = OrbitTarget.gameObject;
+                PanGesture.PlatformSpecificView = OrbitTarget.gameObject;
             }
 
             // point oribiter at target
@@ -141,11 +178,11 @@ namespace DigitalRubyShared
                 allowOrbitWhileZooming = AllowOrbitWhileZooming;
                 if (allowOrbitWhileZooming)
                 {
-                    scaleGesture.AllowSimultaneousExecution(panGesture);
+                    ScaleGesture.AllowSimultaneousExecution(PanGesture);
                 }
                 else
                 {
-                    scaleGesture.DisallowSimultaneousExecution(panGesture);
+                    ScaleGesture.DisallowSimultaneousExecution(PanGesture);
                 }
             }
             Vector3 startPos = Orbiter.transform.position;
@@ -156,19 +193,37 @@ namespace DigitalRubyShared
             zoomSpeed *= OrbitInertia;
         }
 
-        private float IntersectRaySphere(Vector3 rayOrigin, Vector3 rayDir, Vector3 sphereCenter, float sphereRadius)
+        private bool IntersectRaySphere(Vector3 rayOrigin, Vector3 rayDir, Vector3 sphereCenter, float sphereRadius, out float distanceToSphere, out Vector3 intersectPos)
         {
-            sphereCenter = rayOrigin - sphereCenter;
-            float rayLength = float.MaxValue;
-            float b = Vector3.Dot(rayDir, sphereCenter);
-            float c = Vector3.Dot(sphereCenter, sphereCenter) - (sphereRadius * sphereRadius);
+            Vector3 m = rayOrigin - sphereCenter;
+            float b = Vector3.Dot(m, rayDir);
+            float c = Vector3.Dot(m, m) - (sphereRadius * sphereRadius);
+
+            // Exit if r’s origin outside s (c > 0) and r pointing away from s (b > 0) 
+            if (c > 0.0f && b > 0.0f)
+            {
+                distanceToSphere = 0.0f;
+                intersectPos = Vector3.zero;
+                return false;
+            }
             float discr = (b * b) - c;
-            float t = Mathf.Sqrt(discr * (discr > 0.0f ? 1.0f : 0.0f));
-            b = -b;
-            float distanceToSphere = Mathf.Clamp(b - t, 0.0f, rayLength);
-            float intersectAmount = Mathf.Clamp(b + t, 0.0f, rayLength);
-            intersectAmount = intersectAmount - distanceToSphere;
-            return (intersectAmount > 0.0f ? Mathf.Max(distanceToSphere, Mathf.Epsilon) : 0.0f);
+
+            // A negative discriminant corresponds to ray missing sphere 
+            if (discr < 0.0f)
+            {
+                distanceToSphere = 0.0f;
+                intersectPos = Vector3.zero;
+                return false;
+            }
+
+            // Ray now found to intersect sphere, compute smallest t value of intersection
+            // If t is negative, ray started inside sphere so clamp t to zero 
+            distanceToSphere = Mathf.Max(0.0f, -b - Mathf.Sqrt(discr));
+
+            // set intersect point
+            intersectPos = rayOrigin + (distanceToSphere * rayDir);
+
+            return true;
         }
 
         private void ClampDistance(Vector3 startPos)
@@ -178,13 +233,15 @@ namespace DigitalRubyShared
             {
                 Vector3 targetPos = OrbitTarget.transform.position;
                 Vector3 dirFromTarget = (orbitPos - targetPos).normalized;
-                float d;
+                Vector3 intersectPos;
+                float distanceToSphere;
 
                 // check if moved through min distance sphere, if so put back to start
-                if (MinimumDistance > 0.0f && (d = IntersectRaySphere(startPos, (orbitPos - startPos).normalized, targetPos, MinimumDistance)) > 0.0f &&
-                    d < Vector3.Distance(startPos, orbitPos))
+                if (MinimumDistance > 0.0f && IntersectRaySphere(startPos, (orbitPos - startPos).normalized, targetPos, MinimumDistance, out distanceToSphere, out intersectPos) &&
+                    distanceToSphere <= 0.0f)
                 {
-                    Orbiter.transform.position = orbitPos = targetPos + ((startPos - targetPos).normalized * MinimumDistance);
+                    // position orbiter at sphere intersection point plus a tiny bit extra
+                    Orbiter.transform.position = targetPos + (dirFromTarget * (MinimumDistance * (1.0f + Mathf.Epsilon)));
                     panVelocity = Vector3.zero;
                     zoomSpeed = 0.0f;
                 }
@@ -194,7 +251,7 @@ namespace DigitalRubyShared
                     float newDistance = Mathf.Clamp(distance, MinimumDistance, MaximumDistance);
                     if (newDistance != distance)
                     {
-                        Orbiter.transform.position = targetPos + (dirFromTarget * distance);
+                        Orbiter.transform.position = targetPos + (dirFromTarget * newDistance);
                         panVelocity = Vector3.zero;
                         zoomSpeed = 0.0f;
                     }
@@ -236,7 +293,7 @@ namespace DigitalRubyShared
             // orbit the target in either direction depending on pan gesture delta x and y
             if (OrbitXSpeed != 0.0f && yVelocity != 0.0f)
             {
-                if (OrbitYPan)
+                if (YAxisMovementType == PanOrbitMovementType.Pan || (YAxisMovementType == PanOrbitMovementType.OrbitWithTwoFingerPan && PanGesture.CurrentTrackedTouches.Count > 1))
                 {
                     PerformPan(new Vector3(0.0f, yVelocity * Mathf.Abs(OrbitYPanSpeed) * Time.deltaTime, 0.0f), OrbitYPanLimit);
                 }
@@ -261,7 +318,7 @@ namespace DigitalRubyShared
             }
             if (OrbitYSpeed != 0.0f && xVelocity != 0.0f)
             {
-                if (OrbitXPan)
+                if (XAxisMovementType == PanOrbitMovementType.Pan || (XAxisMovementType == PanOrbitMovementType.OrbitWithTwoFingerPan && PanGesture.CurrentTrackedTouches.Count > 1))
                 {
                     PerformPan(new Vector3(xVelocity * Mathf.Abs(OrbitXPanSpeed) * Time.deltaTime, 0.0f, 0.0f), OrbitXPanLimit);
                 }
@@ -286,11 +343,10 @@ namespace DigitalRubyShared
             }
         }
 
-        private void TapGesture_Updated(GestureRecognizer gesture)
+        private void TapGesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Ended)
             {
-                Debug.Log("Orbit target tapped!");
                 if (OrbitTargetTapped != null)
                 {
                     OrbitTargetTapped.Invoke();
@@ -298,7 +354,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void PanGesture_Updated(GestureRecognizer gesture)
+        private void PanGesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
             // if gesture is not executing, exit function
             if (gesture.State != GestureRecognizerState.Executing)
@@ -336,7 +392,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void ScaleGesture_Updated(GestureRecognizer gesture)
+        private void ScaleGesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
             // if gesture is not executing, exit function
             if (gesture.State != GestureRecognizerState.Executing)
@@ -344,13 +400,13 @@ namespace DigitalRubyShared
                 return;
             }
 
-            if (scaleGesture.ScaleMultiplier > 1.0f)
+            if (ScaleGesture.ScaleMultiplier > 1.0f)
             {
-                zoomSpeed += (scaleGesture.ScaleMultiplier * ZoomSpeed);
+                zoomSpeed += (ScaleGesture.ScaleMultiplier * ZoomSpeed);
             }
-            else if (scaleGesture.ScaleMultiplier < 1.0f)
+            else if (ScaleGesture.ScaleMultiplier < 1.0f)
             {
-                zoomSpeed -= ((1.0f / scaleGesture.ScaleMultiplier) * ZoomSpeed);
+                zoomSpeed -= ((1.0f / ScaleGesture.ScaleMultiplier) * ZoomSpeed);
             }
         }
 
@@ -361,9 +417,9 @@ namespace DigitalRubyShared
                 return true;
             }
 
-            float unitsX = Mathf.Abs(panGesture.DistanceX / DeviceInfo.UnitMultiplier);
-            float unitsY = Mathf.Abs(panGesture.DistanceY / DeviceInfo.UnitMultiplier);
-            if (lockedAxis == 0 && unitsX <= panGesture.ThresholdUnits && unitsY <= panGesture.ThresholdUnits)
+            float unitsX = Mathf.Abs(DeviceInfo.PixelsToUnits(PanGesture.DistanceX));
+            float unitsY = Mathf.Abs(DeviceInfo.PixelsToUnits(PanGesture.DistanceY));
+            if (lockedAxis == 0 && unitsX <= PanGesture.ThresholdUnits && unitsY <= PanGesture.ThresholdUnits)
             {
                 return false;
             }

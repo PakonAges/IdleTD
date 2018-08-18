@@ -24,18 +24,27 @@ namespace DigitalRubyShared
         [Tooltip("Whether to bring the object to the front when a gesture executes on it")]
         public bool BringToFront = true;
 
-        private LongPressGestureRecognizer longPressGesture;
+        [Tooltip("Scale to increase object by when a drag starts. When drags stops, scale is returned to normal.")]
+        [Range(1.0f, 1.5f)]
+        public float DragScale = 1.1f;
+
+        /// <summary>
+        /// Long press gesture to start drag
+        /// </summary>
+        public LongPressGestureRecognizer LongPressGesture { get; private set; }
+
         private Rigidbody2D rigidBody;
         private SpriteRenderer spriteRenderer;
         private int startSortOrder;
         private float panZ;
         private Vector3 panOffset;
 
-        private void LongPressGestureUpdated(GestureRecognizer r)
+        private void LongPressGestureUpdated(DigitalRubyShared.GestureRecognizer r)
         {
             FingersPanRotateScaleComponentScript.StartOrResetGesture(r, BringToFront, Camera, gameObject, spriteRenderer, GestureRecognizerComponentScriptBase.GestureObjectMode.RequireIntersectWithGameObject);
             if (r.State == GestureRecognizerState.Began)
             {
+                transform.localScale *= DragScale;
                 panZ = Camera.WorldToScreenPoint(transform.position).z;
                 panOffset = transform.position - Camera.ScreenToWorldPoint(new Vector3(r.FocusX, r.FocusY, panZ));
                 if (DragStarted != null)
@@ -62,6 +71,7 @@ namespace DigitalRubyShared
             }
             else if (r.State == GestureRecognizerState.Ended)
             {
+                transform.localScale /= DragScale;
                 if (spriteRenderer != null && BringToFront)
                 {
                     spriteRenderer.sortingOrder = startSortOrder;
@@ -76,15 +86,15 @@ namespace DigitalRubyShared
         private void Start()
         {
             this.Camera = (this.Camera == null ? Camera.main : this.Camera);
-            longPressGesture = new LongPressGestureRecognizer();
-            longPressGesture.StateUpdated += LongPressGestureUpdated;
+            LongPressGesture = new LongPressGestureRecognizer();
+            LongPressGesture.StateUpdated += LongPressGestureUpdated;
             rigidBody = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             if (spriteRenderer != null)
             {
                 startSortOrder = spriteRenderer.sortingOrder;
             }
-            FingersScript.Instance.AddGesture(longPressGesture);
+            FingersScript.Instance.AddGesture(LongPressGesture);
         }
 
         private void Update()

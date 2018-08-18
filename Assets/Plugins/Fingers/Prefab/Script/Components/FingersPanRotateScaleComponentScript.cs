@@ -33,8 +33,22 @@ namespace DigitalRubyShared
         [Tooltip("The mode to execute in, can be require over game object or allow on any game object.")]
         public GestureRecognizerComponentScriptBase.GestureObjectMode Mode = GestureRecognizerComponentScriptBase.GestureObjectMode.RequireIntersectWithGameObject;
 
+        [Tooltip("The minimum and maximum scale. 0 for no limits.")]
+        public Vector2 MinMaxScale;
+
+        /// <summary>
+        /// Allow moving the target
+        /// </summary>
         public PanGestureRecognizer PanGesture { get; private set; }
+
+        /// <summary>
+        /// Allow scaling the target
+        /// </summary>
         public ScaleGestureRecognizer ScaleGesture { get; private set; }
+
+        /// <summary>
+        /// Allow rotating the target
+        /// </summary>
         public RotateGestureRecognizer RotateGesture { get; private set; }
 
         private Rigidbody2D rigidBody2D;
@@ -48,7 +62,7 @@ namespace DigitalRubyShared
 
         private static readonly List<RaycastResult> captureRaycastResults = new List<RaycastResult>();
 
-        public static GameObject StartOrResetGesture(GestureRecognizer r, bool bringToFront, Camera camera, GameObject obj, SpriteRenderer spriteRenderer, GestureRecognizerComponentScriptBase.GestureObjectMode mode)
+        public static GameObject StartOrResetGesture(DigitalRubyShared.GestureRecognizer r, bool bringToFront, Camera camera, GameObject obj, SpriteRenderer spriteRenderer, GestureRecognizerComponentScriptBase.GestureObjectMode mode)
         {
             GameObject result = null;
             if (r.State == GestureRecognizerState.Began)
@@ -88,7 +102,7 @@ namespace DigitalRubyShared
             return 0;
         }
 
-        private static GameObject GestureIntersectsObject(GestureRecognizer r, Camera camera, GameObject obj, GestureRecognizerComponentScriptBase.GestureObjectMode mode)
+        private static GameObject GestureIntersectsObject(DigitalRubyShared.GestureRecognizer r, Camera camera, GameObject obj, GestureRecognizerComponentScriptBase.GestureObjectMode mode)
         {
             captureRaycastResults.Clear();
             PointerEventData p = new PointerEventData(EventSystem.current);
@@ -120,7 +134,7 @@ namespace DigitalRubyShared
             return null;
         }
 
-        private void PanGestureUpdated(GestureRecognizer r)
+        private void PanGestureUpdated(DigitalRubyShared.GestureRecognizer r)
         {
             GameObject obj = StartOrResetGesture(r, BringToFront, Camera, gameObject, spriteRenderer, Mode);
             if (r.State == GestureRecognizerState.Began)
@@ -163,7 +177,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void ScaleGestureUpdated(GestureRecognizer r)
+        private void ScaleGestureUpdated(DigitalRubyShared.GestureRecognizer r)
         {
             GameObject obj = StartOrResetGesture(r, BringToFront, Camera, gameObject, spriteRenderer, Mode);
             if (r.State == GestureRecognizerState.Began)
@@ -172,7 +186,17 @@ namespace DigitalRubyShared
             }
             else if (r.State == GestureRecognizerState.Executing && _transform != null)
             {
-                _transform.localScale *= ScaleGesture.ScaleMultiplier;
+                // assume uniform scale
+                float scale = _transform.localScale.x * ScaleGesture.ScaleMultiplier;
+
+                if (MinMaxScale.x > 0.0f && MinMaxScale.y >= MinMaxScale.x)
+                {
+                    scale = Mathf.Clamp(scale, MinMaxScale.x, MinMaxScale.y);
+                }
+
+                // don't mess with z scale for 2D
+                float zScale = (rigidBody2D == null && spriteRenderer == null && canvasRenderer == null ? scale : _transform.localScale.z);
+                _transform.localScale = new Vector3(scale, scale, zScale);
             }
             else if (r.State == GestureRecognizerState.Ended)
             {
@@ -180,7 +204,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void RotateGestureUpdated(GestureRecognizer r)
+        private void RotateGestureUpdated(DigitalRubyShared.GestureRecognizer r)
         {
             GameObject obj = StartOrResetGesture(r, BringToFront, Camera, gameObject, spriteRenderer, Mode);
             if (r.State == GestureRecognizerState.Began)

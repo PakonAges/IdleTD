@@ -66,7 +66,7 @@ namespace DigitalRubyShared
     /// A swipe gesture is a rapid movement in one of five directions: left, right, down, up or any.
     /// A swipe gesture only signals the Possible, Ended or Failed state.
     /// </summary>
-    public class SwipeGestureRecognizer : GestureRecognizer
+    public class SwipeGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         private bool CalculateEndDirection(float x, float y)
         {
@@ -119,7 +119,7 @@ namespace DigitalRubyShared
 
         private void CheckForSwipeCompletion(bool end)
         {
-            if (Speed < (MinimumSpeedUnits * DeviceInfo.PixelsPerInch) || !TrackedTouchCountIsWithinRange)
+            if (Speed < DeviceInfo.UnitsToPixels(MinimumSpeedUnits) || !TrackedTouchCountIsWithinRange)
             {
                 // reset focus to current position, we are not going fast enough
                 CalculateFocus(CurrentTrackedTouches, true);

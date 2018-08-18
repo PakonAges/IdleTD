@@ -2,7 +2,7 @@ Fingers, by Jeff Johnson
 Fingers (c) 2015 Digital Ruby, LLC
 http://www.digitalruby.com
 
-Version 2.3.5
+Version 2.4.6
 
 See ChangeLog.txt for history.
 
@@ -12,7 +12,7 @@ If you've used UIGestureRecognizer on iOS, you should feel right at home using F
 
 Tutorial
 --------------------
-Please note that the tutorials may reference the "Updated" property of the GestureRecognizer class. This property has been deprecated in favor of the "StateUpdated" property, the "Updated" property will be removed in a future release.
+Please note that the tutorials may reference the "Updated" property of the DigitalRubyShared.GestureRecognizer class. This property has been deprecated in favor of the "StateUpdated" property, the "Updated" property will be removed in a future release.
 
 Complete overview: https://youtu.be/97tJz0y52Fw
 Image recognition, OCR and shapes: https://youtu.be/7dvP_zhlWvU and https://youtu.be/6JgPYK38G9o
@@ -29,6 +29,7 @@ To get started, perform the following:
 - You are welcome to drag the FingersScriptPrefab object into your scene as well if you want, but this is not necessary anymore.
 - Add "using DigitalRubyShared;" to the top of your scripts to include the gestures and framework.
 - Create some gestures. There are many example scripts and scenes for you to refer to. The component menu allows adding gestures directly in the editor.
+- Add colliders to elements that you want to receive touches. Make sure your camera has physics raycasters as wel.
 
 Fingers script has these properties:
 - Treat mouse as pointer (default is true, useful for testing in the player for some gestures). Disable this if you are using Unity Remote or are running on a touch screen like Surface Pro.
@@ -54,9 +55,18 @@ Options for allowing gestures on UI elements:
 - You can use the CaptureGestureHandler callback on the fingers script to run custom logic to determine whether the gesture can pass through a UI element. See DemoScript.cs, CaptureGestureHandler function.
 - You can use the ComponentTypesToDenyPassThrough and ComponentTypesToIgnorePassThrough properties of FingersScript to customize pass through behavior by adding additional component types.
 
-Fingers touch gestures supports canvas elements that are in screen space overlay mode along with 2D and 3D colliders.
-
 See the DemoScript.cs file for more details and examples.
+
+Canvas Coordinates
+-------------------
+If you need to convert from screen space to canvas space, use this Unity method:
+
+// convert from screen space to the coordinate system of a canvas object
+GameObject canvasObject = canvas; // can be a 'canvas', 'image', 'button' or another canvas ui element.
+Vector2 canvasPoint;
+RectTransform contentRectTransform = canvasObject.GetComponent<RectTransform>();
+RectTransformUtility.ScreenPointToLocalPointInRectangle(contentRectTransform, new Vector2(gesture.FocusX, gesture.FocusY), null, out canvasPoint);
+// canvasPoint is in the coordinate system of canvasObject now.
 
 Standard Gestures:
 --------------------
@@ -90,7 +100,7 @@ The joystick now has a prefab! It must be placed under a Canvas.
 
 DPad:
 --------------------
-FingersDPadScript allows use of a DPad. You can swap out the images and change the colliders. Please watch the DPad tutorial to see how this works in full.
+FingersDPadScript allows use of a DPad. You can swap out the images and change the colliders. Please watch the DPad tutorial and scene to see how this works in full.
 
 The DPad now has a prefab! It must be placed under a Canvas.
 
@@ -109,13 +119,14 @@ Misc:
 Troubleshooting / FAQ:
 --------------------
 Q: My gestures aren't working.
-A: Did you add a physics and/or physics2d ray caster to your camera? What about pass through objects, have you set those up properly?
+A: Did you add a physics and/or physics2d ray caster to your camera? What about pass through objects, have you set those up properly? Did you add collider or collider2d to your game object?
 
 Q: Simultaneous gestures are not working.
 A: Ensure you call the allow simultaneous method on one of the gestures. Also consider trying ClearTrackedTouchesOnEndOrFail = true.
 
 Q: My gesture is always failing.
 A: Most likely you need to set the platform specific view on the gesture. You can set this to the game object of the canvas, or another game object with the UI element or game object collider you want the gesture to execute on.
+A: In Player Settings > Other Settings > Turn on Prebake Collision Meshes. Turn off Strip Engine Code.
 
 Q: Help / I'm lost!?!?
 A: I'm available to answer your questions or feedback at support@digitalruby.com

@@ -21,7 +21,7 @@ namespace DigitalRubyShared
     /// <summary>
     /// A tap gesture detects one or more consecutive taps. The ended state denotes a successful tap.
     /// </summary>
-    public class TapGestureRecognizer : GestureRecognizer
+    public class TapGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         private int tapCount;
         private readonly Stopwatch timer = new Stopwatch();

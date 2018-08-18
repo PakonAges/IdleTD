@@ -31,18 +31,21 @@ namespace DigitalRubyShared
         [Range(0.01f, 1000.0f)]
         public float RotationSpeed = 500.0f;
 
-        private RotateGestureRecognizer rotationGesture;
+        /// <summary>
+        /// Rotation gesture
+        /// </summary>
+        public RotateGestureRecognizer RotationGesture { get; private set; }
 
         private void Start()
         {
-            rotationGesture = new RotateGestureRecognizer();
-            rotationGesture.StateUpdated += RotationGesture_Updated;
-            FingersScript.Instance.AddGesture(rotationGesture);
+            RotationGesture = new RotateGestureRecognizer();
+            RotationGesture.StateUpdated += RotationGesture_Updated;
+            FingersScript.Instance.AddGesture(RotationGesture);
         }
 
-        private void RotationGesture_Updated(GestureRecognizer gesture)
+        private void RotationGesture_Updated(DigitalRubyShared.GestureRecognizer gesture)
         {
-            Orbiter.transform.RotateAround(OrbitTarget.transform.position, Axis, rotationGesture.RotationDegreesDelta * Time.deltaTime * RotationSpeed);
+            Orbiter.transform.RotateAround(OrbitTarget.transform.position, Axis, RotationGesture.RotationDegreesDelta * Time.deltaTime * RotationSpeed);
         }
     }
 }

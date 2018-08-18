@@ -324,7 +324,7 @@ namespace DigitalRubyShared
     /// <summary>
     /// Attempts to create an image out of the gesture and compare with a set of images
     /// </summary>
-    public class ImageGestureRecognizer : GestureRecognizer
+    public class ImageGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         #region Constants
 

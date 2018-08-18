@@ -10,7 +10,7 @@ using System;
 
 namespace DigitalRubyShared
 {
-    public class OneTouchScaleGestureRecognizer : GestureRecognizer
+    public class OneTouchScaleGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
         public OneTouchScaleGestureRecognizer()
         {

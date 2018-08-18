@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿//
+// Fingers Gestures
+// (c) 2015 Digital Ruby, LLC
+// http://www.digitalruby.com
+// Source code may be used for personal or commercial projects.
+// Source code may NOT be redistributed or sold.
+// 
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -143,7 +151,7 @@ namespace DigitalRubyShared
             UpdateLineAnimation();
         }
 
-        public void GestureCallback(GestureRecognizer gesture)
+        public void GestureCallback(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Began)
             {

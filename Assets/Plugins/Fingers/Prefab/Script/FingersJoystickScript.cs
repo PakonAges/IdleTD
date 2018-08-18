@@ -92,7 +92,7 @@ namespace DigitalRubyShared
             }
         }
 
-        private void PanGestureUpdated(GestureRecognizer gesture)
+        private void PanGestureUpdated(DigitalRubyShared.GestureRecognizer gesture)
         {
             if (gesture.State == GestureRecognizerState.Executing)
             {
