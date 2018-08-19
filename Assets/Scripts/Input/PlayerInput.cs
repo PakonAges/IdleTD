@@ -1,13 +1,21 @@
 ﻿using UnityEngine;
 using DigitalRubyShared;
 
-public class PlayerInput : MonoBehaviour {
+public class PlayerInput : MonoBehaviour
+{
+    public Transform deBugBeginDrag;
+    private Vector3 _dragOffset;
+    private Vector3 _origFocusPos;
 
-    public Camera cam;
+    public Transform CameraFocus;
+    public Camera MainCam;
+    private Vector3 StartDragPoint;
 
     private PanGestureRecognizer panGesture;
     private TapGestureRecognizer tapGesture;
     private ScaleGestureRecognizer scaleGesture;
+
+    public bool ShowToches = false;
 
     void Start () {
         CreateTapGesture();
@@ -21,7 +29,7 @@ public class PlayerInput : MonoBehaviour {
         FingersScript.Instance.CaptureGestureHandler = CaptureGestureHandler;
 
         // show touches, only do this for debugging as it can interfere with other canvases
-        FingersScript.Instance.ShowTouches = false;
+        FingersScript.Instance.ShowTouches = ShowToches;
     }
 
     private void CreateTapGesture()
@@ -36,30 +44,70 @@ public class PlayerInput : MonoBehaviour {
         if (gesture.State == GestureRecognizerState.Ended)
         {
             DebugText("Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
+
+            //Vector3 pos = new Vector3(gesture.FocusX, gesture.FocusY, 0.0f);
+            //Ray ray = MainCam.ScreenPointToRay(pos);
+            //float delta = ray.origin.y;
+            //Vector3 dirNorm = ray.direction / ray.direction.y;
+            //Vector3 intersetionPos = ray.origin - dirNorm * delta;
+
+            //deBugBeginDrag.position = intersetionPos;
         }
     }
 
     private void CreatePanGesture()
     {
         panGesture = new PanGestureRecognizer();
-        panGesture.MinimumNumberOfTouchesToTrack = 2;
+        panGesture.MinimumNumberOfTouchesToTrack = 1;
         panGesture.StateUpdated += PanGestureCallback;
         FingersScript.Instance.AddGesture(panGesture);
     }
 
     private void PanGestureCallback(GestureRecognizer gesture)
     {
-        if (gesture.State == GestureRecognizerState.Executing)
+        if (gesture.State == GestureRecognizerState.Began)
         {
-            DebugText("Panned, Location: {0}, {1}, Delta: {2}, {3}", gesture.FocusX, gesture.FocusY, gesture.DeltaX, gesture.DeltaY);
-
-            float deltaX = panGesture.DeltaX / 25.0f;
-            float deltaY = panGesture.DeltaY / 25.0f;
-            Vector3 pos = cam.transform.position;
-            pos.x += deltaX;
-            pos.y += deltaY;
-            cam.transform.position = pos;
+            DebugText("Drag began: {0}, {1}", gesture.FocusX, gesture.FocusY);
+            BeginDrag(gesture.FocusX, gesture.FocusY);
         }
+        else if (gesture.State == GestureRecognizerState.Executing)
+        {
+            DebugText("Drag moved: {0}, {1}", gesture.FocusX, gesture.FocusY);
+            DragTo(gesture.FocusX, gesture.FocusY);
+        }
+        else if (gesture.State == GestureRecognizerState.Ended)
+        {
+            DebugText("Drag end: {0}, {1}, delta: {2}, {3}", gesture.FocusX, gesture.FocusY, gesture.DeltaX, gesture.DeltaY);
+            EndDrag(gesture.FocusX, gesture.FocusY);
+        }
+    }
+
+    void BeginDrag(float screenX, float screenY)
+    {
+        Vector3 pos = new Vector3(screenX, screenY, 0.0f);
+        Ray ray = MainCam.ScreenPointToRay(pos);
+        float delta = ray.origin.y;
+        Vector3 dirNorm = ray.direction / ray.direction.y;
+        _dragOffset = ray.origin - dirNorm * delta;
+
+        _origFocusPos = CameraFocus.position;
+    }
+
+    void DragTo(float screenX, float screenY)
+    {
+        Vector3 pos = new Vector3(screenX, screenY, 0.0f);
+        Ray ray = MainCam.ScreenPointToRay(pos);
+
+        float delta = ray.origin.y;
+        Vector3 dirNorm = ray.direction / ray.direction.y;
+        Vector3 intersetionPos = ray.origin - dirNorm * delta;
+
+        CameraFocus.position = _origFocusPos + intersetionPos - _dragOffset;
+    }
+
+    void EndDrag(float screenX, float screenY)
+    {
+        _dragOffset = Vector3.zero;
     }
 
     private void CreateScaleGesture()
@@ -74,7 +122,7 @@ public class PlayerInput : MonoBehaviour {
         if (gesture.State == GestureRecognizerState.Executing)
         {
             DebugText("Scaled: {0}, Focus: {1}, {2}", scaleGesture.ScaleMultiplier, scaleGesture.FocusX, scaleGesture.FocusY);
-            cam.orthographicSize *= scaleGesture.ScaleMultiplier;
+            //cam.orthographicSize *= scaleGesture.ScaleMultiplier;
         }
     }
 
