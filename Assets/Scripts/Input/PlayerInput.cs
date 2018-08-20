@@ -1,13 +1,22 @@
 ﻿using UnityEngine;
 using DigitalRubyShared;
+using Cinemachine;
 
 public class PlayerInput : MonoBehaviour
 {
+    [Header("Camera Setup")]
+    public Transform CameraFocus;
+    public CinemachineVirtualCamera MainVirtualCamera;
+    public Camera MainCam;
+    public Vector3 DefaultCameraFocus = new Vector3(6.0f, 0.0f, -5.0f);
+    public int defaultZoom = 20;
+    public int maxZoom = 30;
+    public int minZoom = 15;
+
     private Vector3 _dragOffset;
     private Vector3 _origFocusPos;
 
-    public Transform CameraFocus;
-    public Camera MainCam;
+    //public CinemachineVirtualCamera VirtualCamera;
 
     private PanGestureRecognizer panGesture;
     private TapGestureRecognizer tapGesture;
@@ -28,6 +37,14 @@ public class PlayerInput : MonoBehaviour
 
         // show touches, only do this for debugging as it can interfere with other canvases
         FingersScript.Instance.ShowTouches = ShowToches;
+
+        SetupDefaultCamera();
+    }
+
+    void SetupDefaultCamera()
+    {
+        CameraFocus.position = DefaultCameraFocus;
+        MainVirtualCamera.m_Lens.FieldOfView = defaultZoom;
     }
 
     private void CreateTapGesture()
@@ -112,7 +129,9 @@ public class PlayerInput : MonoBehaviour
         if (gesture.State == GestureRecognizerState.Executing)
         {
             //DebugText("Scaled: {0}, Focus: {1}, {2}", scaleGesture.ScaleMultiplier, scaleGesture.FocusX, scaleGesture.FocusY);
-            //cam.orthographicSize *= scaleGesture.ScaleMultiplier;
+
+            MainVirtualCamera.m_Lens.FieldOfView = Mathf.Clamp(MainVirtualCamera.m_Lens.FieldOfView * scaleGesture.ScaleMultiplier,minZoom,maxZoom);
+            
         }
     }
 
