@@ -1,8 +1,6 @@
-﻿using System;
-using UnityEngine;
-using UnityEngine.EventSystems;
+﻿using UnityEngine;
 
-public class MapTile : MonoBehaviour, IPointerClickHandler {
+public class MapTile : MonoBehaviour {
 
     Renderer rend;
     Color defaultColor;
@@ -12,13 +10,6 @@ public class MapTile : MonoBehaviour, IPointerClickHandler {
         rend = GetComponentInChildren<Renderer>();
         defaultColor = rend.material.color;
     }
-
-    #region IPointerClickHandler implementation
-    public virtual void OnPointerClick(PointerEventData eventData)
-    {
-        //throw new NotImplementedException();
-    }
-    #endregion
 
     void OnMouseDown()
     {

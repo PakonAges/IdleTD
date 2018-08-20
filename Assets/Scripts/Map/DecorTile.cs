@@ -1,14 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-
-public class DecorTile : MapTile
+﻿public class DecorTile : MapTile
 {
-    #region IPointerClickHandler implementation
-    public override void OnPointerClick(PointerEventData eventData)
-    {
-        DeselectTower();
-    }
-    #endregion
 
     void DeselectTower()
     {
