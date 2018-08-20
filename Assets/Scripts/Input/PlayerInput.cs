@@ -3,13 +3,11 @@ using DigitalRubyShared;
 
 public class PlayerInput : MonoBehaviour
 {
-    public Transform deBugBeginDrag;
     private Vector3 _dragOffset;
     private Vector3 _origFocusPos;
 
     public Transform CameraFocus;
     public Camera MainCam;
-    private Vector3 StartDragPoint;
 
     private PanGestureRecognizer panGesture;
     private TapGestureRecognizer tapGesture;
@@ -43,15 +41,7 @@ public class PlayerInput : MonoBehaviour
     {
         if (gesture.State == GestureRecognizerState.Ended)
         {
-            DebugText("Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
-
-            //Vector3 pos = new Vector3(gesture.FocusX, gesture.FocusY, 0.0f);
-            //Ray ray = MainCam.ScreenPointToRay(pos);
-            //float delta = ray.origin.y;
-            //Vector3 dirNorm = ray.direction / ray.direction.y;
-            //Vector3 intersetionPos = ray.origin - dirNorm * delta;
-
-            //deBugBeginDrag.position = intersetionPos;
+            //DebugText("Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
         }
     }
 
@@ -67,17 +57,17 @@ public class PlayerInput : MonoBehaviour
     {
         if (gesture.State == GestureRecognizerState.Began)
         {
-            DebugText("Drag began: {0}, {1}", gesture.FocusX, gesture.FocusY);
+            //DebugText("Drag began: {0}, {1}", gesture.FocusX, gesture.FocusY);
             BeginDrag(gesture.FocusX, gesture.FocusY);
         }
         else if (gesture.State == GestureRecognizerState.Executing)
         {
-            DebugText("Drag moved: {0}, {1}", gesture.FocusX, gesture.FocusY);
+            //DebugText("Drag moved: {0}, {1}", gesture.FocusX, gesture.FocusY);
             DragTo(gesture.FocusX, gesture.FocusY);
         }
         else if (gesture.State == GestureRecognizerState.Ended)
         {
-            DebugText("Drag end: {0}, {1}, delta: {2}, {3}", gesture.FocusX, gesture.FocusY, gesture.DeltaX, gesture.DeltaY);
+            //DebugText("Drag end: {0}, {1}, delta: {2}, {3}", gesture.FocusX, gesture.FocusY, gesture.DeltaX, gesture.DeltaY);
             EndDrag(gesture.FocusX, gesture.FocusY);
         }
     }
@@ -88,8 +78,8 @@ public class PlayerInput : MonoBehaviour
         Ray ray = MainCam.ScreenPointToRay(pos);
         float delta = ray.origin.y;
         Vector3 dirNorm = ray.direction / ray.direction.y;
-        _dragOffset = ray.origin - dirNorm * delta;
 
+        _dragOffset = ray.origin - dirNorm * delta;
         _origFocusPos = CameraFocus.position;
     }
 
@@ -102,7 +92,7 @@ public class PlayerInput : MonoBehaviour
         Vector3 dirNorm = ray.direction / ray.direction.y;
         Vector3 intersetionPos = ray.origin - dirNorm * delta;
 
-        CameraFocus.position = _origFocusPos + intersetionPos - _dragOffset;
+        CameraFocus.position = _origFocusPos - (intersetionPos - _dragOffset);
     }
 
     void EndDrag(float screenX, float screenY)
@@ -121,7 +111,7 @@ public class PlayerInput : MonoBehaviour
     {
         if (gesture.State == GestureRecognizerState.Executing)
         {
-            DebugText("Scaled: {0}, Focus: {1}, {2}", scaleGesture.ScaleMultiplier, scaleGesture.FocusX, scaleGesture.FocusY);
+            //DebugText("Scaled: {0}, Focus: {1}, {2}", scaleGesture.ScaleMultiplier, scaleGesture.FocusX, scaleGesture.FocusY);
             //cam.orthographicSize *= scaleGesture.ScaleMultiplier;
         }
     }
