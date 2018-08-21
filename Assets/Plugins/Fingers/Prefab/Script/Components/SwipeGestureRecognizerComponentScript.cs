@@ -39,6 +39,9 @@ namespace DigitalRubyShared
         [Tooltip("Whether to fail if the gesture changes direction mid swipe")]
         public bool FailOnDirectionChange;
 
+        [Tooltip("Whether to send begin and executing states. Default is true. If false, only possible, ended or failed state is sent.")]
+        public bool SendBeginExecutingStates = true;
+
         protected override void Start()
         {
             base.Start();

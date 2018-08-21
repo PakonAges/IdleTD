@@ -64,7 +64,6 @@ namespace DigitalRubyShared
 
     /// <summary>
     /// A swipe gesture is a rapid movement in one of five directions: left, right, down, up or any.
-    /// A swipe gesture only signals the Possible, Ended or Failed state.
     /// </summary>
     public class SwipeGestureRecognizer : DigitalRubyShared.GestureRecognizer
     {
@@ -144,6 +143,10 @@ namespace DigitalRubyShared
                     SetState(GestureRecognizerState.Ended);
                     ClearTrackedTouchesOnEndOrFail = temp;
                 }
+                else if (!SendBeginExecutingStates)
+                {
+                    SetState(GestureRecognizerState.Possible);
+                }
                 else if (State == GestureRecognizerState.Possible)
                 {
                     SetState(GestureRecognizerState.Began);
@@ -193,6 +196,7 @@ namespace DigitalRubyShared
             MinimumSpeedUnits = 3.0f; // must move 3 inches / second speed to execute
             DirectionThreshold = 1.5f;
             EndMode = SwipeGestureRecognizerEndMode.EndImmediately;
+            SendBeginExecutingStates = true;
         }
 
         public override void Reset()
@@ -247,5 +251,10 @@ namespace DigitalRubyShared
         /// </summary>
         /// <value>The end direction.</value>
         public SwipeGestureRecognizerDirection EndDirection { get; private set; }
+
+        /// <summary>
+        /// Whether to send begin and executing states. Default is true. If false, only possible, ended or failed state is sent.
+        /// </summary>
+        public bool SendBeginExecutingStates { get; set; }
     }
 }

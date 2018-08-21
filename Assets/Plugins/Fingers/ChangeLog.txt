@@ -1,5 +1,8 @@
 ﻿Changelog
 --------------------
+2.4.7	(2018-08-19)
+		- Add SendBeginExecutingStates to swipe gesture. Set to false to not send the begin and executing states.
+
 2.4.6	(2018-08-17)
 		- Tweaks / fixes to platform specific view and pass through.
 		- Fix orbit demo to show the tap in debug log.
