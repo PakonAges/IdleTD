@@ -3,6 +3,13 @@ using Zenject;
 
 public class Tower : MonoBehaviour
 {
+    //public Tile tile {get; private set;}
+
+    //public void SetTile(Tile tile){
+    // place tower on the tile
+    //}
+
+
     public TowerParameters TowerParameters;
 
     public TowerData TowerData;

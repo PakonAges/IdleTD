@@ -2,6 +2,17 @@
 
 public class MapTile : MonoBehaviour {
 
+    //private Object = null -> Tower or other object on this tile
+    //It can be separate object, or if there can be only one object - one field
+
+    //public void AddObject(obj) {
+    //add object to the field
+    
+    //public void RemoveUnit
+    //check if unit exist
+
+
+
     Renderer rend;
     Color defaultColor;
 
@@ -13,11 +24,11 @@ public class MapTile : MonoBehaviour {
 
     void OnMouseDown()
     {
-        rend.material.color = Color.magenta;
+        //rend.material.color = Color.magenta;
     }
 
     void OnMouseUp()
     {
-        rend.material.color = defaultColor;
+        //rend.material.color = defaultColor;
     }
 }

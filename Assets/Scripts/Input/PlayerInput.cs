@@ -13,6 +13,10 @@ public class PlayerInput : MonoBehaviour
     public int maxZoom = 30;
     public int minZoom = 15;
 
+    [Header("Input")]
+    public SelectionData TappedObject;
+    public LayerMask ClickSelectionLayer;
+
     private Vector3 _dragOffset;
     private Vector3 _origFocusPos;
 
@@ -59,6 +63,7 @@ public class PlayerInput : MonoBehaviour
         if (gesture.State == GestureRecognizerState.Ended)
         {
             //DebugText("Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
+            TappedObject.SelectedTile = MouseClickToMapTile(gesture.FocusX, gesture.FocusY);
         }
     }
 
@@ -91,12 +96,12 @@ public class PlayerInput : MonoBehaviour
 
     void BeginDrag(float screenX, float screenY)
     {
-        Vector3 pos = new Vector3(screenX, screenY, 0.0f);
-        Ray ray = MainCam.ScreenPointToRay(pos);
-        float delta = ray.origin.y;
-        Vector3 dirNorm = ray.direction / ray.direction.y;
+        Vector3 touchScreenPosition = new Vector3(screenX, screenY, 0.0f);
+        Ray touchRay = MainCam.ScreenPointToRay(touchScreenPosition);
+        float cameraHeightPosition = touchRay.origin.y;
+        Vector3 DirectionNormal = touchRay.direction / touchRay.direction.y;
 
-        _dragOffset = ray.origin - dirNorm * delta;
+        _dragOffset = touchRay.origin - DirectionNormal * cameraHeightPosition;
         _origFocusPos = CameraFocus.position;
     }
 
@@ -129,7 +134,6 @@ public class PlayerInput : MonoBehaviour
         if (gesture.State == GestureRecognizerState.Executing)
         {
             //DebugText("Scaled: {0}, Focus: {1}, {2}", scaleGesture.ScaleMultiplier, scaleGesture.FocusX, scaleGesture.FocusY);
-
             MainVirtualCamera.m_Lens.FieldOfView = Mathf.Clamp(MainVirtualCamera.m_Lens.FieldOfView * scaleGesture.ScaleMultiplier,minZoom,maxZoom);
             
         }
@@ -178,6 +182,41 @@ public class PlayerInput : MonoBehaviour
         foreach (GestureTouch t in FingersScript.Instance.CurrentTouches)
         {
             touchIds += ":" + t.Id + ":";
+        }
+    }
+
+    Vector3 MouseToGoundPlane(float screenX, float screenY)
+    {
+        Vector3 mousePos = new Vector3(screenX, screenY, 0.0f);
+        Ray mouseRay = MainCam.ScreenPointToRay(mousePos);
+        if (mouseRay.direction.y >= 0)
+        {
+            Debug.LogError("Mouse is pointing Up?");
+            return Vector3.zero;
+        }
+        float rayLength = (mouseRay.origin.y / mouseRay.direction.y);
+        return mouseRay.origin - (mouseRay.direction * rayLength);
+    }
+
+    MapTile MouseClickToMapTile(float screenX, float screenY)
+    {
+        Vector3 mousePos = new Vector3(screenX, screenY, 0.0f);
+        Ray mouseRay = MainCam.ScreenPointToRay(mousePos);
+
+        RaycastHit hitInfo;
+        if (Physics.Raycast(mouseRay, out hitInfo, ClickSelectionLayer))
+        {
+            var Tile = hitInfo.rigidbody.gameObject.GetComponent<MapTile>();
+            if (Tile == null)
+            {
+                Debug.Log("Clicked on the tile, but no script Attached");
+            }
+
+            return Tile;
+        }
+        else
+        {
+            return null;
         }
     }
 }
