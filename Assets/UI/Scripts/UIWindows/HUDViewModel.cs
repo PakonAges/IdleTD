@@ -5,12 +5,17 @@ using Zenject;
 [Binding]
 public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
 {
+
     //Injections
     private IntVariable _coins;
     private SignalBus _signalBus;
 
     //UI elements
-    private string coinsAmount = string.Empty;
+    private string _coinsAmount = string.Empty;
+    private bool _showSelectionInfo = false;
+
+    //Selection info
+    public SelectionData Selection;
 
     [Inject]
     public void Construct(  SignalBus signalBus,
@@ -21,16 +26,31 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
     }
 
     [Binding]
-    public string CoinsText
+    public bool ShowSelectionInfo
     {
-        get { return coinsAmount; }
+        get { return _showSelectionInfo; }
         set
         {
-            if (coinsAmount == value)
+            if (_showSelectionInfo == value)
             {
                 return;
             }
-            coinsAmount = value;
+            _showSelectionInfo = value;
+            OnPropertyChanged("ShowSelectionInfo");
+        }
+    }
+
+    [Binding]
+    public string CoinsText
+    {
+        get { return _coinsAmount; }
+        set
+        {
+            if (_coinsAmount == value)
+            {
+                return;
+            }
+            _coinsAmount = value;
             OnPropertyChanged("CoinsText");
         }
     }
@@ -77,4 +97,13 @@ public class HUDViewModel : UIWindow<HUDViewModel>, IDisposable
     {
         _uiManager.OpenWindow(UIcollection.Bank);
     }
+
+    //who will tell me, that tile was selected? Input? NO!
+    //Input just clicks
+    //Selection Data is the one who decides is if New Tile or not selected!
+
+    //when Tile selected -> Property changed
+    //Here I need to take info from SelectionData SO and fill HUD buttons/text
+    // -> I show Selection Button in HUD
+
 }

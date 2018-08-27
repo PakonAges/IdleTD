@@ -31,4 +31,14 @@ public class MapTile : MonoBehaviour {
     {
         //rend.material.color = defaultColor;
     }
+
+    public void SelectedVisualState()
+    {
+        rend.material.color = Color.magenta;
+    }
+
+    public void UnselectedVisualState()
+    {
+        rend.material.color = defaultColor;
+    }
 }

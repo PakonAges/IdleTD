@@ -63,7 +63,12 @@ public class PlayerInput : MonoBehaviour
         if (gesture.State == GestureRecognizerState.Ended)
         {
             //DebugText("Tapped at {0}, {1}", gesture.FocusX, gesture.FocusY);
-            TappedObject.SelectedTile = MouseClickToMapTile(gesture.FocusX, gesture.FocusY);
+            var selectedTile = MouseClickToMapTile(gesture.FocusX, gesture.FocusY);
+
+            if (selectedTile != null)
+            {
+                TappedObject.TileSelected(selectedTile);
+            }
         }
     }
 
@@ -202,14 +207,22 @@ public class PlayerInput : MonoBehaviour
     {
         Vector3 mousePos = new Vector3(screenX, screenY, 0.0f);
         Ray mouseRay = MainCam.ScreenPointToRay(mousePos);
-
         RaycastHit hitInfo;
+
         if (Physics.Raycast(mouseRay, out hitInfo, ClickSelectionLayer))
         {
+            var ObjectHitted = hitInfo.rigidbody.gameObject;
+
+            if (ObjectHitted == null)
+            {
+                return null;
+            }
+
             var Tile = hitInfo.rigidbody.gameObject.GetComponent<MapTile>();
+
             if (Tile == null)
             {
-                Debug.Log("Clicked on the tile, but no script Attached");
+                Debug.Log(string.Format("Clicked on the tile: {0}, but no MapTile script attached", ObjectHitted.name.ToString()));
             }
 
             return Tile;
