@@ -59,6 +59,8 @@ namespace DigitalRubyShared
         [Tooltip("Whether to allow the gesture to execute simultaneously with all other gestures.")]
         public bool AllowSimultaneousExecutionWithAllGestures;
 
+        public List<GestureRecognizerComponentScriptBase> RequireGestureRecognizersToFail;
+
         [Tooltip("Whether tracked touches are cleared when the gesture ends or fails, default is false. By setting to true, you allow the gesture to " +
             "possibly execute again with a different touch even if the original touch it failed on is still on-going. This is a special case, " +
             "so be sure to watch for problems if you set this to true, as leaving it false ensures the most correct behavior, especially " +
@@ -98,6 +100,10 @@ namespace DigitalRubyShared
                 {
                     Gesture.AllowSimultaneousExecution(gesture.GestureBase);
                 }
+            }
+            foreach (GestureRecognizerComponentScriptBase gesture in RequireGestureRecognizersToFail)
+            {
+                Gesture.AddRequiredGestureRecognizerToFail(gesture.GestureBase);
             }
             FingersScript.Instance.AddGesture(Gesture);
         }

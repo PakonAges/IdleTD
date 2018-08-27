@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // Fingers Gestures
 // (c) 2015 Digital Ruby, LLC
 // http://www.digitalruby.com
@@ -86,23 +86,18 @@ namespace DigitalRubyShared
     /// <summary>
     /// Contains a touch event
     /// </summary>
-    public struct GestureTouch : IDisposable, IComparable<GestureTouch>
+    public struct GestureTouch : IComparable<GestureTouch>
     {
-        /// <summary>
-        /// Invalid patform specific id
-        /// </summary>
-        public const int PlatformSpecificIdInvalid = -1;
-
-        private int id;
-        private float x;
-        private float y;
-        private float previousX;
-        private float previousY;
-        private float pressure;
-        private float screenX;
-        private float screenY;
-        private object platformSpecificTouch;
-        private TouchPhase touchPhase;
+        private readonly int id;
+        private readonly float x;
+        private readonly float y;
+        private readonly float previousX;
+        private readonly float previousY;
+        private readonly float pressure;
+        private readonly float screenX;
+        private readonly float screenY;
+        private readonly object platformSpecificTouch;
+        private readonly TouchPhase touchPhase;
 
         /// <summary>
         /// Constructor
@@ -122,22 +117,10 @@ namespace DigitalRubyShared
         }
 
         /// <summary>
-        /// Sets the Id to GestureTouch.PlatformSpecificIdInvalid;
+        /// Compare to another touch by id
         /// </summary>
-        public void Invalidate()
-        {
-            this.id = GestureTouch.PlatformSpecificIdInvalid;
-        }
-
-        /// <summary>
-        /// Determines whether this instance is valid
-        /// </summary>
-        /// <returns>True if valid, false otherwise</returns>
-        public bool IsValid()
-        {
-            return (Id != PlatformSpecificIdInvalid);
-        }
-
+        /// <param name="other">Other touch</param>
+        /// <returns>CompareTo result</returns>
         public int CompareTo(GestureTouch other)
         {
             return this.id.CompareTo(other.id);
@@ -164,14 +147,6 @@ namespace DigitalRubyShared
                 return ((GestureTouch)obj).Id == Id;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Invalidates this gesture touch object
-        /// </summary>
-        public void Dispose()
-        {
-            Invalidate();
         }
 
         /// <summary>
@@ -359,6 +334,7 @@ namespace DigitalRubyShared
         private readonly List<GestureTouch> currentTrackedTouches = new List<GestureTouch>();
         private readonly System.Collections.ObjectModel.ReadOnlyCollection<GestureTouch> currentTrackedTouchesReadOnly;
         private readonly HashSet<DigitalRubyShared.GestureRecognizer> requireGestureRecognizersToFail = new HashSet<DigitalRubyShared.GestureRecognizer>();
+        private readonly HashSet<GestureRecognizer> requireGestureRecognizersToFailThatHaveFailed = new HashSet<GestureRecognizer>();
         private readonly HashSet<DigitalRubyShared.GestureRecognizer> failGestures = new HashSet<DigitalRubyShared.GestureRecognizer>();
         private readonly List<DigitalRubyShared.GestureRecognizer> simultaneousGestures = new List<DigitalRubyShared.GestureRecognizer>();
         private readonly GestureVelocityTracker velocityTracker = new GestureVelocityTracker();
@@ -406,6 +382,13 @@ namespace DigitalRubyShared
                 SetState(GestureRecognizerState.Possible);
                 touchStartLocations.Clear();
                 RemoveFromActiveGestures();
+                requireGestureRecognizersToFailThatHaveFailed.Clear();
+            }
+
+            // if this gesture is a fail gesture for another gesture, reset that gesture as this gesture has ended and not failed
+            foreach (DigitalRubyShared.GestureRecognizer gesture in failGestures)
+            {
+                gesture.FailGestureNow();
             }
         }
 
@@ -451,9 +434,13 @@ namespace DigitalRubyShared
             StateChanged();
             foreach (DigitalRubyShared.GestureRecognizer gesture in failGestures)
             {
+                gesture.requireGestureRecognizersToFailThatHaveFailed.Add(this);
                 if (gesture.state == GestureRecognizerState.EndPending)
                 {
-                    gesture.SetState(GestureRecognizerState.Ended);
+                    if (gesture.HasAllRequiredFailGesturesToEndFromEndPending())
+                    {
+                        gesture.SetState(GestureRecognizerState.Ended);
+                    }
                 }
             }
             ResetInternal(ClearTrackedTouchesOnEndOrFail);
@@ -552,6 +539,7 @@ namespace DigitalRubyShared
             {
                 currentTrackedTouches.Clear();
             }
+            requireGestureRecognizersToFailThatHaveFailed.Clear();
             touchStartLocations.Clear();
             StartFocusX = PrevFocusX = StartFocusY = PrevFocusY = float.MinValue;
             FocusX = FocusY = DeltaX = DeltaY = DistanceX = DistanceY = 0.0f;
@@ -559,7 +547,6 @@ namespace DigitalRubyShared
             velocityTracker.Reset();
             RemoveFromActiveGestures();
             SetState(GestureRecognizerState.Possible);
-
         }
 
         private
@@ -725,15 +712,6 @@ namespace DigitalRubyShared
             {
                 StateUpdated(this);
             }
-
-            if (failGestures.Count != 0 && (state == GestureRecognizerState.Began || state == GestureRecognizerState.Executing ||
-                state == GestureRecognizerState.Ended))
-            {
-                foreach (DigitalRubyShared.GestureRecognizer gesture in failGestures)
-                {
-                    gesture.FailGestureNow();
-                }
-            }
         }
 
         /// <summary>
@@ -758,11 +736,7 @@ namespace DigitalRubyShared
             }
             else if
             (
-                // if we have a require gesture to fail and
-                // the state requested is the end state and
-                // the require gesture to fail is tracking touches or just ended and
-                // the require gesture to fail didn't just fail
-                value == GestureRecognizerState.Ended && CheckRequiredGesturesToFail()
+                value == GestureRecognizerState.Ended && RequiredGesturesToFailAllowsEndPending()
             )
             {
                 // this.Log("END PENDING: " + this);
@@ -799,23 +773,38 @@ namespace DigitalRubyShared
             return true;
         }
 
-        private bool CheckRequiredGesturesToFail()
+        private bool RequiredGesturesToFailAllowsEndPending()
         {
             if (requireGestureRecognizersToFail.Count > 0)
             {
-                bool returnedValue = true;
                 using (HashSet<DigitalRubyShared.GestureRecognizer>.Enumerator gestureToFailEnumerator = requireGestureRecognizersToFail.GetEnumerator())
                 {
-                    while (gestureToFailEnumerator.MoveNext() && returnedValue)
+                    while (gestureToFailEnumerator.MoveNext())
                     {
-                        returnedValue &= gestureToFailEnumerator.Current.State == GestureRecognizerState.Possible &&
-                            (gestureToFailEnumerator.Current.CurrentTrackedTouches.Count != 0 || gestureToFailEnumerator.Current.justEnded) &&
-                            !gestureToFailEnumerator.Current.justFailed;
+                        // if the require fail gesture is possible and
+                        // the require fail gesture has touches or just ended and
+                        // the require fail gesture has not jus failed
+                        // then requre end pending state for failed gesture check
+                        bool isPossible = gestureToFailEnumerator.Current.State == GestureRecognizerState.Possible ||
+                            gestureToFailEnumerator.Current.State == GestureRecognizerState.Began ||
+                            gestureToFailEnumerator.Current.State == GestureRecognizerState.Executing;
+                        bool isTrackingTouches = gestureToFailEnumerator.Current.CurrentTrackedTouches.Count != 0;
+                        bool justEnded = gestureToFailEnumerator.Current.justEnded;
+                        bool justFailed = gestureToFailEnumerator.Current.justFailed;
+                        bool requireEndPending = isPossible && (isTrackingTouches || justEnded) && !justFailed;
+                        if (requireEndPending)
+                        {
+                            return true;
+                        }
                     }
                 }
-                return returnedValue;
             }
             return false;
+        }
+
+        private bool HasAllRequiredFailGesturesToEndFromEndPending()
+        {
+            return requireGestureRecognizersToFail.SetEquals(requireGestureRecognizersToFailThatHaveFailed);
         }
 
         /// <summary>
@@ -1035,7 +1024,7 @@ namespace DigitalRubyShared
                 }
 
                 // if we have the wrong number of tracked touches or haven't started the gesture, fail
-                if (!TrackedTouchCountIsWithinRange||
+                if (!TrackedTouchCountIsWithinRange ||
                     (State != GestureRecognizerState.Possible && State != GestureRecognizerState.Began && State != GestureRecognizerState.Executing))
                 {
                     FailGestureNow();
@@ -1500,4 +1489,3 @@ namespace DigitalRubyShared
         }
     }
 }
-

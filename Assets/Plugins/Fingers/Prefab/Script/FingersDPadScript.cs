@@ -51,7 +51,17 @@ namespace DigitalRubyShared
         [Range(0.01f, 1.0f)]
         public float TouchRadiusInUnits = 0.125f;
 
+        [Tooltip("Horizontal input axis name if cross platform input integration is desired.")]
+        public string CrossPlatformInputHorizontalAxisName;
+
+        [Tooltip("Vertical input axis name if cross platform input integration is desired.")]
+        public string CrossPlatformInputVerticalAxisName;
+
         private readonly Collider2D[] overlap = new Collider2D[32];
+
+        private object crossPlatformInputHorizontalAxisObject;
+        private object crossPlatformInputVerticalAxisObject;
+        private bool crossPlatformInputNewlyRegistered;
 
 #if UNITY_EDITOR
 
@@ -77,6 +87,8 @@ namespace DigitalRubyShared
 
             FingersDPadItem item = FingersDPadItem.None;
             int count = Physics2D.OverlapCircleNonAlloc(point, DeviceInfo.UnitsToPixels(TouchRadiusInUnits), overlap);
+            float horizontal = 0.0f;
+            float vertical = 0.0f;
             for (int i = 0; i < count; i++)
             {
                 if (overlap[i].gameObject == DPadCenterImageSelected.gameObject)
@@ -88,26 +100,38 @@ namespace DigitalRubyShared
                 {
                     DPadRightImageSelected.enabled = true;
                     item |= FingersDPadItem.Right;
+                    horizontal = 1.0f;
                 }
                 if (overlap[i].gameObject == DPadDownImageSelected.gameObject)
                 {
                     DPadDownImageSelected.enabled = true;
                     item |= FingersDPadItem.Down;
+                    vertical = -1.0f;
                 }
                 if (overlap[i].gameObject == DPadLeftImageSelected.gameObject)
                 {
                     DPadLeftImageSelected.enabled = true;
                     item |= FingersDPadItem.Left;
+                    horizontal = -1.0f;
                 }
                 if (overlap[i].gameObject == DPadUpImageSelected.gameObject)
                 {
                     DPadUpImageSelected.enabled = true;
                     item |= FingersDPadItem.Up;
+                    vertical = 1.0f;
                 }
             }
             if (item != FingersDPadItem.None)
             {
                 action(this, item, gesture);
+                if (horizontal != 0.0f && crossPlatformInputHorizontalAxisObject != null)
+                {
+                    FingersCrossPlatformInputReflectionScript.UpdateVirtualAxis(crossPlatformInputHorizontalAxisObject, horizontal);
+                }
+                if (vertical != 0.0f && crossPlatformInputVerticalAxisObject != null)
+                {
+                    FingersCrossPlatformInputReflectionScript.UpdateVirtualAxis(crossPlatformInputVerticalAxisObject, vertical);
+                }
             }
         }
 
@@ -171,6 +195,21 @@ namespace DigitalRubyShared
             TapGesture.AllowSimultaneousExecutionWithAllGestures();
             TapGesture.StateUpdated += TapGestureUpdated;
             FingersScript.Instance.AddGesture(TapGesture);
+
+            if (!string.IsNullOrEmpty(CrossPlatformInputHorizontalAxisName) && !string.IsNullOrEmpty(CrossPlatformInputVerticalAxisName))
+            {
+                crossPlatformInputHorizontalAxisObject = FingersCrossPlatformInputReflectionScript.RegisterVirtualAxis(CrossPlatformInputHorizontalAxisName, out crossPlatformInputNewlyRegistered);
+                crossPlatformInputVerticalAxisObject = FingersCrossPlatformInputReflectionScript.RegisterVirtualAxis(CrossPlatformInputVerticalAxisName, out crossPlatformInputNewlyRegistered);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (crossPlatformInputNewlyRegistered && !string.IsNullOrEmpty(CrossPlatformInputHorizontalAxisName) && !string.IsNullOrEmpty(CrossPlatformInputVerticalAxisName))
+            {
+                FingersCrossPlatformInputReflectionScript.UnRegisterVirtualAxis(CrossPlatformInputHorizontalAxisName);
+                FingersCrossPlatformInputReflectionScript.UnRegisterVirtualAxis(CrossPlatformInputVerticalAxisName);
+            }
         }
 
         public System.Action<FingersDPadScript, FingersDPadItem, TapGestureRecognizer> DPadItemTapped;

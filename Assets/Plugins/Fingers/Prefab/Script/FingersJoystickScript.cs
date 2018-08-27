@@ -30,6 +30,19 @@ namespace DigitalRubyShared
         [Tooltip("In eight axis mode, the joystick can only move up, down, left, right or diagonally. No in between.")]
         public bool EightAxisMode;
 
+        [Tooltip("Whether the x and y absolute values should add up to 1. If false, both can be 1 at a full diagonal.")]
+        public bool AddUpToOne = true;
+
+        [Tooltip("Horizontal input axis name if cross platform input integration is desired.")]
+        public string CrossPlatformInputHorizontalAxisName;
+
+        [Tooltip("Vertical input axis name if cross platform input integration is desired.")]
+        public string CrossPlatformInputVerticalAxisName;
+
+        private object crossPlatformInputHorizontalAxisObject;
+        private object crossPlatformInputVerticalAxisObject;
+        private bool crossPlatformInputNewlyRegistered;
+
         private Vector2 startCenter;
 
         private void Start()
@@ -52,6 +65,11 @@ namespace DigitalRubyShared
 
 #endif
 
+            if (!string.IsNullOrEmpty(CrossPlatformInputHorizontalAxisName) && !string.IsNullOrEmpty(CrossPlatformInputVerticalAxisName))
+            {
+                crossPlatformInputHorizontalAxisObject = FingersCrossPlatformInputReflectionScript.RegisterVirtualAxis(CrossPlatformInputHorizontalAxisName, out crossPlatformInputNewlyRegistered);
+                crossPlatformInputVerticalAxisObject = FingersCrossPlatformInputReflectionScript.RegisterVirtualAxis(CrossPlatformInputVerticalAxisName, out crossPlatformInputNewlyRegistered);
+            }
         }
 
         private void SetImagePosition(Vector2 pos)
@@ -115,6 +133,13 @@ namespace DigitalRubyShared
                 // move image
                 SetImagePosition(startCenter + offset);
 
+                if (!AddUpToOne)
+                {
+                    float maxOffsetLerp = maxOffset * 0.7f;
+                    offset.x = Mathf.Sign(offset.x) * Mathf.Lerp(0.0f, maxOffset, Mathf.Abs(offset.x / maxOffsetLerp));
+                    offset.y = Mathf.Sign(offset.y) * Mathf.Lerp(0.0f, maxOffset, Mathf.Abs(offset.y / maxOffsetLerp));
+                }
+
                 // callback with movement weight
                 if (JoystickPower >= 1.0f)
                 {
@@ -134,6 +159,15 @@ namespace DigitalRubyShared
                     offset = Vector2.ClampMagnitude(offset, maxOffset);
                 }
                 ExecuteCallback(offset);
+
+                if (offset.x != 0.0f && crossPlatformInputHorizontalAxisObject!= null)
+                {
+                    FingersCrossPlatformInputReflectionScript.UpdateVirtualAxis(crossPlatformInputHorizontalAxisObject, offset.x);
+                }
+                if (offset.y != 0.0f && crossPlatformInputVerticalAxisObject != null)
+                {
+                    FingersCrossPlatformInputReflectionScript.UpdateVirtualAxis(crossPlatformInputVerticalAxisObject, offset.y);
+                }
             }
             else if (gesture.State == GestureRecognizerState.Began)
             {
@@ -157,6 +191,16 @@ namespace DigitalRubyShared
         {
 
         }
+
+        private void OnDestroy()
+        {
+            if (crossPlatformInputNewlyRegistered && !string.IsNullOrEmpty(CrossPlatformInputHorizontalAxisName) && !string.IsNullOrEmpty(CrossPlatformInputVerticalAxisName))
+            {
+                FingersCrossPlatformInputReflectionScript.UnRegisterVirtualAxis(CrossPlatformInputHorizontalAxisName);
+                FingersCrossPlatformInputReflectionScript.UnRegisterVirtualAxis(CrossPlatformInputVerticalAxisName);
+            }
+        }
+
 
         public PanGestureRecognizer PanGesture { get; private set; }
         public System.Action<FingersJoystickScript, Vector2> JoystickExecuted;

@@ -269,7 +269,7 @@ namespace DigitalRubyShared
                         if (forcePassThrough)
                         {
                             bool matchesPlatformSpecificView = false;
-                            foreach (GestureRecognizer g in gestures)
+                            foreach (DigitalRubyShared.GestureRecognizer g in gestures)
                             {
                                 if (object.ReferenceEquals(g.PlatformSpecificView, r.gameObject))
                                 {

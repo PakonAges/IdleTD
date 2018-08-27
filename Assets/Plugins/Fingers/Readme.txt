@@ -2,7 +2,7 @@ Fingers, by Jeff Johnson
 Fingers (c) 2015 Digital Ruby, LLC
 http://www.digitalruby.com
 
-Version 2.4.7
+Version 2.4.8
 
 See ChangeLog.txt for history.
 

@@ -36,6 +36,9 @@ namespace DigitalRubyShared
         [Tooltip("The minimum and maximum scale. 0 for no limits.")]
         public Vector2 MinMaxScale;
 
+        [Tooltip("Whether to add a double tap to reset the transform of the game object this script is on.")]
+        public bool DoubleTapToReset;
+
         /// <summary>
         /// Allow moving the target
         /// </summary>
@@ -51,6 +54,11 @@ namespace DigitalRubyShared
         /// </summary>
         public RotateGestureRecognizer RotateGesture { get; private set; }
 
+        /// <summary>
+        /// The double tap gesture or null if DoubleTapToReset was false when this script started up
+        /// </summary>
+        public TapGestureRecognizer DoubleTapGesture { get; private set; }
+
         private Rigidbody2D rigidBody2D;
         private Rigidbody rigidBody;
         private SpriteRenderer spriteRenderer;
@@ -59,6 +67,15 @@ namespace DigitalRubyShared
         private int startSortOrder;
         private float panZ;
         private Vector3 panOffset;
+        private Vector3 savedScale;
+        private Quaternion savedRotation;
+
+        private struct SavedState
+        {
+            public Vector3 Scale;
+            public Quaternion Rotation;
+        }
+        private readonly Dictionary<Transform, SavedState> savedStates = new Dictionary<Transform, SavedState>();
 
         private static readonly List<RaycastResult> captureRaycastResults = new List<RaycastResult>();
 
@@ -139,7 +156,7 @@ namespace DigitalRubyShared
             GameObject obj = StartOrResetGesture(r, BringToFront, Camera, gameObject, spriteRenderer, Mode);
             if (r.State == GestureRecognizerState.Began)
             {
-                SetStartState(obj, false);
+                SetStartState(r, obj, false);
             }
             else if (r.State == GestureRecognizerState.Executing && _transform != null)
             {
@@ -182,7 +199,7 @@ namespace DigitalRubyShared
             GameObject obj = StartOrResetGesture(r, BringToFront, Camera, gameObject, spriteRenderer, Mode);
             if (r.State == GestureRecognizerState.Began)
             {
-                SetStartState(obj, false);
+                SetStartState(r, obj, false);
             }
             else if (r.State == GestureRecognizerState.Executing && _transform != null)
             {
@@ -209,7 +226,7 @@ namespace DigitalRubyShared
             GameObject obj = StartOrResetGesture(r, BringToFront, Camera, gameObject, spriteRenderer, Mode);
             if (r.State == GestureRecognizerState.Began)
             {
-                SetStartState(obj, false);
+                SetStartState(r, obj, false);
             }
             else if (r.State == GestureRecognizerState.Executing && _transform != null)
             {
@@ -238,21 +255,40 @@ namespace DigitalRubyShared
             }
         }
 
+        private void DoubleTapGestureUpdated(DigitalRubyShared.GestureRecognizer r)
+        {
+            if (r.State == GestureRecognizerState.Ended)
+            {
+                GameObject obj = GestureIntersectsObject(r, Camera, gameObject, Mode);
+                SavedState state;
+                if (obj != null && savedStates.TryGetValue(obj.transform, out state))
+                {
+                    obj.transform.rotation = state.Rotation;
+                    obj.transform.localScale = state.Scale;
+                    savedStates.Remove(obj.transform);
+                }
+            }
+        }
+
         private void ClearStartState()
         {
             if (Mode != GestureRecognizerComponentScriptBase.GestureObjectMode.AllowOnAnyGameObjectViaRaycast)
             {
                 return;
             }
-
-            rigidBody2D = null;
-            rigidBody = null;
-            spriteRenderer = null;
-            canvasRenderer = null;
-            _transform = null;
+            else if (PanGesture.State != GestureRecognizerState.Executing &&
+                RotateGesture.State != GestureRecognizerState.Executing &&
+                ScaleGesture.State != GestureRecognizerState.Executing)
+            {
+                rigidBody2D = null;
+                rigidBody = null;
+                spriteRenderer = null;
+                canvasRenderer = null;
+                _transform = null;
+            }
         }
 
-        private bool SetStartState(GameObject obj, bool force)
+        private bool SetStartState(DigitalRubyShared.GestureRecognizer gesture, GameObject obj, bool force)
         {
             if (!force && Mode != GestureRecognizerComponentScriptBase.GestureObjectMode.AllowOnAnyGameObjectViaRaycast)
             {
@@ -274,11 +310,23 @@ namespace DigitalRubyShared
                     startSortOrder = spriteRenderer.sortingOrder;
                 }
                 _transform = (rigidBody == null ? (rigidBody2D == null ? obj.transform : rigidBody2D.transform) : rigidBody.transform);
+                if (DoubleTapToReset && !savedStates.ContainsKey(_transform))
+                {
+                    savedStates[_transform] = new SavedState { Rotation = _transform.rotation, Scale = _transform.localScale };
+                }
+            }
+            else if (_transform != obj.transform)
+            {
+                if (gesture != null)
+                {
+                    gesture.Reset();
+                }
+                return false;
             }
             return true;
         }
 
-        private void Start()
+        private void OnEnable()
         {
             this.Camera = (this.Camera == null ? Camera.main : this.Camera);
             PanGesture = new PanGestureRecognizer { MaximumNumberOfTouchesToTrack = 2, ThresholdUnits = 0.01f };
@@ -289,29 +337,52 @@ namespace DigitalRubyShared
             RotateGesture.StateUpdated += RotateGestureUpdated;
             if (Mode != GestureRecognizerComponentScriptBase.GestureObjectMode.AllowOnAnyGameObjectViaRaycast)
             {
-                SetStartState(gameObject, true);
+                SetStartState(null, gameObject, true);
+            }
+            if (DoubleTapToReset)
+            {
+                DoubleTapGesture = new TapGestureRecognizer { NumberOfTapsRequired = 2 };
+                DoubleTapGesture.StateUpdated += DoubleTapGestureUpdated;
             }
             if (AllowExecutionWithAllGestures)
             {
                 PanGesture.AllowSimultaneousExecutionWithAllGestures();
                 PanGesture.AllowSimultaneousExecutionWithAllGestures();
                 ScaleGesture.AllowSimultaneousExecutionWithAllGestures();
+                if (DoubleTapGesture != null)
+                {
+                    DoubleTapGesture.AllowSimultaneousExecutionWithAllGestures();
+                }
             }
             else
             {
                 PanGesture.AllowSimultaneousExecution(ScaleGesture);
                 PanGesture.AllowSimultaneousExecution(RotateGesture);
                 ScaleGesture.AllowSimultaneousExecution(RotateGesture);
+                if (DoubleTapGesture != null)
+                {
+                    DoubleTapGesture.AllowSimultaneousExecution(ScaleGesture);
+                    DoubleTapGesture.AllowSimultaneousExecution(RotateGesture);
+                    DoubleTapGesture.AllowSimultaneousExecution(PanGesture);
+                }
             }
             if (Mode == GestureRecognizerComponentScriptBase.GestureObjectMode.RequireIntersectWithGameObject)
             {
                 RotateGesture.PlatformSpecificView = gameObject;
                 PanGesture.PlatformSpecificView = gameObject;
                 ScaleGesture.PlatformSpecificView = gameObject;
+                if (DoubleTapGesture != null)
+                {
+                    DoubleTapGesture.PlatformSpecificView = gameObject;
+                }
             }
             FingersScript.Instance.AddGesture(PanGesture);
             FingersScript.Instance.AddGesture(ScaleGesture);
             FingersScript.Instance.AddGesture(RotateGesture);
+            if (DoubleTapGesture != null)
+            {
+                FingersScript.Instance.AddGesture(DoubleTapGesture);
+            }
         }
     }
 }

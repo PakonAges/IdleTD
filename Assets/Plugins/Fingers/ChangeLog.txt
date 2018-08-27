@@ -1,5 +1,9 @@
 ﻿Changelog
 --------------------
+2.4.8	(2018-08-25)
+		- Add option to joystick to have x and y be 1 each at full diagonal instead of 0.5, 0.5 each.
+		- Add cross platform input support for joystick and dpad. See the horizontal and vertical input name properties on these scripts.
+
 2.4.7	(2018-08-19)
 		- Add SendBeginExecutingStates to swipe gesture. Set to false to not send the begin and executing states.
 

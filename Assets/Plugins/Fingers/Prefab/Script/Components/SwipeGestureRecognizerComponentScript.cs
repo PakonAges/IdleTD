@@ -52,6 +52,7 @@ namespace DigitalRubyShared
             Gesture.DirectionThreshold = DirectionThreshold;
             Gesture.EndMode = EndMode;
             Gesture.FailOnDirectionChange = FailOnDirectionChange;
+            Gesture.SendBeginExecutingStates = SendBeginExecutingStates;
         }
 
     }
